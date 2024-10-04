@@ -62,12 +62,31 @@ export const sellersApi = createApi({
 				{ type: "Seller", id: sellerId },
 			],
 		}),
+		fetchSellersByMarketId: builder.query<Seller[], string>({
+			query: (marketId) => ({
+				url: `/market/${marketId}`,
+				method: "GET",
+			}),
+			providesTags: (_result, _error, marketId) => [
+				{ type: "Seller", id: marketId },
+			],
+		}),
+		createSeller: builder.mutation<Seller, Partial<Seller>>({
+			query: (newSeller) => ({
+				url: "/",
+				method: "POST",
+				body: newSeller,
+			}),
+			invalidatesTags: [{ type: "Seller", id: "LIST" }],
+		}),
 	}),
 });
 
 export const {
 	useFetchProductsBySellerIdQuery,
 	useFetchSellerByIdQuery,
+	useFetchSellersByMarketIdQuery,
+	useCreateSellerMutation,
 	useUpdateSellerByIdMutation,
 } = sellersApi;
 

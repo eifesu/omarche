@@ -10,6 +10,7 @@ import {
 	updateOrderStatusById,
 	UpdateOrderStatusInput,
 	selectOrderDetailsById,
+	selectAllOrders,
 } from "@/repositories/order.repository";
 import { selectProductById } from "@/repositories/product.repository";
 import { selectSellerById } from "@/repositories/seller.repository";
@@ -136,4 +137,22 @@ export async function getOrderDetailsById(orderId: string): Promise<
 		shipper: orderDetails.shipper,
 		agent: agent,
 	};
+}
+
+export async function getAllOrders(): Promise<OrderDTO[]> {
+	const orders = await selectAllOrders();
+	const ordersDTO = orders.map((order) => ({
+		order,
+		orderProducts: order.orderProducts.map((op) => ({
+			product: op.products,
+			quantity: op.quantity,
+			sellerName: op.products.seller.firstName,
+			sellerTableNo: op.products.seller.tableNumber,
+		})),
+		marketName: order.orderProducts[0]?.products.seller.market.name || "",
+		client: order.users,
+		market: order.orderProducts[0]?.products.seller.market,
+		shipper: order.shipper,
+	}));
+	return ordersDTO;
 }

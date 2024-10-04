@@ -1,2 +1,4 @@
-mobile/node_modules
-api/node_modules
+# Ignore all node modules and all .env files
+node_modules
+.env
+.env.*

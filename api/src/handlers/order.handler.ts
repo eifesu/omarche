@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import {
+	getAllOrders,
 	getOrderDetailsById,
 	postOrder,
 	putOrderStatusById,
@@ -83,6 +84,18 @@ orderHandler.get("/:id", async (c) => {
 	} catch (error) {
 		if (error instanceof Error) {
 			return c.json({ error: error.message }, 404);
+		}
+		return c.json({ error: "An unexpected error occurred" }, 500);
+	}
+});
+
+orderHandler.get("/", async (c) => {
+	try {
+		const orders = await getAllOrders();
+		return c.json(orders);
+	} catch (error) {
+		if (error instanceof Error) {
+			return c.json({ error: error.message }, 500);
 		}
 		return c.json({ error: "An unexpected error occurred" }, 500);
 	}
