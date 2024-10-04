@@ -50,7 +50,13 @@ export default function SellerList(props: SellerListProps) {
 
 function SellerItem(props: { seller: Seller }) {
     return (
-        <TouchableOpacity style={styles.sellerItemContainer} >
+        <TouchableOpacity
+            style={[
+                styles.sellerItemContainer,
+                !props.seller.isActive && styles.inactiveSellerItem
+            ]}
+            disabled={!props.seller.isActive}
+        >
             <View style={{ justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', width: '100%' }}>
                 <View style={{ gap: 4 }}>
                     <View style={{ gap: 8, backgroundColor: Theme.colors.greenLight, alignItems: 'center', justifyContent: 'center', borderRadius: 999, padding: 8, paddingHorizontal: 12, flexDirection: 'row' }}>
@@ -152,7 +158,8 @@ const styles = StyleSheet.create({
         height: 120,
         backgroundColor: Theme.colors.green,
         borderRadius: 4
-    }
-
-
+    },
+    inactiveSellerItem: {
+        opacity: 0.5,
+    },
 })

@@ -41,17 +41,30 @@ export default function ProductScreen(props: NativeStackScreenProps<MarketStackP
             <View style={{ paddingHorizontal: 16 }}>
                 <ButtonContainer
                     onPress={() => handleOnPress(data)}
-                    style={{ backgroundColor: Theme.colors.green, borderRadius: 999, height: 42 }}>
-                    <ButtonText color="white" style={{ fontFamily: Theme.font.extraBold, fontSize: 14 }}>Mettre {quantity * data.amount}<Text style={{ fontSize: 8 }}>{data.unit.toUpperCase()}
-                    </Text> dans le panier
-                        <Text style={{ fontFamily: Theme.font.semiBold, fontSize: 14 }}>
-                            {'  '}- {quantity * data.price}<Text style={{ fontSize: 8 }}>CFA</Text>
-                        </Text></ButtonText>
+                    style={[
+                        styles.addToCartButton,
+                        !data.isInStock && styles.disabledButton
+                    ]}
+                    disabled={!data.isInStock}
+                >
+                    <ButtonText color="white" style={styles.addToCartButtonText}>
+                        {data.isInStock ? (
+                            <>
+                                Mettre {quantity * data.amount}<Text style={{ fontSize: 8 }}>{data.unit.toUpperCase()}
+                                </Text> dans le panier
+                                <Text style={{ fontFamily: Theme.font.semiBold, fontSize: 14 }}>
+                                    {'  '}- {quantity * data.price}<Text style={{ fontSize: 8 }}>CFA</Text>
+                                </Text>
+                            </>
+                        ) : (
+                            'Produit non disponible'
+                        )}
+                    </ButtonText>
                 </ButtonContainer>
             </View>
             <View style={{ padding: 16, gap: 4 }}>
-                <Text style={{ fontFamily: Theme.font.black, color: Theme.colors.black, fontSize: 16, letterSpacing: -.5 }}>Description</Text>
-                <Text style={{ fontFamily: Theme.font.medium, letterSpacing: -.5, fontSize: 14, opacity: .5 }}>{data.description}</Text>
+                <Text style={styles.descriptionTitle}>Description</Text>
+                <Text style={styles.descriptionText}>{data.description}</Text>
             </View>
         </KeyboardAwareScrollView>
     )
@@ -228,5 +241,30 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: Theme.font.extraBold,
         opacity: .5
+    },
+    addToCartButton: {
+        backgroundColor: Theme.colors.green,
+        borderRadius: 999,
+        height: 42,
+    },
+    disabledButton: {
+        backgroundColor: 'gray',
+        opacity: 0.5,
+    },
+    addToCartButtonText: {
+        fontFamily: Theme.font.extraBold,
+        fontSize: 14,
+    },
+    descriptionTitle: {
+        fontFamily: Theme.font.black,
+        color: Theme.colors.black,
+        fontSize: 16,
+        letterSpacing: -0.5,
+    },
+    descriptionText: {
+        fontFamily: Theme.font.medium,
+        letterSpacing: -0.5,
+        fontSize: 14,
+        opacity: 0.5,
     },
 })

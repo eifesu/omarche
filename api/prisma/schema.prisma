@@ -37,6 +37,7 @@ model Order {
     userId             String          @db.Uuid
     locationX          Decimal         @db.Decimal(10, 6)
     locationY          Decimal         @db.Decimal(10, 6)
+    agentId            String?         @db.Uuid
     shipperId          String?         @db.Uuid
     address            String
     deliveryTime       String          @db.VarChar(50)
@@ -46,6 +47,7 @@ model Order {
     cancellationReason String?         @db.VarChar(255)
     users              User            @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
     shipper            Shipper?        @relation(fields: [shipperId], references: [shipperId], onDelete: Cascade, onUpdate: NoAction)
+    agent              Agent?          @relation(fields: [agentId], references: [agentId], onDelete: Cascade, onUpdate: NoAction)
     orderProducts      OrderProducts[]
     promoCode          PromoCode?      @relation("PromoCodeOrders", fields: [promoCodeId], references: [promoCodeId])
     createdAt          DateTime?       @default(now()) @db.Timestamp(6)
@@ -115,6 +117,7 @@ model Agent {
     market     Market   @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
     createdAt  DateTime @default(now()) @db.Timestamp(6)
     updatedAt  DateTime @updatedAt
+    orders     Order[]
 
     @@unique([email, marketId], map: "uc_agent")
 }

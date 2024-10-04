@@ -21,12 +21,12 @@ const SellerImage: React.FC<SellerImageProps> = ({ pictureUrl, onChangePhoto, on
             <ButtonContainer style={styles.backButton} onPress={onGoBack}>
                 <BackIcon />
             </ButtonContainer>
-            <ButtonContainer style={styles.changePhotoButton} onPress={onChangePhoto}>
+            {/* <ButtonContainer style={styles.changePhotoButton} onPress={onChangePhoto}>
                 <ButtonText color={Theme.colors.black} style={styles.buttonText}>
                     Changer la photo
                 </ButtonText>
                 <CameraIcon />
-            </ButtonContainer>
+            </ButtonContainer> */}
         </View>
     );
 };

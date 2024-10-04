@@ -161,7 +161,7 @@ export default function SellerScreen() {
                 onChangePhoto={handleChangePhoto}
                 onGoBack={handleGoBack}
             />
-            <UploadingOverlay uploading={uploading} />
+            {/* <UploadingOverlay uploading={uploading} /> */}
             <SellerDetailsView data={sellerDetails} isActive={sellerDetails.isActive} />
             <View style={styles.buttonContainer}>
                 <ButtonContainer

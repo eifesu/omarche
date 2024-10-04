@@ -15,25 +15,41 @@ export default function ShippingScreen() {
     const auth = useSelector((state: RootState) => state.auth);
     const user = auth.user as Shipper;
     const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [ws, setWs] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        const ws = new WebSocket(`ws://${ENV.API_URL.replace('http://', '')}/ws/${user.shipperId}`);
+        let reconnectInterval: number;
 
-        ws.onopen = () => {
-            setIsConnected(true);
+        const connectWebSocket = () => {
+            const newWs = new WebSocket(`ws://${ENV.API_URL.replace('http://', '')}/ws/${user.shipperId}`);
+
+            newWs.onopen = () => {
+                setIsConnected(true);
+                clearInterval(reconnectInterval);
+            };
+
+            newWs.onmessage = (event) => {
+                const message: WebSocketMessage = JSON.parse(event.data);
+                dispatch(setCurrentOrderId(message.orderId));
+            };
+
+            newWs.onclose = () => {
+                setIsConnected(false);
+                reconnectInterval = setInterval(() => {
+                    connectWebSocket();
+                }, 5000);
+            };
+
+            setWs(newWs);
         };
 
-        ws.onmessage = (event) => {
-            const message: WebSocketMessage = JSON.parse(event.data);
-            dispatch(setCurrentOrderId(message.orderId));
-        };
-
-        ws.onclose = () => {
-            setIsConnected(false);
-        };
+        connectWebSocket();
 
         return () => {
-            ws.close();
+            if (ws) {
+                ws.close();
+            }
+            clearInterval(reconnectInterval);
         };
     }, []);
 

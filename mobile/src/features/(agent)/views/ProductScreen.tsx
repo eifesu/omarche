@@ -121,11 +121,12 @@ function Carousel({ images, activeIndex, setActiveIndex }: { images: string[], a
                 showsHorizontalScrollIndicator={false}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
-                style={{ height, width: '100%', backgroundColor: Theme.colors.greenDark }}
+                contentContainerStyle={{ flex: 1, height: '100%', width: '100%', backgroundColor: Theme.colors.greenDark }}
+                style={{ height: '100%', width: '100%', backgroundColor: Theme.colors.greenDark }}
             >
                 {images.map((image, index) => (
-                    <View key={index} style={{ height, width, backgroundColor: Theme.colors.greenLight }}>
-                        <Image source={{ uri: image }} style={{ height, width }} contentFit="cover" />
+                    <View key={index} style={{ height: '100%', width: '100%', backgroundColor: Theme.colors.greenLight }}>
+                        <Image source={{ uri: image }} style={{ height: '100%', width: '100%' }} contentFit="cover" />
                     </View>
                 ))}
             </ScrollView>
