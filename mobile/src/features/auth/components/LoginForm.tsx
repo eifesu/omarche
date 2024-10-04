@@ -31,7 +31,6 @@ export default function LoginForm() {
                     initialValues={{ email: route.params ? route.params.email : '', password: '' }}
                     onSubmit={async (values) => {
                         if (!values.email || !values.password) return;
-
                         try {
                             let result;
                             if (role === 'Client') {
@@ -45,7 +44,6 @@ export default function LoginForm() {
                                 homeNavigation.navigate('Shipper');
                             }
                         } catch (error) {
-                            // The error will be handled by the errorToastMiddleware
                             console.error('Login error:', error);
                         }
                     }}

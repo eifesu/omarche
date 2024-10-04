@@ -189,7 +189,7 @@ async function seedShippers() {
 }
 
 console.log("🌱 Starting database seeding");
-seedDb()
+await seedDb()
 	.then(() => {})
 	.catch((error) => {
 		console.log(error);
