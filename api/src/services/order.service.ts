@@ -11,6 +11,8 @@ import {
 	UpdateOrderStatusInput,
 	selectOrderDetailsById,
 	selectAllOrders,
+	deleteOrderById,
+	selectOrdersByUserId,
 } from "@/repositories/order.repository";
 import { selectProductById } from "@/repositories/product.repository";
 import { selectSellerById } from "@/repositories/seller.repository";
@@ -155,4 +157,24 @@ export async function getAllOrders(): Promise<OrderDTO[]> {
 		shipper: order.shipper,
 	}));
 	return ordersDTO;
+}
+
+export async function deleteOrderByIds(orderId: string) {
+	const deletedOrder = await deleteOrderById(orderId);
+	if (!deletedOrder) {
+		throw new Error("Order not found");
+	}
+	return deletedOrder;
+}
+
+export async function getOrdersByUserId(userId: string): Promise<Order[]> {
+	const orders = await selectOrdersByUserId(userId);
+	return orders;
+}
+
+export async function getOrderProductsByOrderId(
+	orderId: string
+): Promise<OrderProducts[]> {
+	const orderProducts = await selectOrderProductsByOrderId(orderId);
+	return orderProducts;
 }

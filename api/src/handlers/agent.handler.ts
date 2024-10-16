@@ -3,6 +3,7 @@ import prisma from "@prisma/index";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { Prisma } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 const agentHandler = new Hono();
 
@@ -32,20 +33,33 @@ agentHandler.post("/", zValidator("json", CreateAgentDTO), async (c) => {
 	} catch (error) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
 			if (error.code === "P2002") {
-				return c.json(
-					{ error: "An agent with this email already exists" },
-					400
+				throw new AppError(
+					"Un agent avec cet email existe déjà",
+					400,
+					error
 				);
 			}
 		}
-		return c.json({ error: "Failed to create agent" }, 500);
+		throw new AppError(
+			"Erreur lors de la création de l'agent",
+			500,
+			error as Error
+		);
 	}
 });
 
 // Get all agents
 agentHandler.get("/", async (c) => {
-	const agents = await prisma.agent.findMany();
-	return c.json(agents);
+	try {
+		const agents = await prisma.agent.findMany({});
+		return c.json(agents);
+	} catch (error) {
+		throw new AppError(
+			"Erreur lors de la récupération des agents",
+			500,
+			error as Error
+		);
+	}
 });
 
 // Get agent by id
@@ -56,7 +70,11 @@ agentHandler.get("/:agentId", async (c) => {
 	});
 
 	if (!agent) {
-		return c.json({ error: "Agent not found" }, 404);
+		throw new AppError(
+			"Agent non trouvé",
+			404,
+			new Error("Agent not found")
+		);
 	}
 
 	return c.json(agent);
@@ -87,7 +105,11 @@ agentHandler.put("/:agentId", zValidator("json", UpdateAgentDTO), async (c) => {
 		});
 		return c.json(updatedAgent);
 	} catch (error) {
-		return c.json({ error: "Failed to update agent" }, 500);
+		throw new AppError(
+			"Erreur lors de la mise à jour de l'agent",
+			500,
+			error as Error
+		);
 	}
 });
 
@@ -99,9 +121,13 @@ agentHandler.delete("/:agentId", async (c) => {
 		await prisma.agent.delete({
 			where: { agentId },
 		});
-		return c.json({ message: "Agent deleted successfully" });
+		return c.json({ message: "Agent supprimé avec succès" });
 	} catch (error) {
-		return c.json({ error: "Failed to delete agent" }, 500);
+		throw new AppError(
+			"Erreur lors de la suppression de l'agent",
+			500,
+			error as Error
+		);
 	}
 });
 

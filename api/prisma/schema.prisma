@@ -43,7 +43,7 @@ model Order {
     deliveryTime       String          @db.VarChar(50)
     paymentMethod      String          @db.VarChar(50)
     promoCodeId        String?         @db.Uuid
-    status             String          @default("IDLE") @db.VarChar(50)
+    status             order_status    @default(IDLE)
     cancellationReason String?         @db.VarChar(255)
     users              User            @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
     shipper            Shipper?        @relation(fields: [shipperId], references: [shipperId], onDelete: Cascade, onUpdate: NoAction)
@@ -55,20 +55,20 @@ model Order {
 }
 
 model Product {
-    productId     String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    productId     String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
     pictureUrl    String[]
-    name          String          @db.VarChar(100)
+    name          String           @db.VarChar(100)
     description   String?
-    unit          String          @db.VarChar(50)
+    unit          String           @db.VarChar(50)
     amount        Int
-    price         Decimal         @db.Decimal(10, 2)
-    category      String          @default("Légumes") @db.VarChar(50)
-    sellerId      String          @db.Uuid
-    isInStock     Boolean         @default(true)
+    price         Decimal          @db.Decimal(10, 2)
+    category      product_category @default(Legumes)
+    sellerId      String           @db.Uuid
+    isInStock     Boolean          @default(true)
     orderProducts OrderProducts[]
-    seller        Seller          @relation(fields: [sellerId], references: [sellerId], onDelete: Cascade, onUpdate: NoAction)
-    createdAt     DateTime?       @default(now()) @db.Timestamp(6)
-    updatedAt     DateTime        @updatedAt
+    seller        Seller           @relation(fields: [sellerId], references: [sellerId], onDelete: Cascade, onUpdate: NoAction)
+    createdAt     DateTime?        @default(now()) @db.Timestamp(6)
+    updatedAt     DateTime         @updatedAt
 
     @@unique([name, sellerId], map: "uc_product")
 }
@@ -101,7 +101,9 @@ model User {
     phone     String   @unique @db.VarChar(50)
     createdAt DateTime @default(now()) @db.Timestamp(6)
     updatedAt DateTime @updatedAt
-    orders    Order[]
+
+    orders   Order[]
+    giftCard GiftCard?
 }
 
 model Agent {
@@ -123,18 +125,19 @@ model Agent {
 }
 
 model Shipper {
-    shipperId         String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    marketId          String             @db.Uuid
-    firstName         String             @db.VarChar(50)
-    lastName          String             @db.VarChar(50)
-    email             String             @unique @db.VarChar(50)
-    password          String             @db.VarChar(255)
-    phone             String             @db.VarChar(50)
-    pictureUrl        String?            @db.VarChar(255)
-    isOnline          Boolean            @default(false)
-    availableShippers AvailableShipper[]
-    market            Market             @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
-    orders            Order[]
+    shipperId  String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    marketId   String   @db.Uuid
+    firstName  String   @db.VarChar(50)
+    lastName   String   @db.VarChar(50)
+    email      String   @unique @db.VarChar(50)
+    password   String   @db.VarChar(255)
+    phone      String   @db.VarChar(50)
+    pictureUrl String?  @db.VarChar(255)
+    isOnline   Boolean  @default(false)
+    market     Market   @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
+    orders     Order[]
+    createdAt  DateTime @default(now()) @db.Timestamp(6)
+    updatedAt  DateTime @updatedAt
 }
 
 model PromoCode {
@@ -144,15 +147,21 @@ model PromoCode {
     discountType String
     amount       Decimal  @db.Decimal(10, 2)
     orders       Order[]  @relation("PromoCodeOrders")
+    createdAt    DateTime @default(now()) @db.Timestamp(6)
+    updatedAt    DateTime @updatedAt
 }
 
-model AvailableShipper {
-    shipperId String   @id @db.Uuid
-    shipper   Shipper  @relation(fields: [shipperId], references: [shipperId])
-    lastPing  DateTime @default(now())
+model GiftCard {
+    giftCardId String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    userId     String?  @unique @db.Uuid
+    expiration DateTime @db.Timestamp(6)
+    status     String   @default("IDLE") @db.VarChar(50)
+    createdAt  DateTime @default(now()) @db.Timestamp(6)
+    updatedAt  DateTime @updatedAt
+    user       User?    @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
 
-enum status {
+enum order_status {
     IDLE
     PROCESSING
     PROCESSED
@@ -162,7 +171,7 @@ enum status {
     CANCELED
 }
 
-enum category {
+enum product_category {
     Legumes
     Fruits
     Viandes

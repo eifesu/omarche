@@ -54,18 +54,14 @@ const ShipperRegisterDTO = z.object({
 
 const authHandler = new Hono();
 
-authHandler.post(
-	"/auth/user/login",
-	zValidator("json", UserLoginDTO),
-	async (c) => {
-		const { email, password } = c.req.valid("json");
-		const body = await postLoginUser({ email, password });
-		return c.json(body);
-	}
-);
+authHandler.post("/user/login", zValidator("json", UserLoginDTO), async (c) => {
+	const { email, password } = c.req.valid("json");
+	const body = await postLoginUser({ email, password });
+	return c.json(body);
+});
 
 authHandler.post(
-	"/auth/user/register",
+	"/user/register",
 	zValidator("json", UserRegisterDTO),
 	async (c) => {
 		const { email, password, firstName, lastName, address, phone } =
@@ -83,7 +79,7 @@ authHandler.post(
 );
 
 authHandler.post(
-	"/auth/agent/login",
+	"/agent/login",
 	zValidator("json", AgentLoginDTO),
 	async (c) => {
 		const { email, password } = c.req.valid("json");
@@ -93,7 +89,7 @@ authHandler.post(
 );
 
 authHandler.post(
-	"/auth/agent/register",
+	"/agent/register",
 	zValidator("json", AgentRegisterDTO),
 	async (c) => {
 		const { email, password, firstName, lastName, phone, marketId } =
@@ -111,7 +107,7 @@ authHandler.post(
 );
 
 authHandler.post(
-	"/auth/shipper/login",
+	"/shipper/login",
 	zValidator("json", ShipperLoginDTO),
 	async (c) => {
 		const { email, password } = c.req.valid("json");
@@ -121,7 +117,7 @@ authHandler.post(
 );
 
 authHandler.post(
-	"/auth/shipper/register",
+	"/shipper/register",
 	zValidator("json", ShipperRegisterDTO),
 	async (c) => {
 		const { email, password, firstName, lastName, phone, marketId } =

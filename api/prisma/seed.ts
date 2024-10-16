@@ -7,7 +7,7 @@ async function seedDb() {
 		await seedProducts();
 		await seedAgents();
 		await seedUsers();
-		await seedShippers(); // Add this line to call the new function
+		await seedShippers();
 		console.log("🌱 Database seeding completed successfully");
 	} catch (error) {
 		console.log("🌱 Database seeding failed");

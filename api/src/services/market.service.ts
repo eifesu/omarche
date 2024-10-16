@@ -1,4 +1,5 @@
 import {
+	deleteMarketById,
 	insertMarket,
 	selectAllMarkets,
 	selectMarketById,
@@ -7,7 +8,7 @@ import {
 import { selectSellersFromMarketById } from "@/repositories/seller.repository";
 import { getOrderById, OrderDTO } from "./order.service";
 import { selectOrdersByMarketId } from "@/repositories/order.repository";
-import { Market } from "@prisma/client";
+import { Market, Order } from "@prisma/client";
 
 export async function getAllMarkets() {
 	return selectAllMarkets();
@@ -17,11 +18,15 @@ export async function getSellersFromMarketById(marketId: string) {
 	return selectSellersFromMarketById(marketId);
 }
 
-export async function getOrdersByMarketId(
+export async function getOrdersByMarketId(marketId: string): Promise<Order[]> {
+	const orders = await selectOrdersByMarketId(marketId);
+	return orders;
+}
+
+export async function getOrdersDetailsByMarketId(
 	marketId: string
 ): Promise<OrderDTO[]> {
 	const orders = await selectOrdersByMarketId(marketId);
-	console.log(orders);
 	const ordersDTO = await Promise.all(
 		orders.map((order) => getOrderById(order.orderId))
 	);
@@ -49,4 +54,12 @@ export async function getMarketById(marketId: string) {
 		throw new Error("Market not found");
 	}
 	return market;
+}
+
+export async function deleteMarket(marketId: string) {
+	const market = await selectMarketById(marketId);
+	if (!market) {
+		throw new Error("Market not found");
+	}
+	await deleteMarketById(marketId);
 }

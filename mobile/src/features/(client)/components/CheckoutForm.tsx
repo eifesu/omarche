@@ -1,7 +1,7 @@
 import { Formik } from "formik"
 import * as Yup from "yup"
 import { CartItemType } from "../redux/cart.slice"
-import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View, ViewProps } from "react-native"
+import { ActivityIndicator, Animated, StyleSheet, Text, TextInput, TouchableOpacity, View, ViewProps } from "react-native"
 import { Iconify } from "react-native-iconify"
 import { Theme } from "@/config/constants"
 import { ButtonContainer, ButtonText } from "@/components/Button"
@@ -16,6 +16,9 @@ import { showToast } from "@/redux/slices/toast.slice"
 import { useNavigation } from "@react-navigation/native"
 import { getMarketCartTotal } from "../helpers/helpers"
 import { User } from "@/features/auth/redux/user.api"
+import { useValidatePromoCodeMutation } from "../redux/promoCodeApi.slice"
+import { useCallback } from "react"
+import { debounce } from "lodash"
 
 const CheckoutSchema = Yup.object().shape({
     address: Yup.string().required('Veuillez préciser votre adresse de livraison.'),
@@ -23,7 +26,6 @@ const CheckoutSchema = Yup.object().shape({
         latitude: Yup.number().required(),
         longitude: Yup.number().required()
     }).required(),
-    // addressExtra: Yup.string().notRequired(),
     deliveryTime: Yup.string().oneOf(['ASAP', 'Scheduled']).required('Veuillez choisir une option de livraison.'),
     paymentMethod: Yup.string().oneOf(['Cash', 'Card']).required('Veuillez choisir un mode de paiement.'),
     promoCodeId: Yup.string().notRequired(),
@@ -35,6 +37,7 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
     const auth = useSelector((state: RootState) => state.auth)
     const location = useSelector((state: RootState) => state.location)
     const [createOrderWithProducts, { isLoading }] = useCreateOrderWithProductsMutation()
+    const [validatePromoCode, { isLoading: isValidatePromoCodeLoading }] = useValidatePromoCodeMutation()
     const dispatch = useDispatch()
     const navigation = useNavigation()
 
@@ -48,6 +51,22 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
         paymentMethod: 'Cash',
         promoCodeId: undefined
     }
+
+    const handleValidatePromoCode = useCallback(
+        debounce(async (code: string) => {
+            if (code.length > 0) {
+                try {
+                    const result = await validatePromoCode(code).unwrap()
+                    console.log(result)
+                    dispatch(showToast({ message: "Code promo valide", type: "success" }))
+                } catch (error) {
+                    console.log(error)
+                    dispatch(showToast({ message: "Code promo invalide", type: "warning" }))
+                }
+            }
+        }, 500),
+        [validatePromoCode, dispatch]
+    )
     return (
         <Formik
             validationSchema={CheckoutSchema}
@@ -142,10 +161,11 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
 
                         <View style={{ position: "relative", flexDirection: 'row', width: '100%', gap: 16 }}>
                             <View style={styles.formIconContainer}>
-                                <Iconify icon="mdi:percent" size={14} color={Theme.colors.greenDark} />
+                                {isValidatePromoCodeLoading ? <ActivityIndicator size="small" color={Theme.colors.greenDark} /> :
+                                    <Iconify icon="mdi:percent" size={14} color={Theme.colors.greenDark} />}
                             </View>
                             <View style={{ gap: 0, justifyContent: 'center', width: '100%' }}>
-                                <TextInput style={styles.formInput} placeholder="Code promotionnel" />
+                                <TextInput style={styles.formInput} placeholder="Code promotionnel" onChangeText={(text) => { handleChange('promoCodeId')(text); handleValidatePromoCode(text); }} />
                             </View>
                         </View>
                         {errors.promoCodeId && touched.promoCodeId && <InputError error={errors.promoCodeId} />}

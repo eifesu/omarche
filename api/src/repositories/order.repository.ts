@@ -182,3 +182,12 @@ export async function selectAllOrders() {
 	});
 	return orders;
 }
+
+export async function deleteOrderById(orderId: string) {
+	const deletedOrder = await prisma.order.delete({
+		where: {
+			orderId,
+		},
+	});
+	return deletedOrder;
+}

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Linking } from 'react-native
 import { Theme } from '@/config/constants';
 import { Iconify } from 'react-native-iconify';
 import { ButtonContainer, ButtonText } from '@/components/Button';
-import { Order, OrderDetailsWithParticipants, useGetOrderDetailsByIdQuery, useUpdateOrderStatusMutation } from '../../../(client)/redux/ordersApi.slice';
+import { Order, OrderDetails, useGetOrderDetailsByIdQuery, useUpdateOrderStatusMutation } from '../../../(client)/redux/ordersApi.slice';
 import { useDispatch } from 'react-redux';
 import { showToast } from '@/redux/slices/toast.slice';
 import QRCodeScannerModal from '@/components/QRCodeScannerModal';
@@ -77,7 +77,7 @@ const MenuComponent: React.FC<MenuProps> = ({
     );
 };
 
-const MenuContent = ({ data }: { data: OrderDetailsWithParticipants }) => {
+const MenuContent = ({ data }: { data: OrderDetails }) => {
     function getMenuContent() {
         switch (data.order.status) {
             case 'IDLE':

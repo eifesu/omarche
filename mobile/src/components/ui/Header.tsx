@@ -33,6 +33,7 @@ export function HeaderContainer(props: HeaderContainerProps) {
 
 const styles = StyleSheet.create({
     headerContainer: {
+        width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

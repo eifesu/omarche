@@ -1,15 +1,18 @@
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { showToast } from '@/redux/slices/toast.slice'
 import { useUpdateOrderStatusMutation } from '@/features/(client)/redux/ordersApi.slice'
-import { useDispatch } from 'react-redux'
 import { useGetOrdersByMarketIdQuery } from '@/features/(client)/redux/marketsApi.slice'
 import OrderItem from './OrderItem'
+import { useErrorHandler } from '@/hooks/useErrorHandler'
+import { useDispatch } from 'react-redux'
+import { showToast } from '@/redux/slices/toast.slice'
 
 const OrderList = ({ marketId }: { marketId: string }) => {
     const dispatch = useDispatch()
     const { data, refetch, isFetching } = useGetOrdersByMarketIdQuery(marketId)
     const [updateOrderStatus] = useUpdateOrderStatusMutation()
+    const handleError = useErrorHandler()
+
 
     const handleConfirm = async (orderId: string) => {
         try {
@@ -17,7 +20,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
             dispatch(showToast({ message: "Commande confirmée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
-            dispatch(showToast({ message: "Erreur lors de la confirmation de la commande.", type: "warning" }))
+            handleError(error)
         }
     }
 
@@ -27,7 +30,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
             dispatch(showToast({ message: "Commande annulée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
-            dispatch(showToast({ message: "Erreur lors de l'annulation de la commande.", type: "warning" }))
+            handleError(error)
         }
     }
 
@@ -37,7 +40,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
             dispatch(showToast({ message: "Commande collectée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
-            dispatch(showToast({ message: "Erreur lors de la finalisation de la commande.", type: "warning" }))
+            handleError(error)
         }
     }
 
@@ -48,7 +51,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
                 contentContainerStyle={styles.flatListContent}
                 refreshing={isFetching}
                 onRefresh={refetch}
-                keyExtractor={(item) => item.order.orderId}
+                keyExtractor={(item) => item.orderId}
                 renderItem={({ item }) => (
                     <OrderItem
                         data={item}

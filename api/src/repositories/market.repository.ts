@@ -39,3 +39,11 @@ export async function selectMarketById(marketId: string) {
 	});
 	return market;
 }
+
+export async function deleteMarketById(marketId: string) {
+	await prisma.market.delete({
+		where: {
+			marketId,
+		},
+	});
+}

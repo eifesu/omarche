@@ -1,6 +1,5 @@
 import { ENV } from "@/config/constants";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SellerDetails } from "./sellersApi.slice";
 
 export type Product = {
 	productId: string;
@@ -13,19 +12,6 @@ export type Product = {
 	category: "Légumes" | "Fruits" | "Viande" | "Poisson";
 	isInStock: boolean;
 	sellerId: string;
-};
-
-export type ProductDetails = {
-	productId: string;
-	pictureUrl: string[];
-	name: string;
-	description: string;
-	unit: string;
-	amount: number;
-	price: number;
-	category: "Légumes" | "Fruits" | "Viande" | "Poisson";
-	isInStock: boolean;
-	seller: SellerDetails;
 };
 
 export type UpdateProductDTO = Partial<Omit<Product, "productId" | "sellerId">>;
@@ -42,7 +28,7 @@ export const productApi = createApi({
 			}),
 			providesTags: ["Product"],
 		}),
-		fetchProductById: builder.query<ProductDetails, string>({
+		fetchProductById: builder.query<Product, string>({
 			query: (productId) => ({
 				url: `/${productId}`,
 				method: "GET",

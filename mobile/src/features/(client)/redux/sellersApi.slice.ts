@@ -1,7 +1,6 @@
 import { ENV } from "@/config/constants";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product } from "./productsApi.slice";
-import { Market } from "./marketsApi.slice";
 
 export type Seller = {
 	sellerId: string;
@@ -15,34 +14,23 @@ export type Seller = {
 	isActive: boolean;
 };
 
-export type SellerDetails = {
-	sellerId: string;
-	market: Market;
-	pictureUrl: string | undefined;
-	firstName: string;
-	lastName: string;
-	tableNumber: number;
-	gender: "M" | "F";
-	isActive: boolean;
-};
-
 export const sellersApi = createApi({
 	reducerPath: "sellersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/sellers` }),
+	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}` }),
 	tagTypes: ["Seller", "Product"],
 	endpoints: (builder) => ({
 		fetchProductsBySellerId: builder.query<Product[], string>({
 			query: (sellerId) => ({
-				url: `/${sellerId}/products`,
+				url: `/sellers/${sellerId}/products`,
 				method: "GET",
 			}),
 			providesTags: (_result, _error, sellerId) => [
 				{ type: "Product", id: sellerId },
 			],
 		}),
-		fetchSellerById: builder.query<SellerDetails, string>({
+		fetchSellerById: builder.query<Seller, string>({
 			query: (sellerId) => ({
-				url: `/${sellerId}`,
+				url: `/sellers/${sellerId}`,
 				method: "GET",
 			}),
 			providesTags: (_result, _error, sellerId) => [
@@ -50,11 +38,11 @@ export const sellersApi = createApi({
 			],
 		}),
 		updateSellerById: builder.mutation<
-			SellerDetails,
-			{ sellerId: string; data: SellerDetails }
+			Partial<Seller>,
+			{ sellerId: string; data: Partial<Seller> }
 		>({
 			query: ({ sellerId, data }) => ({
-				url: `/${sellerId}`,
+				url: `/sellers/${sellerId}`,
 				method: "PUT",
 				body: data,
 			}),
@@ -64,7 +52,7 @@ export const sellersApi = createApi({
 		}),
 		fetchSellersByMarketId: builder.query<Seller[], string>({
 			query: (marketId) => ({
-				url: `/market/${marketId}`,
+				url: `/markets/${marketId}/sellers`,
 				method: "GET",
 			}),
 			providesTags: (_result, _error, marketId) => [

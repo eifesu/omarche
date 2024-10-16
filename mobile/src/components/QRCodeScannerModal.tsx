@@ -34,7 +34,9 @@ export default function QRCodeScannerModal({ isVisible, onClose, onScan, validat
             return;
         }
         dispatch(showToast({ message: 'Code QR valide', type: 'success' }))
-        onScan(data);
+        if (onScan) {
+            onScan(data);
+        }
         setScanned(false);
         onClose();
     };

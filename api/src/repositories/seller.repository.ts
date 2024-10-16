@@ -37,3 +37,33 @@ export async function updateSellerById(
 	});
 	return updatedSeller;
 }
+
+export async function selectAllSellers() {
+	const sellers = await prisma.seller.findMany({
+		include: {
+			market: true,
+			products: true,
+		},
+	});
+	return sellers;
+}
+
+export async function insertSeller(
+	data: Omit<Seller, "sellerId" | "createdAt" | "updatedAt">
+) {
+	const newSeller = await prisma.seller.create({
+		data,
+		include: {
+			market: true,
+		},
+	});
+	return newSeller;
+}
+
+export async function deleteSellerById(sellerId: string) {
+	await prisma.seller.delete({
+		where: {
+			sellerId,
+		},
+	});
+}

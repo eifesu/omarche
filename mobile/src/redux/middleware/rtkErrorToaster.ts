@@ -12,10 +12,8 @@ const errorToastMiddleware: Middleware =
 			if (action.payload) {
 				if (typeof action.payload === "string") {
 					errorMessage = action.payload;
-				} else if (action.payload.data && action.payload.data.error) {
-					errorMessage =
-						action.payload.data.error.message ||
-						action.payload.data.error;
+				} else if (action.payload.data && action.payload.data.message) {
+					errorMessage = action.payload.data.message;
 				} else if (action.payload.error) {
 					errorMessage = action.payload.error;
 				}
@@ -25,7 +23,7 @@ const errorToastMiddleware: Middleware =
 			}
 
 			console.log(
-				"Errora details:",
+				"Error details:",
 				JSON.stringify(action.payload || action.error, null, 2)
 			);
 			dispatch(showToast({ message: errorMessage, type: "warning" }));

@@ -12,6 +12,7 @@ import { RootState } from '@/redux/store'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { AuthStackNavigation, LoginScreenRouteProp } from '../routers/AuthStackRouter'
 import { RootStackNavigation } from '@/routers/BaseRouter'
+import { useErrorHandler } from '@/hooks/useErrorHandler'
 
 export default function LoginForm() {
     const authNavigation = useNavigation<AuthStackNavigation>()
@@ -21,6 +22,7 @@ export default function LoginForm() {
     const [loginShipper] = useLoginShipperMutation()
     const route = useRoute<LoginScreenRouteProp>()
     const role = useSelector((state: RootState) => state.auth.role)
+    const handleError = useErrorHandler()
 
     return (
         <View style={styles.container}>
@@ -44,7 +46,8 @@ export default function LoginForm() {
                                 homeNavigation.navigate('Shipper');
                             }
                         } catch (error) {
-                            console.error('Login error:', error);
+                            console.log('caught')
+                            handleError(error)
                         }
                     }}
                     validationSchema={LoginSchema}

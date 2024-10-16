@@ -14,6 +14,8 @@ import usersApi from "@/features/auth/redux/user.api";
 import sellersApi from "@/features/(client)/redux/sellersApi.slice";
 import agentsApi from "@/features/auth/redux/agent.api";
 import shippersApi from "@/features/auth/redux/shipper.api";
+import { promoCodeApi } from "@/features/(client)/redux/promoCodeApi.slice";
+import giftCardApi from "@/features/(client)/redux/giftCardApi.slice";
 
 export const store = configureStore({
 	reducer: {
@@ -30,6 +32,8 @@ export const store = configureStore({
 		[ordersApi.reducerPath]: ordersApi.reducer,
 		[usersApi.reducerPath]: usersApi.reducer,
 		[sellersApi.reducerPath]: sellersApi.reducer,
+		[promoCodeApi.reducerPath]: promoCodeApi.reducer,
+		[giftCardApi.reducerPath]: giftCardApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(
@@ -41,6 +45,8 @@ export const store = configureStore({
 			sellersApi.middleware,
 			agentsApi.middleware,
 			shippersApi.middleware,
+			promoCodeApi.middleware,
+			giftCardApi.middleware,
 			errorToastMiddleware
 		),
 	enhancers: (defaultEnhancers) =>

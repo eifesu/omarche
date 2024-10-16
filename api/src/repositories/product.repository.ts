@@ -13,13 +13,25 @@ export async function selectProductById(productId: string) {
 	return product;
 }
 
-export async function selectProductsBySellerId(sellerId: string) {
+export async function selectAllProducts() {
 	const products = await prisma.product.findMany({
-		where: {
-			sellerId,
+		include: {
+			seller: true,
 		},
 	});
 	return products;
+}
+
+export async function insertProduct(
+	data: Omit<Product, "productId" | "createdAt" | "updatedAt">
+) {
+	const newProduct = await prisma.product.create({
+		data,
+		include: {
+			seller: true,
+		},
+	});
+	return newProduct;
 }
 
 export async function updateProductById(
@@ -36,4 +48,24 @@ export async function updateProductById(
 		},
 	});
 	return updatedProduct;
+}
+
+export async function deleteProductById(productId: string) {
+	await prisma.product.delete({
+		where: {
+			productId,
+		},
+	});
+}
+
+export async function selectProductsBySellerId(sellerId: string) {
+	const products = await prisma.product.findMany({
+		where: {
+			sellerId,
+		},
+		include: {
+			seller: true,
+		},
+	});
+	return products;
 }

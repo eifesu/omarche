@@ -1,7 +1,6 @@
 import { ButtonContainer, ButtonText } from '@/components/Button';
 import { HeaderSubtitle, HeaderTitle } from '@/components/ui/Header';
 import { Theme } from '@/config/constants';
-import { OrderDetails } from '@/features/(client)/redux/ordersApi.slice';
 import { Agent } from '@/features/auth/redux/agent.api';
 import { RootState } from '@/redux/store';
 import React, { useState } from 'react';
@@ -10,34 +9,50 @@ import { Iconify } from 'react-native-iconify';
 import QRCode from 'react-native-qrcode-svg';
 import { useSelector } from 'react-redux';
 import { OrderProductList, OrderStatusComponent } from '../../../(client)/components/OrderItem';
+import { Order, OrderDetails, OrderProduct, useGetOrderDetailsByIdQuery, useGetOrderProductsByOrderIdQuery, useUpdateOrderStatusMutation } from '@/features/(client)/redux/ordersApi.slice';
+import { Market, useFetchMarketByIdQuery } from '@/features/(client)/redux/marketsApi.slice';
+import { Seller, useFetchSellerByIdQuery } from '@/features/(client)/redux/sellersApi.slice';
+import { Product, useFetchProductByIdQuery } from '@/features/(client)/redux/productsApi.slice';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 interface OrderItemProps {
-    data: OrderDetails;
+    data: Order;
     onConfirm: (id: string) => void;
-    onCancel: (id: string, reason?: string) => void; // <-- Made reason optional
+    onCancel: (id: string, reason?: string) => void;
     onFinish: (id: string) => void;
 }
 
 const CheckIcon = () => <Iconify icon="mdi:check" size={20} color="white" />;
 const CloseIcon = () => <Iconify icon="mdi:close" size={20} color="white" />;
 
-const OrderItem = ({ data, onConfirm, onCancel, onFinish }: OrderItemProps) => {
+const OrderItem = ({ data, onConfirm, onFinish }: OrderItemProps) => {
+
     const [modalVisible, setModalVisible] = useState(false);
     const [cancellationReason, setCancellationReason] = useState('');
+    const [updateOrderStatus] = useUpdateOrderStatusMutation();
+    const { data: orderProducts, isLoading: isOrderProductsLoading } = useGetOrderProductsByOrderIdQuery(data.orderId);
+    const { data: product, isLoading: isProductLoading } = useFetchProductByIdQuery(orderProducts?.[0]?.productId ?? '', { skip: !orderProducts });
+    const { data: seller, isLoading: isSellerLoading } = useFetchSellerByIdQuery(product?.sellerId ?? '', { skip: !product?.sellerId });
+    const { data: market, isLoading: isMarketLoading } = useFetchMarketByIdQuery(seller?.marketId ?? '', { skip: !seller?.marketId });
 
     const handleCancel = () => {
-        onCancel(data.order.orderId, cancellationReason);
+        updateOrderStatus({ orderId: data.orderId, status: 'CANCELED', cancellationReason });
         setModalVisible(false);
         setCancellationReason('');
     };
 
-    const isOrderProcessed = !(['IDLE', 'PROCESSING', 'PROCESSED'].some(status => status === data.order.status))
+    const isOrderProcessed = !(['IDLE', 'PROCESSING', 'PROCESSED'].some(status => status === data.status));
+
+    const loading = isOrderProductsLoading || isProductLoading || isSellerLoading || isMarketLoading
+
+    if (loading || !orderProducts || !product || !seller || !market) return null
 
     return (
         <View style={styles.orderItem}>
-            <OrderHeader data={data} />
+            <OrderHeader data={data} market={market} />
             <OrderDetailsAndStatus data={data} />
-            <OrderProductList orderProducts={data.orderProducts} />
+            <OrderProductList orderProducts={orderProducts} />
             <OrderActions
                 data={data}
                 isOrderProcessed={isOrderProcessed}
@@ -56,25 +71,95 @@ const OrderItem = ({ data, onConfirm, onCancel, onFinish }: OrderItemProps) => {
     );
 };
 
-const OrderHeader = ({ data }: { data: OrderDetails }) => (
-    <View style={styles.header}>
-        <View style={styles.headerTextContainer}>
-            <HeaderSubtitle>Commande</HeaderSubtitle>
-            <HeaderTitle style={{ fontSize: 14 }}>
-                {data.marketName} <Text style={styles.orderId}>#{data.order.orderId.substring(0, 8).toUpperCase()}</Text>
-            </HeaderTitle>
-        </View>
-    </View>
-);
 
-const OrderDetailsAndStatus = ({ data }: { data: OrderDetails }) => (
+function generateOrderDetailsHTML(data: Order, market: Market, orderDetails: OrderDetails) {
+    const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Détails de la commande</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1, h2 { color: #333; }
+                .order-info { margin-bottom: 20px; }
+                .product-list { border-top: 1px solid #ccc; padding-top: 10px; }
+                .product-item { margin-bottom: 20px; }
+            </style>
+        </head>
+        <body>
+            <h1>Détails de la commande</h1>
+            <div class="order-info">
+                <p><strong>ID de commande:</strong> ${data.orderId}</p>
+                <p><strong>Marché:</strong> ${market.name}</p>
+                <p><strong>Statut:</strong> ${data.status}</p>
+                <p><strong>Adresse:</strong> ${data.address}</p>
+                <p><strong>Heure de livraison:</strong> ${data.deliveryTime}</p>
+                <p><strong>Méthode de paiement:</strong> ${data.paymentMethod}</p>
+            </div>
+            <div class="product-list">
+                <h2>Produits</h2>
+                ${orderDetails?.orderProducts.map(op => `
+                    <div class="product-item">
+                        <h3>${op.product.name}</h3>
+                        <p><strong>Quantité:</strong> ${op.quantity}</p>
+                        <p><strong>Prix:</strong> ${op.product.price} CFA</p>
+                        <p><strong>Quantité:</strong> ${op.product.amount} ${op.product.unit}</p>
+                        <p><strong>Catégorie:</strong> ${op.product.category}</p>
+                        <p><strong>Description:</strong> ${op.product.description}</p>
+                        <p><strong>En stock:</strong> ${op.product.isInStock ? 'Oui' : 'Non'}</p>
+                        <p><strong>Vendeur:</strong> ${op.sellerName}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </body>
+        </html>
+    `;
+    return html;
+}
+
+const OrderHeader = ({ data, market }: { data: Order, market: Market }) => {
+    const { data: orderDetails } = useGetOrderDetailsByIdQuery(data.orderId);
+    async function handlePrint() {
+        if (!orderDetails) return
+        const html = generateOrderDetailsHTML(data, market, orderDetails);
+        try {
+            const { uri } = await Print.printToFileAsync({ html });
+            await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        } catch (error) {
+            console.error('Erreur lors de l\'impression des détails de la commande:', error);
+        }
+    }
+
+    return (
+        <View style={styles.header}>
+            <View style={styles.headerTextContainer}>
+                <HeaderSubtitle>Commande</HeaderSubtitle>
+                <HeaderTitle style={{ fontSize: 14 }}>
+                    {market.name} <Text style={styles.orderId}>#{data.orderId.substring(0, 8).toUpperCase()}</Text>
+                </HeaderTitle>
+            </View>
+            <View>
+                <ActionButton
+                    text="Imprimer"
+                    icon={<Iconify icon="mdi:printer" size={20} color="white" />}
+                    onPress={handlePrint}
+                    style={styles.printButton}
+                />
+            </View>
+        </View>
+    );
+};
+
+const OrderDetailsAndStatus = ({ data }: { data: Order }) => (
     <View style={styles.detailsAndStatusContainer}>
         <View style={styles.detailsContainer}>
-            <DetailItem label="Adresse" value={data.order.address} />
-            <DetailItem label="Heure de livraison" value={data.order.deliveryTime} />
-            <DetailItem label="Méthode de paiement" value={data.order.paymentMethod} />
+            <DetailItem label="Adresse" value={data.address} />
+            <DetailItem label="Heure de livraison" value={data.deliveryTime} />
+            <DetailItem label="Méthode de paiement" value={data.paymentMethod} />
         </View>
-        <OrderStatusComponent status={data.order.status} />
+        <OrderStatusComponent status={data.status} />
     </View>
 );
 
@@ -86,7 +171,7 @@ const DetailItem = ({ label, value }: { label: string; value: string }) => (
 );
 
 const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVisible }: {
-    data: OrderDetails;
+    data: Order;
     isOrderProcessed: boolean;
     onConfirm: (id: string) => void;
     onFinish: (id: string) => void;
@@ -95,22 +180,22 @@ const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVis
     const [qrModalVisible, setQrModalVisible] = useState(false);
     const auth = useSelector((state: RootState) => state.auth)
     const user = auth.user as Agent
-    const disabled = data.order.agentId && data.order.agentId !== user.agentId
+    const disabled = data.agentId === user.agentId
 
     if (disabled) return null
     return (
         <View style={{ marginTop: 12 }}>
             {!isOrderProcessed && (
                 <View style={styles.buttonGroup}>
-                    {data.order.status === 'IDLE' ? (
+                    {data.status === 'IDLE' ? (
                         <ActionButton
                             text="Commencer collecte"
                             icon={<CheckIcon />}
-                            onPress={() => onConfirm(data.order.orderId)}
+                            onPress={() => onConfirm(data.orderId)}
                             style={styles.confirmButton}
                             holdDuration={2000}
                         />
-                    ) : data.order.status === 'PROCESSED' ? (
+                    ) : data.status === 'PROCESSED' ? (
                         <ActionButton
                             text="Afficher QR Code"
                             icon={<Iconify icon="mdi:qrcode" size={20} color="white" />}
@@ -121,7 +206,7 @@ const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVis
                         <ActionButton
                             text="Finir collecte"
                             icon={<CheckIcon />}
-                            onPress={() => onFinish(data.order.orderId)}
+                            onPress={() => onFinish(data.orderId)}
                             style={styles.confirmButton}
                             holdDuration={2000}
                         />
@@ -137,7 +222,7 @@ const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVis
             <QRCodeModal
                 visible={qrModalVisible}
                 onClose={() => setQrModalVisible(false)}
-                orderId={data.order.orderId}
+                orderId={data.orderId}
             />
         </View>
     );
@@ -350,6 +435,14 @@ const styles = StyleSheet.create({
     qrModalCloseButton: {
         backgroundColor: Theme.colors.blackLight,
         width: '100%',
+    },
+    printButton: {
+        backgroundColor: Theme.colors.blackLight,
+        gap: 4,
+        width: 'auto',
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        height: 40,
     },
 });
 

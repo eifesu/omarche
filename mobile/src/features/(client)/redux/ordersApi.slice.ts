@@ -1,10 +1,10 @@
 import { ENV } from "@/config/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ProductDetails } from "./productsApi.slice";
-import { User } from "@/features/auth/redux/user.api";
-import { Shipper } from "@/features/auth/redux/shipper.api";
 import { Agent } from "@/features/auth/redux/agent.api";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Market } from "./marketsApi.slice";
+import { Shipper } from "@/features/auth/redux/shipper.api";
+import { User } from "@/features/auth/redux/user.api";
+import { Product } from "./productsApi.slice";
 
 export interface Order {
 	orderId: string;
@@ -21,15 +21,11 @@ export interface Order {
 	cancellationReason?: string;
 }
 
-export interface OrderDetails {
-	order: Order;
-	orderProducts: {
-		product: ProductDetails;
-		quantity: number;
-		sellerName: string;
-		sellerTableNo: number;
-	}[];
-	marketName: string;
+export interface OrderProduct {
+	orderProductId: string;
+	orderId: string;
+	productId: string;
+	quantity: number;
 }
 
 interface CreateOrderInput {
@@ -51,6 +47,21 @@ export interface CreateOrderWithProductsInput {
 	}[];
 }
 
+export interface OrderDetails {
+	order: Order;
+	orderProducts: {
+		sellerName: string;
+		sellerTableNo: number;
+		product: Product;
+		quantity: number;
+	}[];
+	marketName: string;
+	client: User;
+	market: Market;
+	shipper: Shipper | null;
+	agent: Agent | null;
+}
+
 export type OrderStatusType =
 	| "IDLE"
 	| "PROCESSING"
@@ -67,48 +78,41 @@ interface UpdateOrderStatusInput {
 	cancellationReason?: string;
 }
 
-export interface OrderDetailsWithParticipants extends OrderDetails {
-	client: User;
-	market: Market;
-	shipper: Shipper | null;
-	agent: Agent | null;
-}
-
 export const ordersApi = createApi({
 	reducerPath: "ordersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/orders` }),
+	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}` }),
 	endpoints: (builder) => ({
 		createOrderWithProducts: builder.mutation<
 			void,
 			CreateOrderWithProductsInput
 		>({
 			query: (order) => ({
-				url: "/",
+				url: "/orders/",
 				method: "POST",
 				body: order,
 			}),
 		}),
-		getOrdersByUserId: builder.query<OrderDetails[], string>({
-			query: (userId) => `/user/${userId}`,
+		getOrdersByUserId: builder.query<Order[], string>({
+			query: (userId) => `/users/${userId}/orders`,
+		}),
+		getOrderProductsByOrderId: builder.query<OrderProduct[], string>({
+			query: (orderId) => `/orders/${orderId}/order-products`,
+		}),
+		getOrderDetailsById: builder.query<OrderDetails, string>({
+			query: (orderId) => `/orders/${orderId}/details`,
 		}),
 		updateOrderStatus: builder.mutation<
-			OrderDetails,
+			Partial<Order>,
 			UpdateOrderStatusInput
 		>({
 			query: ({ orderId, agentId, status, cancellationReason }) => ({
-				url: `/${orderId}/status`,
+				url: `/orders/${orderId}/status`,
 				method: "PUT",
 				body: { agentId, status, cancellationReason }, // <-- Updated body
 			}),
 			invalidatesTags: (_result, _error, { orderId }) => [
 				{ type: "Order", id: orderId },
 			],
-		}),
-		getOrderDetailsById: builder.query<
-			OrderDetailsWithParticipants,
-			string
-		>({
-			query: (orderId) => `/${orderId}`,
 		}),
 	}),
 	tagTypes: ["Order"],
@@ -118,6 +122,7 @@ export const {
 	useCreateOrderWithProductsMutation,
 	useGetOrdersByUserIdQuery,
 	useUpdateOrderStatusMutation,
+	useGetOrderProductsByOrderIdQuery,
 	useGetOrderDetailsByIdQuery,
 } = ordersApi;
 
