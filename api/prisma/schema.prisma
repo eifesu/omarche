@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Market {
-    marketId   String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    marketId   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl String?   @db.VarChar(255)
     name       String    @unique @db.VarChar(50)
     latitude   Float
@@ -22,7 +22,7 @@ model Market {
 }
 
 model OrderProducts {
-    orderProductId String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    orderProductId String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     orderId        String    @db.Uuid
     productId      String    @db.Uuid
     quantity       Int
@@ -33,7 +33,7 @@ model OrderProducts {
 }
 
 model Order {
-    orderId            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    orderId            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     userId             String          @db.Uuid
     locationX          Decimal         @db.Decimal(10, 6)
     locationY          Decimal         @db.Decimal(10, 6)
@@ -55,7 +55,7 @@ model Order {
 }
 
 model Product {
-    productId     String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    productId     String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl    String[]
     name          String           @db.VarChar(100)
     description   String?
@@ -74,7 +74,7 @@ model Product {
 }
 
 model Seller {
-    sellerId    String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    sellerId    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     marketId    String    @db.Uuid
     pictureUrl  String?   @db.VarChar(255)
     firstName   String    @db.VarChar(50)
@@ -91,7 +91,7 @@ model Seller {
 }
 
 model User {
-    userId    String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    userId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     email     String   @unique @db.VarChar(50)
     password  String   @db.VarChar(255)
     firstName String   @db.VarChar(50)
@@ -107,7 +107,7 @@ model User {
 }
 
 model Agent {
-    agentId    String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    agentId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl String?  @db.VarChar(255)
     marketId   String   @db.Uuid
     email      String   @unique @db.VarChar(50)
@@ -125,7 +125,7 @@ model Agent {
 }
 
 model Shipper {
-    shipperId  String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    shipperId  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     marketId   String   @db.Uuid
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
@@ -141,7 +141,7 @@ model Shipper {
 }
 
 model PromoCode {
-    promoCodeId  String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    promoCodeId  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     code         String          @unique @db.VarChar(50)
     expiration   DateTime        @db.Timestamp(6)
     discountType promo_code_type @default(PERCENTAGE)
@@ -152,7 +152,7 @@ model PromoCode {
 }
 
 model GiftCard {
-    giftCardId String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    giftCardId String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     userId     String?  @unique @db.Uuid
     expiration DateTime @db.Timestamp(6)
     status     String   @default("IDLE") @db.VarChar(50)
