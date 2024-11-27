@@ -121,8 +121,8 @@ function Carousel({ images, activeIndex, setActiveIndex }: { images: string[], a
                 showsHorizontalScrollIndicator={false}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
-                contentContainerStyle={{ flex: 1, height: '100%', width: '100%', backgroundColor: Theme.colors.greenDark }}
-                style={{ height: '100%', width: '100%', backgroundColor: Theme.colors.greenDark }}
+                contentContainerStyle={{ flex: 1, height: height, width: width, backgroundColor: Theme.colors.greenDark }}
+                style={{ height: height, width: width, backgroundColor: Theme.colors.greenDark }}
             >
                 {images.map((image, index) => (
                     <View key={index} style={{ height: '100%', width: '100%', backgroundColor: Theme.colors.greenLight }}>

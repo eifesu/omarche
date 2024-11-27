@@ -141,14 +141,14 @@ model Shipper {
 }
 
 model PromoCode {
-    promoCodeId  String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    code         String   @unique @db.VarChar(50)
-    expiration   DateTime @db.Timestamp(6)
-    discountType String
-    amount       Decimal  @db.Decimal(10, 2)
-    orders       Order[]  @relation("PromoCodeOrders")
-    createdAt    DateTime @default(now()) @db.Timestamp(6)
-    updatedAt    DateTime @updatedAt
+    promoCodeId  String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    code         String          @unique @db.VarChar(50)
+    expiration   DateTime        @db.Timestamp(6)
+    discountType promo_code_type @default(PERCENTAGE)
+    amount       Decimal         @db.Decimal(10, 2)
+    orders       Order[]         @relation("PromoCodeOrders")
+    createdAt    DateTime        @default(now()) @db.Timestamp(6)
+    updatedAt    DateTime        @updatedAt
 }
 
 model GiftCard {
@@ -169,6 +169,11 @@ enum order_status {
     DELIVERING
     DELIVERED
     CANCELED
+}
+
+enum promo_code_type {
+    PERCENTAGE
+    FIXED
 }
 
 enum product_category {

@@ -21,7 +21,17 @@ const UpdateProductDTO = z.object({
 		.number()
 		.transform((value) => new Decimal(value))
 		.optional(),
-	category: z.enum(["Légumes", "Fruits", "Viande", "Poisson"]).optional(),
+	category: z
+		.enum([
+			"Legumes",
+			"Fruits",
+			"Viandes",
+			"Poissons",
+			"Boissons",
+			"Epices",
+			"Autres",
+		])
+		.optional(),
 	pictureUrl: z.array(z.string().url()).optional(),
 });
 
@@ -31,7 +41,15 @@ const CreateProductDTO = z.object({
 	unit: z.string(),
 	amount: z.number(),
 	price: z.number().transform((value) => new Decimal(value)),
-	category: z.enum(["Légumes", "Fruits", "Viande", "Poisson"]),
+	category: z.enum([
+		"Legumes",
+		"Fruits",
+		"Viandes",
+		"Poissons",
+		"Boissons",
+		"Epices",
+		"Autres",
+	]),
 	pictureUrl: z.array(z.string().url()),
 	sellerId: z.string(),
 });

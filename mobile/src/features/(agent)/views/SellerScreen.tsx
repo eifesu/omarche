@@ -18,7 +18,6 @@ import {
 } from '../../(client)/redux/sellersApi.slice';
 import { showToast } from '@/redux/slices/toast.slice';
 import SellerImage from '../components/(seller)/SellerImage';
-import UploadingOverlay from '../components/(seller)/UploadingOverlay';
 import SellerDetailsView from '../components/(seller)/SellerDetails';
 import ProductList from '../components/(seller)/ProductList';
 

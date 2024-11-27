@@ -35,7 +35,7 @@ app.route("/sellers/", sellerHandler);
 app.route("/agents/", agentHandler);
 app.route("/shippers/", shipperHandler);
 app.route("/giftcards/", giftcardHandler);
-app.route("/promocodes", promocodeHandler);
+app.route("/promocodes/", promocodeHandler);
 
 console.log("🚀 Server is running on port 3000");
 

@@ -16,7 +16,7 @@ import { showToast } from "@/redux/slices/toast.slice"
 import { useNavigation } from "@react-navigation/native"
 import { getMarketCartTotal } from "../helpers/helpers"
 import { User } from "@/features/auth/redux/user.api"
-import { useValidatePromoCodeMutation } from "../redux/promoCodeApi.slice"
+import { PromoCode, useValidatePromoCodeMutation } from "../redux/promoCodeApi.slice"
 import { useCallback } from "react"
 import { debounce } from "lodash"
 
@@ -38,6 +38,9 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
     const location = useSelector((state: RootState) => state.location)
     const [createOrderWithProducts, { isLoading }] = useCreateOrderWithProductsMutation()
     const [validatePromoCode, { isLoading: isValidatePromoCodeLoading }] = useValidatePromoCodeMutation()
+    const [promoCode, setPromoCode] = useState<PromoCode | undefined>(undefined)
+    const shippingFee = 1500
+    const servicesFee = 800
     const dispatch = useDispatch()
     const navigation = useNavigation()
 
@@ -57,14 +60,14 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
             if (code.length > 0) {
                 try {
                     const result = await validatePromoCode(code).unwrap()
-                    console.log(result)
+                    setPromoCode(result)
                     dispatch(showToast({ message: "Code promo valide", type: "success" }))
                 } catch (error) {
                     console.log(error)
                     dispatch(showToast({ message: "Code promo invalide", type: "warning" }))
                 }
             }
-        }, 500),
+        }, 2000),
         [validatePromoCode, dispatch]
     )
     return (
@@ -83,8 +86,8 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
                         deliveryTime: values.deliveryTime,
                         locationX: location.latitude,
                         locationY: location.longitude,
+                        promoCodeId: promoCode?.promoCodeId ?? undefined,
                         paymentMethod: values.paymentMethod,
-                        promoCodeId: values.promoCodeId ?? undefined,
                         status: "IDLE",
                     },
                     orderProducts: props.cart.map(item => ({ productId: item.product.productId, quantity: item.quantity })),
@@ -185,13 +188,25 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
                         <View style={{ flexDirection: "row", width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text style={{ fontFamily: Theme.font.medium, letterSpacing: -.2, fontSize: 16, }}>Livraison</Text>
                             <Text style={{ fontFamily: Theme.font.extraBold, fontSize: 16, letterSpacing: -.5, color: Theme.colors.greenDark }}>
-                                {total}<Text style={{ fontSize: 10 }}>CFA</Text>
+                                {shippingFee}<Text style={{ fontSize: 10 }}>CFA</Text>
                             </Text>
                         </View>
                         <View style={{ flexDirection: "row", width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text style={{ fontFamily: Theme.font.medium, letterSpacing: -.2, fontSize: 16, }}>Services</Text>
                             <Text style={{ fontFamily: Theme.font.extraBold, fontSize: 16, letterSpacing: -.5, color: Theme.colors.greenDark }}>
-                                {200}<Text style={{ fontSize: 10 }}>CFA</Text>
+                                {servicesFee}<Text style={{ fontSize: 10 }}>CFA</Text>
+                            </Text>
+                        </View>
+                        {promoCode && <View style={{ flexDirection: "row", width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={{ fontFamily: Theme.font.medium, letterSpacing: -.2, fontSize: 16, }}>Réduction</Text>
+                            <Text style={{ fontFamily: Theme.font.extraBold, fontSize: 16, letterSpacing: -.5, color: Theme.colors.greenDark }}>
+                                {(promoCode.discountType === "PERCENTAGE" ? promoCode.amount / 100 * total : promoCode.amount)}<Text style={{ fontSize: 10 }}>CFA</Text>
+                            </Text>
+                        </View>}
+                        <View style={{ flexDirection: "row", width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={{ fontFamily: Theme.font.medium, letterSpacing: -.2, fontSize: 16, }}>Total</Text>
+                            <Text style={{ fontFamily: Theme.font.extraBold, fontSize: 16, letterSpacing: -.5, color: Theme.colors.greenDark }}>
+                                {total + shippingFee + servicesFee - (promoCode ? (promoCode.discountType === "PERCENTAGE" ? promoCode.amount / 100 * total : promoCode.amount) : 0)}<Text style={{ fontSize: 10 }}>CFA</Text>
                             </Text>
                         </View>
                     </View>
@@ -271,7 +286,6 @@ function MapUserCursor(props: MapCursorProps) {
         { transform: [{ translateY: translateValue }] },
         props.style]}>
         <Image source={require("@/../assets/img/location-pin.png")} style={{ width: 36, height: 36, transform: [{ translateY: -12 }] }} />
-        {/* <Iconify icon="fluent:cursor-16-filled" size={20} color={Theme.colors.orange} /> */}
     </Animated.View>
 }
 

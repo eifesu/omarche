@@ -1,7 +1,8 @@
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack'
-import { Product, ProductDetails, useFetchProductByIdQuery } from '../../(client)/redux/productsApi.slice'
+import { useFetchProductByIdQuery } from '../../(client)/redux/productsApi.slice'
+import type { ProductDetails } from '../../(client)/redux/productsApi.slice'
 import { Theme } from '@/config/constants'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Iconify } from 'react-native-iconify'
@@ -96,7 +97,7 @@ function Carousel(props: { images: string[] }) {
             <ScrollView
                 horizontal
                 pagingEnabled
-                contentContainerStyle={{ height: 250, position: 'relative' }}
+                contentContainerStyle={{ height: height, position: 'relative' }}
                 showsHorizontalScrollIndicator={false}
                 onScroll={handleOnScroll}
                 style={{ position: 'relative', height: height, width: '100%', backgroundColor: Theme.colors.greenDark }}>

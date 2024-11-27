@@ -16,6 +16,10 @@ export type Product = {
 
 export type UpdateProductDTO = Partial<Omit<Product, "productId" | "sellerId">>;
 
+export interface ProductDetails extends Product {
+	// ... existing type definition
+}
+
 export const productApi = createApi({
 	reducerPath: "productApi",
 	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/products` }),
