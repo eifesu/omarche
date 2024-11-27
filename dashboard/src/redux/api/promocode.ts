@@ -30,7 +30,7 @@ export interface UpdatePromoCodeDTO {
 export const promocodeApi = createApi({
 	reducerPath: "promocodeApi",
 	baseQuery: fetchBaseQuery({
-		baseUrl: `${API_URL}/api`,
+		baseUrl: `${API_URL}/`,
 	}),
 	tagTypes: ["PromoCode"],
 	endpoints: (builder) => ({
