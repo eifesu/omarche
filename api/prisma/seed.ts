@@ -16,7 +16,6 @@ async function seedDb() {
 }
 
 async function seedMarkets() {
-	await prisma.$executeRaw`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 	await prisma.market.createMany({
 		skipDuplicates: true,
 		data: [

@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from "../../config";
 
 export type PromoCodeType = "PERCENTAGE" | "FIXED";
 
@@ -28,9 +27,11 @@ export interface UpdatePromoCodeDTO {
 	amount?: number;
 }
 
-export const promoCodeApi = createApi({
-	reducerPath: "promoCodeApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+export const promocodeApi = createApi({
+	reducerPath: "promocodeApi",
+	baseQuery: fetchBaseQuery({
+		baseUrl: `${API_URL}/api`,
+	}),
 	tagTypes: ["PromoCode"],
 	endpoints: (builder) => ({
 		getAllPromoCodes: builder.query<PromoCode[], void>({
@@ -90,4 +91,4 @@ export const {
 	useCreatePromoCodeMutation,
 	useUpdatePromoCodeMutation,
 	useDeletePromoCodeMutation,
-} = promoCodeApi;
+} = promocodeApi;

@@ -4,7 +4,7 @@ import { sellerApi } from "./seller";
 import { orderApi } from "./order";
 import { productApi } from "./product";
 import { giftCardApi } from "./giftcard";
-import { promoCodeApi } from "./promocode";
+import { promocodeApi } from "./promocode";
 
 export const store = configureStore({
 	reducer: {
@@ -13,7 +13,7 @@ export const store = configureStore({
 		[orderApi.reducerPath]: orderApi.reducer,
 		[productApi.reducerPath]: productApi.reducer,
 		[giftCardApi.reducerPath]: giftCardApi.reducer,
-		[promoCodeApi.reducerPath]: promoCodeApi.reducer,
+		[promocodeApi.reducerPath]: promocodeApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(
@@ -22,7 +22,7 @@ export const store = configureStore({
 			orderApi.middleware,
 			productApi.middleware,
 			giftCardApi.middleware,
-			promoCodeApi.middleware
+			promocodeApi.middleware
 		),
 	devTools: true,
 });
