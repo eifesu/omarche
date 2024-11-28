@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FaPlus } from "react-icons/fa"
 import { FaImage } from "react-icons/fa6"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 export default function MarketCreateDialog() {
     const [createMarket] = useCreateMarketMutation()
@@ -114,6 +115,14 @@ export default function MarketCreateDialog() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 gap-4 items-center">
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 gap-4 items-center">
                         <Label htmlFor="name" className="text-right">
                             Nom
                         </Label>
@@ -150,17 +159,6 @@ export default function MarketCreateDialog() {
                             className={`col-span-3 ${errors.longitude ? 'border-red-500' : ''}`}
                         />
                         {errors.longitude && <p className="text-red-500">{errors.longitude}</p>}
-                    </div>
-                    <div className="grid grid-cols-4 gap-4 items-center">
-                        <Label htmlFor="pictureUrl" className="text-right">
-                            Image
-                        </Label>
-                        <Input
-                            id="pictureUrl"
-                            type="file"
-                            onChange={handleImageUpload}
-                            className="col-span-3"
-                        />
                     </div>
                 </div>
                 <DialogFooter>

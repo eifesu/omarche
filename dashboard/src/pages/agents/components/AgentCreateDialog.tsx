@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { useCreateAgentMutation } from "@/redux/api/agent";
 import { useGetAllMarketsQuery } from "@/redux/api/market";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 const AgentCreateDialog = () => {
     const [open, setOpen] = useState(false);
@@ -23,6 +25,7 @@ const AgentCreateDialog = () => {
         password: "",
         phone: "",
         marketId: "",
+        pictureUrl: ""
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -37,6 +40,7 @@ const AgentCreateDialog = () => {
                 password: "",
                 phone: "",
                 marketId: "",
+                pictureUrl: ""
             });
         } catch (error) {
             console.error("Failed to create agent:", error);
@@ -53,7 +57,15 @@ const AgentCreateDialog = () => {
                     <DialogTitle>Créer un nouvel agent</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
                     <div className="grid grid-cols-2 gap-4">
+                    </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Prénom</label>
                             <Input

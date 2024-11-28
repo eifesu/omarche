@@ -13,6 +13,7 @@ import { CreateShipperDTO, useCreateShipperMutation } from "@/redux/api/shipper"
 import { useGetAllMarketsQuery } from "@/redux/api/market";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function ShipperCreateDialog() {
     const [createShipper] = useCreateShipperMutation();
@@ -95,6 +96,14 @@ export default function ShipperCreateDialog() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
+                    </div>
+                    <div className="grid gap-2">
                         <Label htmlFor="market">Marché</Label>
                         <Select
                             value={formData.marketId}
@@ -111,7 +120,7 @@ export default function ShipperCreateDialog() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.marketId && <span className="text-red-500 text-sm">{errors.marketId}</span>}
+                        {errors.marketId && <span className="text-sm text-red-500">{errors.marketId}</span>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="firstName">Prénom</Label>
@@ -120,7 +129,7 @@ export default function ShipperCreateDialog() {
                             value={formData.firstName}
                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         />
-                        {errors.firstName && <span className="text-red-500 text-sm">{errors.firstName}</span>}
+                        {errors.firstName && <span className="text-sm text-red-500">{errors.firstName}</span>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="lastName">Nom</Label>
@@ -129,7 +138,7 @@ export default function ShipperCreateDialog() {
                             value={formData.lastName}
                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         />
-                        {errors.lastName && <span className="text-red-500 text-sm">{errors.lastName}</span>}
+                        {errors.lastName && <span className="text-sm text-red-500">{errors.lastName}</span>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
@@ -139,7 +148,7 @@ export default function ShipperCreateDialog() {
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
-                        {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+                        {errors.email && <span className="text-sm text-red-500">{errors.email}</span>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="password">Mot de passe</Label>
@@ -149,7 +158,7 @@ export default function ShipperCreateDialog() {
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         />
-                        {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
+                        {errors.password && <span className="text-sm text-red-500">{errors.password}</span>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">Téléphone</Label>
@@ -158,15 +167,7 @@ export default function ShipperCreateDialog() {
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         />
-                        {errors.phone && <span className="text-red-500 text-sm">{errors.phone}</span>}
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="pictureUrl">URL de la photo</Label>
-                        <Input
-                            id="pictureUrl"
-                            value={formData.pictureUrl}
-                            onChange={(e) => setFormData({ ...formData, pictureUrl: e.target.value })}
-                        />
+                        {errors.phone && <span className="text-sm text-red-500">{errors.phone}</span>}
                     </div>
                 </div>
                 <div className="flex justify-end">

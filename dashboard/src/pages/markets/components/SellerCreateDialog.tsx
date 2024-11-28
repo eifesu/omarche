@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FaPlus, FaImage } from "react-icons/fa6"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface SellerCreateDialogProps {
     marketId: string;
@@ -176,32 +177,12 @@ export default function SellerCreateDialog({ marketId }: SellerCreateDialogProps
                         </Select>
                     </div>
                     <div className="grid grid-cols-4 gap-4 items-center">
-                        <Label htmlFor="pictureUrl" className="text-right">
-                            Image
-                        </Label>
-                        <div className="col-span-3 flex gap-2 items-center">
-                            <Input
-                                id="pictureUrl"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                            <Label
-                                htmlFor="pictureUrl"
-                                className="flex gap-2 items-center px-4 py-2 rounded-md cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            >
-                                <FaImage className="w-4 h-4" />
-                                Choisir une image
-                            </Label>
-                            {formData.pictureUrl && (
-                                <img
-                                    src={formData.pictureUrl}
-                                    alt="Seller preview"
-                                    className="object-cover w-10 h-10 rounded-full"
-                                />
-                            )}
-                        </div>
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
                     </div>
                 </div>
                 <DialogFooter>

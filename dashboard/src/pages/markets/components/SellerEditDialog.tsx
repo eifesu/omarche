@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label"
 import { FaEllipsisH, FaImage } from "react-icons/fa"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface SellerEditDialogProps {
     seller: Seller
@@ -30,7 +31,7 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
         firstName: seller.firstName,
         lastName: seller.lastName,
         tableNumber: seller.tableNumber,
-        gender: seller.gender,
+        gender: seller.gender as "M" | "F",
         isActive: seller.isActive,
         pictureUrl: seller.pictureUrl ?? ""
     })
@@ -57,32 +58,6 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
-    }
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const response = await fetch('YOUR_UPLOAD_ENDPOINT', {
-                method: 'POST',
-                body: formData
-            })
-
-            if (!response.ok) {
-                throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            setFormData(prev => ({ ...prev, pictureUrl: data.url }))
-            toast.success("Image téléchargée avec succès")
-        } catch (error) {
-            toast.error("Erreur lors du téléchargement de l'image")
-            console.error("Failed to upload image:", error)
-        }
     }
 
     const handleSubmit = async () => {
@@ -171,33 +146,14 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="grid grid-cols-4 gap-4 items-center">
-                        <Label htmlFor="pictureUrl" className="text-right">
-                            Image
-                        </Label>
-                        <div className="flex col-span-3 gap-2 items-center">
-                            <Input
-                                id="pictureUrl"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                            <Label
-                                htmlFor="pictureUrl"
-                                className="flex gap-2 items-center px-4 py-2 rounded-md cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            >
-                                <FaImage className="w-4 h-4" />
-                                Changer l'image
-                            </Label>
-                            {formData.pictureUrl && (
-                                <img
-                                    src={formData.pictureUrl}
-                                    alt="Seller preview"
-                                    className="object-cover w-10 h-10 rounded-full"
-                                />
-                            )}
-                        </div>
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
                     </div>
                     <div className="flex items-center space-x-2">
                         <Checkbox

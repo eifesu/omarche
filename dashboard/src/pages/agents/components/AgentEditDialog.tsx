@@ -13,6 +13,8 @@ import { useGetAllMarketsQuery } from "@/redux/api/market";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { ImageUpload, MultiImageUpload } from "@/components/ui/image-upload";
 
 interface AgentEditDialogProps {
     agent: Agent;
@@ -93,6 +95,14 @@ const AgentEditDialog = ({ agent }: AgentEditDialogProps) => {
                     <DialogTitle>Modifier l'agent</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Prénom</label>
@@ -139,16 +149,6 @@ const AgentEditDialog = ({ agent }: AgentEditDialogProps) => {
                             value={formData.phone}
                             onChange={(e) =>
                                 setFormData({ ...formData, phone: e.target.value })
-                            }
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Photo URL (optionnel)</label>
-                        <Input
-                            type="url"
-                            value={formData.pictureUrl}
-                            onChange={(e) =>
-                                setFormData({ ...formData, pictureUrl: e.target.value })
                             }
                         />
                     </div>

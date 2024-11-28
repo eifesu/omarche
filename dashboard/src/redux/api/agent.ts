@@ -24,6 +24,7 @@ export interface CreateAgentDTO {
 	password: string;
 	phone: string;
 	marketId: string;
+	pictureUrl?: string;
 }
 
 export interface UpdateAgentDTO {
