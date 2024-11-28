@@ -9,7 +9,9 @@ export type ProductCategory =
 	| "Fruits"
 	| "Viandes"
 	| "Poissons"
-	| "Boissons"
+	| "Cereales"
+	| "Tubercules"
+	| "Mer"
 	| "Epices"
 	| "Autres";
 

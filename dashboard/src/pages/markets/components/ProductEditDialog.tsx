@@ -219,7 +219,9 @@ export default function ProductEditDialog({ product }: ProductEditDialogProps) {
                                 <SelectItem value="Fruits">Fruits</SelectItem>
                                 <SelectItem value="Viandes">Viandes</SelectItem>
                                 <SelectItem value="Poissons">Poissons</SelectItem>
-                                <SelectItem value="Boissons">Boissons</SelectItem>
+                                <SelectItem value="Cereales">Céréales</SelectItem>
+                                <SelectItem value="Tubercules">Tubercules</SelectItem>
+                                <SelectItem value="Mer">Fruits de mer</SelectItem>
                                 <SelectItem value="Epices">Épices</SelectItem>
                                 <SelectItem value="Autres">Autres</SelectItem>
                             </SelectContent>

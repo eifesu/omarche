@@ -30,7 +30,7 @@ interface FormData {
     unit: string;
     amount: number;
     price: number;
-    category: "Legumes" | "Fruits" | "Viandes" | "Poissons" | "Boissons" | "Epices" | "Autres";
+    category: "Legumes" | "Fruits" | "Viandes" | "Poissons" | "Cereales" | "Tubercules" | "Mer" | "Epices" | "Autres";
     pictureUrl: string[];
     sellerId: string;
 }
@@ -192,7 +192,7 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
                         </Label>
                         <Select
                             value={formData.category}
-                            onValueChange={(value) => setFormData(prev => ({ ...prev, category: value as "Legumes" | "Fruits" | "Viandes" | "Poissons" | "Boissons" | "Epices" | "Autres" }))}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, category: value as "Legumes" | "Fruits" | "Viandes" | "Poissons" | "Cereales" | "Tubercules" | "Mer" | "Epices" | "Autres" }))}
                         >
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Sélectionnez la catégorie" />
@@ -202,7 +202,9 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
                                 <SelectItem value="Fruits">Fruits</SelectItem>
                                 <SelectItem value="Viandes">Viandes</SelectItem>
                                 <SelectItem value="Poissons">Poissons</SelectItem>
-                                <SelectItem value="Boissons">Boissons</SelectItem>
+                                <SelectItem value="Cereales">Céréales</SelectItem>
+                                <SelectItem value="Tubercules">Tubercules</SelectItem>
+                                <SelectItem value="Mer">Fruits de mer</SelectItem>
                                 <SelectItem value="Epices">Épices</SelectItem>
                                 <SelectItem value="Autres">Autres</SelectItem>
                             </SelectContent>
