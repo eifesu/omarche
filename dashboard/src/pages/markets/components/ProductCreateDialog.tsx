@@ -180,9 +180,13 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="KG">Kilogramme</SelectItem>
-                                <SelectItem value="G">Gramme</SelectItem>
-                                <SelectItem value="L">Litre</SelectItem>
+                                <SelectItem value="DEMI_KG">Demi Kilogramme</SelectItem>
+                                <SelectItem value="TAS">Tas</SelectItem>
+                                <SelectItem value="SAC">Sac</SelectItem>
+                                <SelectItem value="BOITE">Boite</SelectItem>
+                                <SelectItem value="MORCEAUX">Morceaux</SelectItem>
                                 <SelectItem value="UNIT">Unité</SelectItem>
+                                <SelectItem value="AUTRE">Autre</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

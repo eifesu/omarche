@@ -196,10 +196,14 @@ export default function ProductEditDialog({ product }: ProductEditDialogProps) {
                                 <SelectValue placeholder="Sélectionnez l'unité" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="kg">Kilogramme</SelectItem>
-                                <SelectItem value="l">Gramme</SelectItem>
-                                <SelectItem value="l">Litre</SelectItem>
-                                <SelectItem value="pc">Unité</SelectItem>
+                                <SelectItem value="KG">Kilogramme</SelectItem>
+                                <SelectItem value="DEMI_KG">Demi Kilogramme</SelectItem>
+                                <SelectItem value="TAS">Tas</SelectItem>
+                                <SelectItem value="SAC">Sac</SelectItem>
+                                <SelectItem value="BOITE">Boite</SelectItem>
+                                <SelectItem value="MORCEAUX">Morceaux</SelectItem>
+                                <SelectItem value="UNIT">Unité</SelectItem>
+                                <SelectItem value="AUTRE">Autre</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
