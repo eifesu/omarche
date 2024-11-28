@@ -67,7 +67,18 @@ const OrdersScreen = (): JSX.Element => {
                     <TableCell>{order.order.userId.slice(0, 8)}</TableCell>
                     <TableCell>{order.order.address}</TableCell>
                     <TableCell>{order.order.deliveryTime}</TableCell>
-                    <TableCell>{order.order.status}</TableCell>
+                    <TableCell>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                            order.order.status === "IDLE" ? 'bg-gray-100 text-gray-800' :
+                            order.order.status === "PROCESSING" || order.order.status === "PROCESSED" ? 'bg-blue-100 text-blue-800' :
+                            order.order.status === "COLLECTING" ? 'bg-yellow-100 text-yellow-800' :
+                            order.order.status === "DELIVERING" ? 'bg-purple-100 text-purple-800' :
+                            order.order.status === "DELIVERED" ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                        }`}>
+                            {order.order.status}
+                        </span>
+                    </TableCell>
                     <TableCell>{order.marketName}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                         <OrderEditDialog order={order.order} />
@@ -78,4 +89,4 @@ const OrdersScreen = (): JSX.Element => {
     </div>
 }
 
-export default OrdersScreen; 
+export default OrdersScreen;

@@ -59,7 +59,11 @@ const MarketsScreen = (): JSX.Element => {
                     <TableCell>{market.name}</TableCell>
                     <TableCell>{market.latitude}</TableCell>
                     <TableCell>{market.longitude}</TableCell>
-                    <TableCell>{market.isActive ? "Oui" : "Non"}</TableCell>
+                    <TableCell>
+                        <span className={`px-2 py-1 rounded-full text-xs ${market.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {market.isActive ? "Actif" : "Inactif"}
+                        </span>
+                    </TableCell>
                     <TableCell className="flex flex-row gap-4 justify-start items-center">
                         <MarketEditDialog market={market} />
                     </TableCell>

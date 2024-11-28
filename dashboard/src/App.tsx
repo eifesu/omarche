@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import './App.css'
 import NavigationBar, { NavigationButton, NavigationLink, NavigationLinkContainer, NavigationLogo } from './components/Navigation'
-import { FaCreditCard, FaDoorOpen, FaReceipt, FaShop, FaTags } from "react-icons/fa6";
+import { FaBoxOpen, FaCreditCard, FaDoorOpen, FaListCheck, FaReceipt, FaShop, FaTags, FaTruck } from "react-icons/fa6";
 import { Toaster } from 'sonner';
 
 function App() {
@@ -25,6 +25,14 @@ function App() {
                 <NavigationLinkContainer to="/promo-codes">
                     <FaTags />
                     <NavigationLink>Codes</NavigationLink>
+                </NavigationLinkContainer>
+                <NavigationLinkContainer to="/agents">
+                    <FaListCheck />
+                    <NavigationLink>Agents</NavigationLink>
+                </NavigationLinkContainer>
+                <NavigationLinkContainer to="/shippers">
+                    <FaTruck />
+                    <NavigationLink>Livreurs</NavigationLink>
                 </NavigationLinkContainer>
                 <NavigationButton>
                     <FaDoorOpen />

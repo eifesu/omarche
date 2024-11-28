@@ -90,6 +90,13 @@ const UpdateAgentDTO = z.object({
 		.transform((val) => (val ? Bun.password.hashSync(val) : undefined)),
 	email: z.string().email().optional(),
 	phone: z.string().optional(),
+	market: z
+		.object({
+			connect: z.object({
+				marketId: z.string().uuid(),
+			}),
+		})
+		.optional(),
 	pictureUrl: z.string().url().optional(),
 	isOnline: z.boolean().optional(),
 });
@@ -105,6 +112,7 @@ agentHandler.put("/:agentId", zValidator("json", UpdateAgentDTO), async (c) => {
 		});
 		return c.json(updatedAgent);
 	} catch (error) {
+		console.error("Error updating agent:", error);
 		throw new AppError(
 			"Erreur lors de la mise à jour de l'agent",
 			500,

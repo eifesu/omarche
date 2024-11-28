@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product } from "./product";
+import { User } from "./user";
+import { Agent } from "./agent";
+import { Shipper } from "./shipper";
+import { PromoCode } from "./promocode";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -14,31 +18,46 @@ export interface OrderDTO {
 	marketName: string;
 }
 
+export type OrderStatus =
+	| "IDLE"
+	| "PROCESSING"
+	| "PROCESSED"
+	| "COLLECTING"
+	| "DELIVERING"
+	| "DELIVERED"
+	| "CANCELED";
+
 export interface Order {
 	orderId: string;
 	userId: string;
-	agentId?: string;
-	shipperId?: string;
 	locationX: number;
 	locationY: number;
+	agentId?: string;
+	shipperId?: string;
 	address: string;
 	deliveryTime: string;
 	paymentMethod: string;
-	status:
-		| "IDLE"
-		| "PROCESSING"
-		| "PROCESSED"
-		| "COLLECTING"
-		| "DELIVERING"
-		| "DELIVERED"
-		| "CANCELED";
-	promoCode?: string;
+	promoCodeId?: string;
+	status: OrderStatus;
 	cancellationReason?: string;
+	users: User;
+	shipper?: Shipper;
+	agent?: Agent;
+	orderProducts: OrderProducts[];
+	promoCode?: PromoCode;
+	createdAt?: Date;
+	updatedAt: Date;
 }
 
-export interface OrderProduct {
+export interface OrderProducts {
+	orderProductId: string;
+	orderId: string;
 	productId: string;
 	quantity: number;
+	products: Product;
+	orders: Order;
+	createdAt?: Date;
+	updatedAt: Date;
 }
 
 export interface CreateOrderDTO {
@@ -59,7 +78,7 @@ export interface CreateOrderDTO {
 			| "DELIVERED"
 			| "CANCELED";
 	};
-	orderProducts: OrderProduct[];
+	orderProducts: OrderProducts[];
 }
 
 export interface UpdateOrderDTO {
@@ -107,7 +126,7 @@ export const orderApi = createApi({
 			providesTags: ["Order"],
 		}),
 
-		getOrderProducts: builder.query<OrderProduct[], string>({
+		getOrderProducts: builder.query<OrderProducts[], string>({
 			query: (orderId) => `orders/${orderId}/order-products`,
 			providesTags: ["Order"],
 		}),

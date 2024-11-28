@@ -20,7 +20,7 @@ const GiftCardsScreen = (): JSX.Element => {
         card.giftCardId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         card.userId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         card.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        card.expiration.toLowerCase().includes(searchTerm.toLowerCase())
+        card.expiration.toLocaleDateString().includes(searchTerm)
     );
 
     return <div className="flex flex-col justify-start items-start w-full h-full border border-slate-100">

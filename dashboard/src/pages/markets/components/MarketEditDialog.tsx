@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useUpdateMarketMutation } from "@/redux/api/market"
+import { Market, useUpdateMarketMutation } from "@/redux/api/market"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -18,16 +18,10 @@ import { Label } from "@/components/ui/label"
 import { FaEllipsisH } from "react-icons/fa"
 import { Checkbox } from "@/components/ui/checkbox"
 import { FaImage } from "react-icons/fa6"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface MarketEditDialogProps {
-    market: {
-        marketId: string
-        name: string
-        latitude: number
-        longitude: number
-        isActive: boolean
-        pictureUrl?: string
-    }
+    market: Market
 }
 
 export default function MarketEditDialog({ market }: MarketEditDialogProps) {
@@ -125,6 +119,14 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
                 </DialogHeader>
                 <div className="grid gap-4">
                     <div className="grid gap-2">
+                        <Label>Photo</Label>
+                        <ImageUpload
+                            value={formData.pictureUrl}
+                            onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
+                            onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
+                        />
+                    </div>
+                    <div className="grid gap-2">
                         <Label htmlFor="name">Nom du marché</Label>
                         <Input
                             id="name"
@@ -133,32 +135,6 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
                             className={errors.name ? "border-red-500" : ""}
                         />
                         {errors.name && <span className="text-sm text-red-500">{errors.name}</span>}
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="pictureUrl">Image du marché</Label>
-                        <div className="flex gap-2 items-center">
-                            <Input
-                                id="pictureUrl"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                            <Label
-                                htmlFor="pictureUrl"
-                                className="flex gap-2 items-center px-4 py-2 rounded-md cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            >
-                                <FaImage className="w-4 h-4" />
-                                Changer l'image
-                            </Label>
-                            {formData.pictureUrl && (
-                                <img
-                                    src={formData.pictureUrl}
-                                    alt="Market preview"
-                                    className="object-cover w-10 h-10 rounded-full"
-                                />
-                            )}
-                        </div>
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="latitude">Latitude</Label>

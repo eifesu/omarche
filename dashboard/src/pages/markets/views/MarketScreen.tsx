@@ -63,7 +63,9 @@ const MarketScreen = (): JSX.Element => {
                         <h3 className="text-lg font-medium">Informations générales</h3>
                         <div className="grid grid-cols-2 gap-2">
                             <span className="text-sm text-gray-500">Status:</span>
-                            <span className="text-sm">{market.isActive ? "Actif" : "Inactif"}</span>
+                            <span className={`px-2 w-fit py-1 rounded-full text-xs ${market.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {market.isActive ? "Actif" : "Inactif"}
+                            </span>
                             <span className="text-sm text-gray-500">Latitude:</span>
                             <span className="text-sm">{market.latitude}</span>
                             <span className="text-sm text-gray-500">Longitude:</span>
@@ -137,7 +139,11 @@ const MarketScreen = (): JSX.Element => {
                                         <TableCell>{seller.firstName}</TableCell>
                                         <TableCell>{seller.tableNumber}</TableCell>
                                         <TableCell>{seller.gender === "M" ? "Homme" : "Femme"}</TableCell>
-                                        <TableCell>{seller.isActive ? "Oui" : "Non"}</TableCell>
+                                        <TableCell>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${seller.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                {seller.isActive ? "Actif" : "Inactif"}
+                                            </span>
+                                        </TableCell>
                                         <TableCell onClick={(e) => e.stopPropagation()}>
                                             <SellerEditDialog seller={seller} />
                                         </TableCell>
@@ -174,7 +180,17 @@ const MarketScreen = (): JSX.Element => {
                                         <TableCell>{order.userId.slice(0, 8)}</TableCell>
                                         <TableCell>{order.address}</TableCell>
                                         <TableCell>{order.deliveryTime}</TableCell>
-                                        <TableCell>{order.status}</TableCell>
+                                        <TableCell>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${order.status === "IDLE" ? 'bg-gray-100 text-gray-800' :
+                                                    order.status === "PROCESSING" || order.status === "PROCESSED" ? 'bg-blue-100 text-blue-800' :
+                                                        order.status === "COLLECTING" ? 'bg-yellow-100 text-yellow-800' :
+                                                            order.status === "DELIVERING" ? 'bg-purple-100 text-purple-800' :
+                                                                order.status === "DELIVERED" ? 'bg-green-100 text-green-800' :
+                                                                    'bg-red-100 text-red-800'
+                                                }`}>
+                                                {order.status}
+                                            </span>
+                                        </TableCell>
                                         <TableCell>
                                             <OrderEditDialog order={order} />
                                         </TableCell>

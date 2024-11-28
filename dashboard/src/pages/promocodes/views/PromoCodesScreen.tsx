@@ -23,15 +23,6 @@ const PromoCodesScreen = (): JSX.Element => {
         promoCode.amount.toString().includes(searchTerm)
     );
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('fr-FR', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric'
-        });
-    };
 
     const formatDiscount = (amount: number, type: string) => {
         return type === 'PERCENTAGE' ? `${amount}%` : `${amount} FCFA`;
@@ -69,7 +60,7 @@ const PromoCodesScreen = (): JSX.Element => {
                     <TableCell>{promoCode.code}</TableCell>
                     <TableCell>{formatDiscount(promoCode.amount, promoCode.discountType)}</TableCell>
                     <TableCell>{promoCode.discountType === 'PERCENTAGE' ? 'Pourcentage' : 'Montant fixe'}</TableCell>
-                    <TableCell>{formatDate(promoCode.expiration)}</TableCell>
+                    <TableCell>{new Date(promoCode.expiration).toLocaleDateString()}</TableCell>
                     <TableCell className="flex flex-row gap-4 justify-start items-center">
                         <PromoCodeEditDialog promoCode={promoCode} />
                     </TableCell>

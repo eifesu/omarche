@@ -34,7 +34,7 @@ export default function PromoCodeEditDialog({ promoCode }: PromoCodeEditDialogPr
         code: promoCode.code,
         amount: promoCode.amount,
         discountType: promoCode.discountType,
-        expiration: promoCode.expiration,
+        expiration: new Date(promoCode.expiration).toLocaleDateString(),
     })
     const [errors, setErrors] = useState<{
         code?: string;
@@ -135,7 +135,7 @@ export default function PromoCodeEditDialog({ promoCode }: PromoCodeEditDialogPr
                             min="1"
                             max={formData.discountType === "PERCENTAGE" ? "100" : undefined}
                             value={formData.amount}
-                            onChange={(e) => setFormData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                            onChange={(e) => setFormData(prev => ({ ...prev, amount: parseInt(e.target.value) }))}
                             className={`col-span-3 ${errors.amount ? 'border-red-500' : ''}`}
                         />
                         {errors.amount && <p className="col-span-3 col-start-2 text-sm text-red-500">{errors.amount}</p>}

@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { FaEllipsisH, FaImage } from "react-icons/fa"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MultiImageUpload } from "@/components/ui/image-upload"
 
 interface ProductEditDialogProps {
     product: Product;
@@ -122,7 +123,7 @@ export default function ProductEditDialog({ product }: ProductEditDialogProps) {
                     <FaEllipsisH className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[900px]">
                 <DialogHeader>
                     <DialogTitle>Modifier le produit</DialogTitle>
                     <DialogDescription>
@@ -228,29 +229,10 @@ export default function ProductEditDialog({ product }: ProductEditDialogProps) {
                         <Label htmlFor="pictureUrl" className="text-right">
                             Image
                         </Label>
-                        <div className="flex col-span-3 gap-2 items-center">
-                            <Input
-                                id="pictureUrl"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                            <Label
-                                htmlFor="pictureUrl"
-                                className="flex gap-2 items-center px-4 py-2 rounded-md cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            >
-                                <FaImage className="w-4 h-4" />
-                                Changer l'image
-                            </Label>
-                            {formData.pictureUrl.length > 0 && (
-                                <img
-                                    src={formData.pictureUrl[0]}
-                                    alt="Product preview"
-                                    className="object-cover w-10 h-10 rounded-lg"
-                                />
-                            )}
-                        </div>
+                        <MultiImageUpload
+                            values={formData.pictureUrl}
+                            onChange={(e) => setFormData(prev => ({ ...prev, pictureUrl: Array.from(e) }))}
+                        />
                     </div>
                     <div className="flex items-center space-x-2">
                         <Checkbox

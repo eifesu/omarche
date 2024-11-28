@@ -1,14 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { User } from "./user";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export interface GiftCard {
 	giftCardId: string;
 	userId?: string;
-	expiration: string;
-	status: "IDLE" | "USED" | "EXPIRED";
-	createdAt: Date;
+	expiration: Date;
+	status: string;
+	createdAt?: Date;
 	updatedAt: Date;
+	user?: User;
 }
 
 export interface CreateGiftCardDTO {

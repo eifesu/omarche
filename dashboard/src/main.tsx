@@ -13,6 +13,8 @@ import OrderScreen from './pages/orders/views/OrderScreen.tsx'
 import GiftCardsScreen from './pages/giftcards/views/GiftCardsScreen.tsx'
 import PromoCodesScreen from './pages/promocodes/views/PromoCodesScreen.tsx'
 import { API_URL } from './config'
+import AgentsScreen from './pages/agents/views/AgentsScreen.tsx'
+import ShippersScreen from './pages/shippers/views/ShippersScreen.tsx'
 
 if (import.meta.env.DEV) {
     console.log('API URL:', API_URL)
@@ -50,6 +52,14 @@ const router = createBrowserRouter([
             {
                 path: '/promo-codes',
                 element: <PromoCodesScreen />,
+            },
+            {
+                path: '/agents',
+                element: <AgentsScreen />,
+            },
+            {
+                path: '/shippers',
+                element: <ShippersScreen />,
             },
         ],
     },

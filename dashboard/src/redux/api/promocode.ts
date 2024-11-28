@@ -1,15 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_URL } from "../../config";
+import { Order } from "./order";
 
 export type PromoCodeType = "PERCENTAGE" | "FIXED";
 
 export interface PromoCode {
 	promoCodeId: string;
 	code: string;
-	expiration: string;
+	expiration: Date;
 	discountType: PromoCodeType;
 	amount: number;
-	createdAt: Date;
+	orders?: Order[];
+	createdAt?: Date;
 	updatedAt: Date;
 }
 

@@ -60,7 +60,7 @@ const CreateMarketDTO = z.object({
 	name: z.string(),
 	latitude: z.number(),
 	longitude: z.number(),
-	pictureUrl: z.string().url().optional(),
+	pictureUrl: z.string().optional(),
 });
 
 // POST create a new market
@@ -83,7 +83,7 @@ const UpdateMarketDTO = z.object({
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
 	isActive: z.boolean().optional(),
-	pictureUrl: z.string().url().optional(),
+	pictureUrl: z.string().nullable(),
 });
 
 // PUT update a market

@@ -48,7 +48,9 @@ const SellerScreen = (): JSX.Element => {
                         <h3 className="text-lg font-medium">Informations générales</h3>
                         <div className="grid grid-cols-2 gap-2">
                             <span className="text-sm text-gray-500">Status:</span>
-                            <span className="text-sm">{seller.isActive ? "Actif" : "Inactif"}</span>
+                            <span className={`px-2 py-1 rounded-full w-fit text-xs ${seller.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {seller.isActive ? "Actif" : "Inactif"}
+                            </span>
                             <span className="text-sm text-gray-500">Genre:</span>
                             <span className="text-sm">{seller.gender === "M" ? "Homme" : "Femme"}</span>
                             <span className="text-sm text-gray-500">Table №:</span>

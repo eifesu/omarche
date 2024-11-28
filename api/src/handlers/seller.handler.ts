@@ -64,7 +64,7 @@ sellerHandler.get("/:sellerId", async (c) => {
 const UpdateSellerDTO = z.object({
 	firstName: z.string().optional(),
 	lastName: z.string().optional(),
-	pictureUrl: z.string().url().optional(),
+	pictureUrl: z.string().nullable(),
 	gender: z.enum(["M", "F"]).optional(),
 	tableNumber: z.number().optional(),
 	isActive: z.boolean().optional(),

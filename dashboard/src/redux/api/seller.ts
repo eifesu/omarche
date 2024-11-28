@@ -1,17 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Product } from "./product";
+import { Market } from "./market";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export interface Seller {
 	sellerId: string;
 	marketId: string;
-	pictureUrl: string | null;
+	pictureUrl?: string;
 	firstName: string;
 	lastName: string;
 	tableNumber: number;
-	gender: "M" | "F";
-	isActive: boolean;
+	gender: string;
+	isActive?: boolean;
+	products?: Product[];
+	market: Market;
+	createdAt?: Date;
+	updatedAt: Date;
 }
 
 export interface CreateSellerDTO {

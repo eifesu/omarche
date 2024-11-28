@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Seller } from "./seller";
+import { OrderProducts } from "./order";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -13,16 +15,18 @@ export type ProductCategory =
 
 export interface Product {
 	productId: string;
-	name: string;
-	description: string | null;
-	price: number;
-	amount: number;
-	unit: string;
-	category: ProductCategory;
-	isInStock: boolean;
 	pictureUrl: string[];
+	name: string;
+	description?: string;
+	unit: string;
+	amount: number;
+	price: number;
+	category: ProductCategory;
 	sellerId: string;
-	createdAt: Date | null;
+	isInStock: boolean;
+	orderProducts?: OrderProducts[];
+	seller: Seller;
+	createdAt?: Date;
 	updatedAt: Date;
 }
 

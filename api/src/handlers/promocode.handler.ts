@@ -10,14 +10,15 @@ import {
 	validatePromoCode,
 } from "@/services/promocode.service";
 import AppError from "@/utils/AppError";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const promocodeHandler = new Hono();
 
 const PromoCodeDTO = z.object({
 	code: z.string(),
-	expiration: z.string().datetime(),
+	expiration: z.string().transform((value) => new Date(value)),
 	discountType: z.enum(["PERCENTAGE", "FIXED"]),
-	amount: z.number(),
+	amount: z.number().transform((value) => new Decimal(value)),
 });
 
 // GET all promocodes
@@ -59,7 +60,6 @@ promocodeHandler.get("/:promoCodeId", async (c) => {
 promocodeHandler.post("/", zValidator("json", PromoCodeDTO), async (c) => {
 	const promoCodeData = c.req.valid("json");
 	try {
-		// @ts-ignore
 		const newPromoCode = await createPromoCode(promoCodeData);
 		return c.json(newPromoCode, 201);
 	} catch (error) {

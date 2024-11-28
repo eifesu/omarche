@@ -11,14 +11,12 @@ export async function assignOrdersToShippers() {
 		});
 
 		if (unassignedOrders.length === 0) {
-			console.log("No unassigned orders to process.");
 			return;
 		}
 
 		const availableShippers = Array.from(connectedShippers.keys());
 
 		if (availableShippers.length === 0) {
-			console.log("No available shippers online.");
 			return;
 		}
 

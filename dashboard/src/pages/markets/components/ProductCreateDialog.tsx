@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { FaPlus, FaImage } from "react-icons/fa6"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MultiImageUpload } from "@/components/ui/image-upload"
 
 interface ProductCreateDialogProps {
     marketId: string;
@@ -72,36 +73,12 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
         return Object.keys(newErrors).length === 0
     }
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const response = await fetch('YOUR_UPLOAD_ENDPOINT', {
-                method: 'POST',
-                body: formData
-            })
-
-            if (!response.ok) {
-                throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            setFormData(prev => ({ ...prev, pictureUrl: [data.url] }))
-            toast.success("Image téléchargée avec succès")
-        } catch (error) {
-            toast.error("Erreur lors du téléchargement de l'image")
-            console.error("Failed to upload image:", error)
-        }
-    }
 
     const handleSubmit = async () => {
         if (!validateForm()) return
 
         try {
+            console.log(formData.pictureUrl)
             await createProduct(formData).unwrap()
             toast.success("Produit créé avec succès")
             setIsOpen(false)
@@ -129,7 +106,7 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
                     <FaPlus className="ml-2" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[900px]">
                 <DialogHeader>
                     <DialogTitle>Ajouter un produit</DialogTitle>
                     <DialogDescription>
@@ -235,29 +212,10 @@ export default function ProductCreateDialog({ marketId, sellerId }: ProductCreat
                         <Label htmlFor="pictureUrl" className="text-right">
                             Image
                         </Label>
-                        <div className="flex col-span-3 gap-2 items-center">
-                            <Input
-                                id="pictureUrl"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                            <Label
-                                htmlFor="pictureUrl"
-                                className="flex gap-2 items-center px-4 py-2 rounded-md cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            >
-                                <FaImage className="w-4 h-4" />
-                                Choisir une image
-                            </Label>
-                            {formData.pictureUrl.length > 0 && (
-                                <img
-                                    src={formData.pictureUrl[0]}
-                                    alt="Product preview"
-                                    className="object-cover w-10 h-10 rounded-lg"
-                                />
-                            )}
-                        </div>
+                        <MultiImageUpload
+                            values={formData.pictureUrl}
+                            onChange={(e) => setFormData(prev => ({ ...prev, pictureUrl: Array.from(e) }))}
+                        />
                     </div>
                 </div>
                 <DialogFooter>

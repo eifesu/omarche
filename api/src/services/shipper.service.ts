@@ -3,6 +3,7 @@ import {
 	selectShipperById,
 	updateShipperById,
 	deleteShipperById,
+	createShipper as createShipperRepo,
 } from "@/repositories/shipper.repository";
 import { Shipper } from "@prisma/client";
 
@@ -36,4 +37,10 @@ export async function deleteShipper(shipperId: string): Promise<void> {
 	}
 
 	await deleteShipperById(shipperId);
+}
+
+export async function createShipper(
+	data: Omit<Shipper, "shipperId" | "createdAt" | "updatedAt">
+): Promise<Shipper> {
+	return createShipperRepo(data);
 }

@@ -32,7 +32,7 @@ const UpdateProductDTO = z.object({
 			"Autres",
 		])
 		.optional(),
-	pictureUrl: z.array(z.string().url()).optional(),
+	pictureUrl: z.array(z.string()).optional(),
 });
 
 const CreateProductDTO = z.object({
@@ -50,7 +50,7 @@ const CreateProductDTO = z.object({
 		"Epices",
 		"Autres",
 	]),
-	pictureUrl: z.array(z.string().url()),
+	pictureUrl: z.array(z.string()),
 	sellerId: z.string(),
 });
 
@@ -102,6 +102,7 @@ productHandler.post("/", zValidator("json", CreateProductDTO), async (c) => {
 		const newProduct = await createProduct(productDataWithDefaults);
 		return c.json(newProduct, 201);
 	} catch (error) {
+		console.error(error)
 		throw new AppError(
 			"Erreur lors de la création du produit",
 			500,
@@ -151,3 +152,4 @@ productHandler.delete("/:productId", async (c) => {
 });
 
 export default productHandler;
+
