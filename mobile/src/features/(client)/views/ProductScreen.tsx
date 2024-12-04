@@ -14,6 +14,7 @@ import { addItemToCart } from '../../(client)/redux/cart.slice'
 import { showToast } from '@/redux/slices/toast.slice'
 import { Image } from 'expo-image'
 import { MarketStackParamList } from '../routers/MarketStackRouter'
+import { ProductCategory } from "../redux/productsApi.slice";
 
 export default function ProductScreen(props: NativeStackScreenProps<MarketStackParamList, 'Product'>) {
     const { data } = useFetchProductByIdQuery(props.route.params.productId)
@@ -167,22 +168,24 @@ function QuantitySelector(props: { quantity: number, setQuantity: React.Dispatch
     )
 }
 
-export function CategoryLabel(props: { category: string, textSize?: number, iconSize?: number }) {
+export function CategoryLabel(props: { category: ProductCategory, textSize?: number, iconSize?: number }) {
     const iconProps = { size: props.iconSize ?? 16, color: Theme.colors.greenDark }
-
-    const categoryIcons: { [key: string]: JSX.Element } = {
-        'Fruits': <Iconify icon="icon-park-twotone:tomato" {...iconProps} />,
-        'Légumes': <Iconify icon="fluent:bowl-salad-24-filled" {...iconProps} />,
-        'Viande': <Iconify icon="tabler:meat" {...iconProps} />,
-        'Poisson': <Iconify icon="icon-park-twotone:fish" {...iconProps} />
+    const categoryIcons: { [key in ProductCategory]: JSX.Element } = {
+        [ProductCategory.Fruits]: <Iconify icon="icon-park-twotone:apple-one" {...iconProps} />,
+        [ProductCategory.Legumes]: <Iconify icon="icon-park-twotone:tomato" {...iconProps} />,
+        [ProductCategory.Viandes]: <Iconify icon="tabler:meat" {...iconProps} />,
+        [ProductCategory.Poissons]: <Iconify icon="icon-park-twotone:fish" {...iconProps} />,
+        [ProductCategory.Cereales]: <Iconify icon="fluent:food-grains-24-regular" {...iconProps} />,
+        [ProductCategory.Tubercules]: <Iconify icon="game-icons:potato" {...iconProps} />,
+        [ProductCategory.Mer]: <Iconify icon="hugeicons:shellfish" {...iconProps} />,
+        [ProductCategory.Epices]: <Iconify icon="mdi:shaker-outline" {...iconProps} />,
+        [ProductCategory.Autres]: <Iconify icon="mdi:food-apple-outline" {...iconProps} />
     }
-
-    const iconComponent = categoryIcons[props.category] || <Iconify icon="icon-park-twotone:tomato" {...iconProps} />
 
     return (
         <View style={styles.categoryLabel}>
             <Text style={[styles.categoryText, { fontSize: props.textSize ?? 12 }]}>{props.category}</Text>
-            {iconComponent}
+            {categoryIcons[props.category]}
         </View>
     )
 }

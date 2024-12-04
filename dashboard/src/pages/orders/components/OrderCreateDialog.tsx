@@ -85,7 +85,7 @@ export default function OrderCreateDialog() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="default">
+                <Button variant="default"  className="bg-orange-400 hover:bg-orange-500">
                     Ajouter une commande
                     <FaPlus className="ml-2" />
                 </Button>

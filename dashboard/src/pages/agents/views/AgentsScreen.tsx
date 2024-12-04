@@ -61,7 +61,7 @@ const AgentsScreen = (): JSX.Element => {
                     <TableHeader>ACTIONS</TableHeader>
                 </TableRow>
                 {filteredAgents?.map((agent) => (
-                    <TableRow
+                    <TableRow 
                         key={agent.agentId}
                         className="cursor-pointer hover:bg-slate-50"
                         onClick={() => navigate(`/agents/${agent.agentId}`)}

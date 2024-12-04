@@ -14,6 +14,7 @@ import { useGetAllMarketsQuery } from "@/redux/api/market";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { FaPlus } from "react-icons/fa6";
 
 export default function ShipperCreateDialog() {
     const [createShipper] = useCreateShipperMutation();
@@ -88,7 +89,9 @@ export default function ShipperCreateDialog() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button>Nouveau livreur</Button>
+                <Button className="bg-orange-400 hover:bg-orange-500">Nouveau livreur
+                    <FaPlus className="ml-2" />
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -176,4 +179,4 @@ export default function ShipperCreateDialog() {
             </DialogContent>
         </Dialog>
     );
-} 
+}

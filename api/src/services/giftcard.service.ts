@@ -7,47 +7,94 @@ import {
 	selectGiftCardByUserId,
 } from "@/repositories/giftcard.repository";
 import { GiftCard } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 export async function getAllGiftCards() {
-	return selectAllGiftCards();
+	try {
+		return await selectAllGiftCards();
+	} catch (error) {
+		throw new AppError("Erreur lors de la récupération des cartes cadeaux", 500, error as Error);
+	}
 }
 
 export async function getGiftCardById(giftCardId: string) {
-	return selectGiftCardById(giftCardId);
+	try {
+		const giftCard = await selectGiftCardById(giftCardId);
+		if (!giftCard) {
+			throw new AppError("Carte cadeau introuvable", 404, new Error(`GiftCard with ID ${giftCardId} not found`));
+		}
+		return giftCard;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération de la carte cadeau", 500, error as Error);
+	}
 }
 
 export async function assignGiftCardToUser(giftCardId: string, userId: string) {
-	return updateGiftCardById(giftCardId, { userId });
+	try {
+		const giftCard = await selectGiftCardById(giftCardId);
+		if (!giftCard) {
+			throw new AppError("Carte cadeau introuvable", 404, new Error(`GiftCard with ID ${giftCardId} not found`));
+		}
+		
+		return await updateGiftCardById(giftCardId, { userId });
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de l'attribution de la carte cadeau", 500, error as Error);
+	}
 }
 
 export async function createGiftCard(
 	data: Omit<GiftCard, "giftCardId" | "createdAt" | "updatedAt">
 ) {
-	return insertGiftCard(data);
+	try {
+		return await insertGiftCard(data);
+	} catch (error) {
+		throw new AppError("Erreur lors de la création de la carte cadeau", 500, error as Error);
+	}
 }
 
 export async function updateGiftCard(
 	giftCardId: string,
 	data: Partial<GiftCard>
 ) {
-	const existingGiftCard = await getGiftCardById(giftCardId);
-	if (!existingGiftCard) {
-		throw new Error("GiftCard not found");
-	}
+	try {
+		const existingGiftCard = await getGiftCardById(giftCardId);
+		if (!existingGiftCard) {
+			throw new AppError("Carte cadeau introuvable", 404, new Error(`GiftCard with ID ${giftCardId} not found`));
+		}
 
-	const updatedGiftCard = await updateGiftCardById(giftCardId, data);
-	return updatedGiftCard;
+		const updatedGiftCard = await updateGiftCardById(giftCardId, data);
+		return updatedGiftCard;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la mise à jour de la carte cadeau", 500, error as Error);
+	}
 }
 
 export async function deleteGiftCard(giftCardId: string) {
-	const existingGiftCard = await getGiftCardById(giftCardId);
-	if (!existingGiftCard) {
-		throw new Error("GiftCard not found");
-	}
+	try {
+		const existingGiftCard = await getGiftCardById(giftCardId);
+		if (!existingGiftCard) {
+			throw new AppError("Carte cadeau introuvable", 404, new Error(`GiftCard with ID ${giftCardId} not found`));
+		}
 
-	await deleteGiftCardById(giftCardId);
+		await deleteGiftCardById(giftCardId);
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la suppression de la carte cadeau", 500, error as Error);
+	}
 }
 
 export async function getGiftCardByUserId(userId: string) {
-	return selectGiftCardByUserId(userId);
+	try {
+		const giftCard = await selectGiftCardByUserId(userId);
+		if (!giftCard) {
+			throw new AppError("Carte cadeau introuvable pour cet utilisateur", 404, new Error(`GiftCard not found for user ${userId}`));
+		}
+		return giftCard;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération de la carte cadeau", 500, error as Error);
+	}
 }

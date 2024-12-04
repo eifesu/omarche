@@ -2,18 +2,25 @@ import { randomUUID } from "crypto";
 import { unlink } from "fs/promises";
 import { mkdir } from "fs/promises";
 import { join } from "path";
+import AppError from "@/utils/AppError";
 
 class ImageService {
 	private readonly uploadDir = "./uploads";
 
 	constructor() {
 		// Ensure uploads directory exists
-		mkdir(this.uploadDir, { recursive: true });
+		mkdir(this.uploadDir, { recursive: true }).catch((error) => {
+			throw new AppError("Erreur lors de la création du dossier d'upload", 500, error as Error);
+		});
 	}
 
 	async uploadImage(file: File) {
 		try {
 			const fileExtension = file.type.split("/")[1];
+			if (!fileExtension) {
+				throw new AppError("Type de fichier non valide", 400, new Error("Invalid file type"));
+			}
+
 			const fileName = `${randomUUID()}.${fileExtension}`;
 			const filePath = join(this.uploadDir, fileName);
 
@@ -28,8 +35,8 @@ class ImageService {
 				type: file.type,
 			};
 		} catch (error) {
-			console.error("Error in uploadImage:", error);
-			throw new Error("Failed to upload image");
+			if (error instanceof AppError) throw error;
+			throw new AppError("Erreur lors du téléchargement de l'image", 500, error as Error);
 		}
 	}
 
@@ -39,8 +46,8 @@ class ImageService {
 			await Bun.write(filePath, ""); // Create empty file
 			await unlink(filePath); // Use node's unlink instead
 		} catch (error) {
-			console.error("Error in deleteImage:", error);
-			throw new Error("Failed to delete image");
+			if (error instanceof AppError) throw error;
+			throw new AppError("Erreur lors de la suppression de l'image", 500, error as Error);
 		}
 	}
 }

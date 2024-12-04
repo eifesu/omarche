@@ -9,33 +9,68 @@ import { selectSellersFromMarketById } from "@/repositories/seller.repository";
 import { getOrderById, OrderDTO } from "./order.service";
 import { selectOrdersByMarketId } from "@/repositories/order.repository";
 import { Market, Order } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 export async function getAllMarkets() {
-	return selectAllMarkets();
+	try {
+		return await selectAllMarkets();
+	} catch (error) {
+		throw new AppError("Erreur lors de la récupération des marchés", 500, error as Error);
+	}
 }
 
 export async function getSellersFromMarketById(marketId: string) {
-	return selectSellersFromMarketById(marketId);
+	try {
+		const sellers = await selectSellersFromMarketById(marketId);
+		if (!sellers || sellers.length === 0) {
+			throw new AppError("Aucun vendeur trouvé pour ce marché", 404, new Error(`No sellers found for market ${marketId}`));
+		}
+		return sellers;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération des vendeurs", 500, error as Error);
+	}
 }
 
 export async function getOrdersByMarketId(marketId: string): Promise<Order[]> {
-	const orders = await selectOrdersByMarketId(marketId);
-	return orders;
+	try {
+		const orders = await selectOrdersByMarketId(marketId);
+		return orders;
+	} catch (error) {
+		throw new AppError("Erreur lors de la récupération des commandes", 500, error as Error);
+	}
 }
 
 export async function getOrdersDetailsByMarketId(
 	marketId: string
 ): Promise<OrderDTO[]> {
-	const orders = await selectOrdersByMarketId(marketId);
-	const ordersDTO = await Promise.all(
-		orders.map((order) => getOrderById(order.orderId))
-	);
-	return ordersDTO;
+	try {
+		const orders = await selectOrdersByMarketId(marketId);
+		if (!orders || orders.length === 0) {
+			throw new AppError("Aucune commande trouvée pour ce marché", 404, new Error(`No orders found for market ${marketId}`));
+		}
+		const ordersDTO = await Promise.all(
+			orders.map((order) => getOrderById(order.orderId))
+		);
+		return ordersDTO;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération des détails des commandes", 500, error as Error);
+	}
 }
 
 export async function updateMarket(marketId: string, data: Partial<Market>) {
-	const updatedMarket = await updateMarketById(marketId, data);
-	return updatedMarket;
+	try {
+		const market = await selectMarketById(marketId);
+		if (!market) {
+			throw new AppError("Marché introuvable", 404, new Error(`Market with ID ${marketId} not found`));
+		}
+		const updatedMarket = await updateMarketById(marketId, data);
+		return updatedMarket;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la mise à jour du marché", 500, error as Error);
+	}
 }
 
 export async function createMarket(data: {
@@ -44,22 +79,36 @@ export async function createMarket(data: {
 	longitude: number;
 	pictureUrl?: string;
 }) {
-	const newMarket = await insertMarket(data);
-	return newMarket;
+	try {
+		const newMarket = await insertMarket(data);
+		return newMarket;
+	} catch (error) {
+		throw new AppError("Erreur lors de la création du marché", 500, error as Error);
+	}
 }
 
 export async function getMarketById(marketId: string) {
-	const market = await selectMarketById(marketId);
-	if (!market) {
-		throw new Error("Market not found");
+	try {
+		const market = await selectMarketById(marketId);
+		if (!market) {
+			throw new AppError("Marché introuvable", 404, new Error(`Market with ID ${marketId} not found`));
+		}
+		return market;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération du marché", 500, error as Error);
 	}
-	return market;
 }
 
 export async function deleteMarket(marketId: string) {
-	const market = await selectMarketById(marketId);
-	if (!market) {
-		throw new Error("Market not found");
+	try {
+		const market = await selectMarketById(marketId);
+		if (!market) {
+			throw new AppError("Marché introuvable", 404, new Error(`Market with ID ${marketId} not found`));
+		}
+		await deleteMarketById(marketId);
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la suppression du marché", 500, error as Error);
 	}
-	await deleteMarketById(marketId);
 }

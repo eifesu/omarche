@@ -80,6 +80,7 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
+                    Modifier
                     <FaEllipsisH className="w-4 h-4" />
                 </Button>
             </DialogTrigger>

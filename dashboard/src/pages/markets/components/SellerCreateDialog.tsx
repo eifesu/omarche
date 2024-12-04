@@ -108,7 +108,7 @@ export default function SellerCreateDialog({ marketId }: SellerCreateDialogProps
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="default">
+                <Button variant="default" className="bg-orange-400 hover:bg-orange-500">
                     Ajouter un vendeur
                     <FaPlus className="ml-2" />
                 </Button>

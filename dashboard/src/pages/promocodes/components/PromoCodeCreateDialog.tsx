@@ -86,7 +86,7 @@ export default function PromoCodeCreateDialog() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="default">
+                <Button className="bg-orange-400 hover:bg-orange-500" variant="default">
                     Ajouter un code promo
                     <FaPlus className="ml-2" />
                 </Button>

@@ -7,41 +7,78 @@ import {
 	deleteSellerById,
 } from "@/repositories/seller.repository";
 import { Seller } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 export async function getProductsBySellerId(sellerId: string) {
-	return selectProductsBySellerId(sellerId);
+	try {
+		const products = await selectProductsBySellerId(sellerId);
+		if (!products || products.length === 0) {
+			throw new AppError("Aucun produit trouvé pour ce vendeur", 404, new Error(`No products found for seller ID ${sellerId}`));
+		}
+		return products;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération des produits du vendeur", 500, error as Error);
+	}
 }
 
 export async function getSellerById(sellerId: string) {
-	return selectSellerById(sellerId);
+	try {
+		const seller = await selectSellerById(sellerId);
+		if (!seller) {
+			throw new AppError("Vendeur introuvable", 404, new Error(`Seller with ID ${sellerId} not found`));
+		}
+		return seller;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération du vendeur", 500, error as Error);
+	}
 }
 
 export async function updateSeller(sellerId: string, data: Partial<Seller>) {
-	const existingSeller = await selectSellerById(sellerId);
-	if (!existingSeller) {
-		throw new Error("Ce vendeur n'existe pas");
-	}
+	try {
+		const existingSeller = await selectSellerById(sellerId);
+		if (!existingSeller) {
+			throw new AppError("Vendeur introuvable", 404, new Error(`Seller with ID ${sellerId} not found`));
+		}
 
-	const updatedSeller = await updateSellerById(sellerId, data);
-	return updatedSeller;
+		const updatedSeller = await updateSellerById(sellerId, data);
+		return updatedSeller;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la mise à jour du vendeur", 500, error as Error);
+	}
 }
 
 export async function getAllSellers() {
-	return selectAllSellers();
+	try {
+		return await selectAllSellers();
+	} catch (error) {
+		throw new AppError("Erreur lors de la récupération des vendeurs", 500, error as Error);
+	}
 }
 
 export async function createSeller(
 	data: Omit<Seller, "sellerId" | "createdAt" | "updatedAt" | "isActive">
 ) {
-	const newSeller = await insertSeller({ ...data, isActive: true });
-	return newSeller;
+	try {
+		const newSeller = await insertSeller({ ...data, isActive: true });
+		return newSeller;
+	} catch (error) {
+		throw new AppError("Erreur lors de la création du vendeur", 500, error as Error);
+	}
 }
 
 export async function deleteSeller(sellerId: string) {
-	const existingSeller = await selectSellerById(sellerId);
-	if (!existingSeller) {
-		throw new Error("Ce vendeur n'existe pas");
-	}
+	try {
+		const existingSeller = await selectSellerById(sellerId);
+		if (!existingSeller) {
+			throw new AppError("Vendeur introuvable", 404, new Error(`Seller with ID ${sellerId} not found`));
+		}
 
-	await deleteSellerById(sellerId);
+		await deleteSellerById(sellerId);
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la suppression du vendeur", 500, error as Error);
+	}
 }

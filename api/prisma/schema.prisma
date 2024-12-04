@@ -59,7 +59,7 @@ model Product {
     pictureUrl    String[]
     name          String           @db.VarChar(100)
     description   String?
-    unit          String           @db.VarChar(50)
+    unit          product_unit     @default(KG)
     amount        Int
     price         Decimal          @db.Decimal(10, 2)
     category      product_category @default(Legumes)
@@ -181,7 +181,20 @@ enum product_category {
     Fruits
     Viandes
     Poissons
-    Boissons
+    Cereales
+    Tubercules
+    Mer 
     Epices
     Autres
+}
+
+enum product_unit {
+    KG
+    DEMI_KG
+    TAS
+    SAC
+    BOITE
+    MORCEAUX
+    UNIT
+    AUTRE
 }

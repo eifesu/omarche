@@ -13,6 +13,7 @@ import { useGetAllMarketsQuery } from "@/redux/api/market";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { FaPlus } from "react-icons/fa6";
 
 const AgentCreateDialog = () => {
     const [open, setOpen] = useState(false);
@@ -50,7 +51,9 @@ const AgentCreateDialog = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Ajouter un agent</Button>
+                <Button className="bg-orange-400 hover:bg-orange-500">Ajouter un agent
+                <FaPlus />
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>

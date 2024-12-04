@@ -7,47 +7,85 @@ import {
 	selectPromoCodeByCode,
 } from "@/repositories/promocode.repository";
 import { PromoCode } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 export async function getAllPromoCodes() {
-	return selectAllPromoCodes();
+	try {
+		return await selectAllPromoCodes();
+	} catch (error) {
+		throw new AppError("Erreur lors de la récupération des codes promo", 500, error as Error);
+	}
 }
 
 export async function getPromoCodeById(promoCodeId: string) {
-	return selectPromoCodeById(promoCodeId);
+	try {
+		const promoCode = await selectPromoCodeById(promoCodeId);
+		if (!promoCode) {
+			throw new AppError("Code promo introuvable", 404, new Error(`PromoCode with ID ${promoCodeId} not found`));
+		}
+		return promoCode;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la récupération du code promo", 500, error as Error);
+	}
 }
 
 export async function createPromoCode(
 	data: Omit<PromoCode, "promoCodeId" | "createdAt" | "updatedAt">
 ) {
-	return insertPromoCode(data);
+	try {
+		return await insertPromoCode(data);
+	} catch (error) {
+		throw new AppError("Erreur lors de la création du code promo", 500, error as Error);
+	}
 }
 
 export async function updatePromoCode(
 	promoCodeId: string,
 	data: Partial<PromoCode>
 ) {
-	const existingPromoCode = await getPromoCodeById(promoCodeId);
-	if (!existingPromoCode) {
-		throw new Error("Code promo invalide");
-	}
+	try {
+		const existingPromoCode = await getPromoCodeById(promoCodeId);
+		if (!existingPromoCode) {
+			throw new AppError("Code promo introuvable", 404, new Error(`PromoCode with ID ${promoCodeId} not found`));
+		}
 
-	const updatedPromoCode = await updatePromoCodeById(promoCodeId, data);
-	return updatedPromoCode;
+		const updatedPromoCode = await updatePromoCodeById(promoCodeId, data);
+		return updatedPromoCode;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la mise à jour du code promo", 500, error as Error);
+	}
 }
 
 export async function deletePromoCode(promoCodeId: string) {
-	const existingPromoCode = await getPromoCodeById(promoCodeId);
-	if (!existingPromoCode) {
-		throw new Error("Code promo invalide");
-	}
+	try {
+		const existingPromoCode = await getPromoCodeById(promoCodeId);
+		if (!existingPromoCode) {
+			throw new AppError("Code promo introuvable", 404, new Error(`PromoCode with ID ${promoCodeId} not found`));
+		}
 
-	await deletePromoCodeById(promoCodeId);
+		await deletePromoCodeById(promoCodeId);
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la suppression du code promo", 500, error as Error);
+	}
 }
 
 export async function validatePromoCode(code: string) {
-	const promoCode = await selectPromoCodeByCode(code);
-	if (!promoCode || new Date(promoCode.expiration) < new Date()) {
-		throw new Error("Code promo invalide ou expiré");
+	try {
+		const promoCode = await selectPromoCodeByCode(code);
+		if (!promoCode) {
+			throw new AppError("Code promo invalide", 400, new Error(`Invalid promo code: ${code}`));
+		}
+		
+		if (new Date(promoCode.expiration) < new Date()) {
+			throw new AppError("Code promo expiré", 400, new Error(`Expired promo code: ${code}`));
+		}
+		
+		return promoCode;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la validation du code promo", 500, error as Error);
 	}
-	return promoCode;
 }

@@ -15,6 +15,8 @@ import PromoCodesScreen from './pages/promocodes/views/PromoCodesScreen.tsx'
 import { API_URL } from './config'
 import AgentsScreen from './pages/agents/views/AgentsScreen.tsx'
 import ShippersScreen from './pages/shippers/views/ShippersScreen.tsx'
+import AgentScreen from './pages/agents/views/AgentScreen.tsx'
+import ShipperScreen from './pages/shippers/views/ShipperScreen.tsx'
 
 if (import.meta.env.DEV) {
     console.log('API URL:', API_URL)
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
         path: '/',
         element: <App />,
         children: [
+            {
+                path: '/',
+                element: <MarketsScreen />,
+            },
             {
                 path: '/markets',
                 element: <MarketsScreen />,
@@ -58,9 +64,17 @@ const router = createBrowserRouter([
                 element: <AgentsScreen />,
             },
             {
+                path: '/agents/:agentId',
+                element: <AgentScreen />,
+            },
+            {
                 path: '/shippers',
                 element: <ShippersScreen />,
             },
+            {
+                path: '/shippers/:shipperId',
+                element: <ShipperScreen />,
+            }
         ],
     },
 ])

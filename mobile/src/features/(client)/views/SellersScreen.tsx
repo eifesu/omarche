@@ -8,7 +8,7 @@ import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons'
 import InputGroup, { InputField } from '@/components/Input'
 import SellerList from '../../(client)/components/SellerList'
 import { Iconify } from 'react-native-iconify'
-import { Product } from '../../(client)/redux/productsApi.slice'
+import { Product, ProductCategory } from '../../(client)/redux/productsApi.slice'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { RouteProp } from '@react-navigation/native'
@@ -39,7 +39,7 @@ function FilterBar(props: { searchCategoryFilter: Product['category'] | undefine
                 <Iconify icon="ion:filter" size={16} color={Theme.colors.green} />
             </View>
             <FlatList
-                data={['Fruits', 'Légumes', 'Viande', 'Poisson']}
+                data={Object.keys(ProductCategory)}
                 keyExtractor={(item) => item}
                 horizontal
                 style={{ marginTop: 8 }}

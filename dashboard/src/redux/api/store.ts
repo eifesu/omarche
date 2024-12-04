@@ -7,6 +7,7 @@ import { giftCardApi } from "./giftcard";
 import { promocodeApi } from "./promocode";
 import { shipperApi } from "./shipper";
 import { agentApi } from "./agent";
+import { imageApi } from "./image";
 
 export const store = configureStore({
 	reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
 		[promocodeApi.reducerPath]: promocodeApi.reducer,
 		[shipperApi.reducerPath]: shipperApi.reducer,
 		[agentApi.reducerPath]: agentApi.reducer,
+		[imageApi.reducerPath]: imageApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(
@@ -28,7 +30,8 @@ export const store = configureStore({
 			giftCardApi.middleware,
 			promocodeApi.middleware,
 			shipperApi.middleware,
-			agentApi.middleware
+			agentApi.middleware,
+			imageApi.middleware
 		),
 	devTools: true,
 });

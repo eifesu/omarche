@@ -46,7 +46,6 @@ export default function LoginForm() {
                                 homeNavigation.navigate('Shipper');
                             }
                         } catch (error) {
-                            console.log('caught')
                             handleError(error)
                         }
                     }}

@@ -9,6 +9,7 @@ import {
 } from "../repositories/auth.repository";
 import jwt from "jsonwebtoken";
 import { Agent, Shipper, User } from "@prisma/client";
+import AppError from "@/utils/AppError";
 
 export type LoginDTO = {
 	email: string;
@@ -22,7 +23,7 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 	try {
 		let user = await selectUserByEmail(params.email);
 		if (!user) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("User not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -30,7 +31,7 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 			user.password
 		);
 		if (!isMatch) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
 		const token = jwt.sign({ userID: user.userId }, ENV.JWT_SECRET, {
@@ -42,8 +43,8 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 			token: token,
 		};
 	} catch (error) {
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la connexion", 500, error as Error);
 	}
 }
 
@@ -55,6 +56,7 @@ export type RegisterDTO = {
 	address: string;
 	phone: string;
 };
+
 export async function postRegisterUser(params: RegisterDTO): Promise<void> {
 	try {
 		const password = await Bun.password.hash(params.password);
@@ -67,9 +69,8 @@ export async function postRegisterUser(params: RegisterDTO): Promise<void> {
 			phone: params.phone,
 		});
 	} catch (error) {
-		console.error(error);
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de l'inscription", 500, error as Error);
 	}
 }
 
@@ -102,8 +103,8 @@ export async function postRegisterAgent(
 		});
 		return agent;
 	} catch (error) {
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de l'inscription de l'agent", 500, error as Error);
 	}
 }
 
@@ -112,9 +113,9 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 	token: string;
 }> {
 	try {
-		let agent = await selectAgentByEmail(params.email); // Implement getAgentByEmail function
+		let agent = await selectAgentByEmail(params.email);
 		if (!agent) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Agent not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -122,7 +123,7 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 			agent.password
 		);
 		if (!isMatch) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
 		const token = jwt.sign({ agentID: agent.agentId }, ENV.JWT_SECRET, {
@@ -134,8 +135,8 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 			token: token,
 		};
 	} catch (error) {
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la connexion de l'agent", 500, error as Error);
 	}
 }
 
@@ -168,8 +169,8 @@ export async function postRegisterShipper(
 		});
 		return shipper;
 	} catch (error) {
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de l'inscription du livreur", 500, error as Error);
 	}
 }
 
@@ -180,7 +181,7 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 	try {
 		let shipper = await selectShipperByEmail(params.email);
 		if (!shipper) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Shipper not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -188,7 +189,7 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 			shipper.password
 		);
 		if (!isMatch) {
-			throw new Error("E-mail/mot de passe incorrect");
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
 		const token = jwt.sign(
@@ -204,7 +205,7 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 			token: token,
 		};
 	} catch (error) {
-		const err = error as Error;
-		throw new Error(err.message);
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la connexion du livreur", 500, error as Error);
 	}
 }
