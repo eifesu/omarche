@@ -6,17 +6,21 @@ import OrderItem from './OrderItem'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { useDispatch } from 'react-redux'
 import { showToast } from '@/redux/slices/toast.slice'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { Agent } from '@/features/auth/redux/agent.api'
 
 const OrderList = ({ marketId }: { marketId: string }) => {
     const dispatch = useDispatch()
     const { data, refetch, isFetching } = useGetOrdersByMarketIdQuery(marketId)
     const [updateOrderStatus] = useUpdateOrderStatusMutation()
     const handleError = useErrorHandler()
+    const user = useSelector((state: RootState) => state.auth.user) as Agent
 
 
     const handleConfirm = async (orderId: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'PROCESSING' }).unwrap()
+            await updateOrderStatus({ orderId, status: 'PROCESSING', agentId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande confirmée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
@@ -26,7 +30,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
 
     const handleCancel = async (orderId: string, reason?: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'CANCELED', cancellationReason: reason }).unwrap()
+            await updateOrderStatus({ orderId, status: 'CANCELED', cancellationReason: reason, agentId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande annulée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
@@ -36,7 +40,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
 
     const handleFinish = async (orderId: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'PROCESSED' }).unwrap()
+            await updateOrderStatus({ orderId, status: 'PROCESSED', agentId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande collectée avec succès.", type: "success" }))
             refetch()
         } catch (error) {

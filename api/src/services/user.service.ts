@@ -63,9 +63,6 @@ export async function deleteUser(userId: string): Promise<void> {
 export async function getOrdersByUserId(userId: string): Promise<Order[]> {
 	try {
 		const orders = await selectOrdersByUserId(userId);
-		if (!orders || orders.length === 0) {
-			throw new AppError("Aucune commande trouvée pour cet utilisateur", 404, new Error(`No orders found for user ID ${userId}`));
-		}
 		return orders;
 	} catch (error) {
 		if (error instanceof AppError) throw error;

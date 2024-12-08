@@ -1,5 +1,5 @@
 import { HeaderContainer, HeaderSubtitle, HeaderTitle } from "../../../components/Header";
-import { useGetAgentByIdQuery } from "@/redux/api/agent";
+import { useGetAgentByIdQuery, useGetAgentOrdersQuery } from "@/redux/api/agent";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { TableCell, TableContainer, TableHeader, TableRow } from "@/components/Table";
@@ -9,13 +9,14 @@ import AgentEditDialog from "../components/AgentEditDialog";
 const AgentScreen = (): JSX.Element => {
     const { agentId } = useParams();
     const { data: agent, isLoading: agentLoading, error: agentError } = useGetAgentByIdQuery(agentId!);
+    const { data: orders, isLoading: ordersLoading, error: ordersError } = useGetAgentOrdersQuery(agentId!);
     const [searchTerm, setSearchTerm] = useState("");
 
-    if (agentLoading) {
+    if (agentLoading || ordersLoading) {
         return <div>Loading...</div>;
     }
 
-    if (agentError || !agent) {
+    if (agentError || !agent || ordersError) {
         return <div>Error loading agent</div>;
     }
 
@@ -61,7 +62,7 @@ const AgentScreen = (): JSX.Element => {
                     )}
                 </div>
 
-                {agent.orders && agent.orders.length > 0 && (
+                {orders && orders.length > 0 && (
                     <div className="flex flex-col gap-2 mt-8">
                         <h3 className="text-lg font-medium">Commandes</h3>
                         <Input
@@ -80,7 +81,7 @@ const AgentScreen = (): JSX.Element => {
                                 </TableRow>
                             </TableHeader>
                             <tbody>
-                                {agent.orders
+                                {orders
                                     .filter(order => 
                                         order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         order.status.toLowerCase().includes(searchTerm.toLowerCase())

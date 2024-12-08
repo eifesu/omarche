@@ -6,6 +6,8 @@ import {
 	postRegisterAgent,
 	postLoginShipper,
 	postRegisterShipper,
+	postLoginAdmin,
+	postRegisterAdmin,
 } from "../services/auth.service";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -49,6 +51,17 @@ const ShipperRegisterDTO = z.object({
 	firstName: z.string(),
 	lastName: z.string(),
 	phone: z.string(),
+	marketId: z.string().uuid(),
+});
+
+const AdminLoginDTO = z.object({
+	email: z.string(),
+	password: z.string(),
+});
+
+const AdminRegisterDTO = z.object({
+	email: z.string(),
+	password: z.string(),
 	marketId: z.string().uuid(),
 });
 
@@ -133,5 +146,17 @@ authHandler.post(
 		return c.json("Enregistrement réussi");
 	}
 );
+
+authHandler.post("/admin/login", zValidator("json", AdminLoginDTO), async (c) => {
+	const data = await c.req.json();
+	const response = await postLoginAdmin(data);
+	return c.json(response);
+});
+
+authHandler.post("/admin/register", zValidator("json", AdminRegisterDTO), async (c) => {
+	const data = await c.req.json();
+	const response = await postRegisterAdmin(data);
+	return c.json(response);
+});
 
 export default authHandler;

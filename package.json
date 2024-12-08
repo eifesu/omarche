@@ -1,0 +1,13 @@
+{
+  "name": "omarche",
+  "private": true,
+  "workspaces": [
+    "api",
+    "mobile",
+    "dashboard",
+    "shared"
+  ],
+  "scripts": {
+    "build:shared": "cd shared && npm run build"
+  }
+}

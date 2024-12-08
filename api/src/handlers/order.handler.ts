@@ -39,13 +39,28 @@ const InsertOrderProductDTO = z.object({
 });
 
 const UpdateOrderStatusDTO = z.object({
+	type: z.enum(["agent", "shipper", "admin"]),
+	userId: z.string().uuid(),
 	status: StatusDTO,
-	cancellationReason: z.string().optional(), // <-- Added field
+	cancellationReason: z.string().optional()
 });
 
 const PostOrderDTO = z.object({
 	order: InsertOrderDTO,
 	orderProducts: z.array(InsertOrderProductDTO),
+});
+
+const UpdateOrderDTO = z.object({
+	locationX: z.number().optional(),
+	locationY: z.number().optional(),
+	agentId: z.string().uuid().optional(),
+	shipperId: z.string().uuid().optional(),
+	address: z.string().optional(),
+	deliveryTime: z.string().optional(),
+	paymentMethod: z.string().optional(),
+	promoCodeId: z.string().uuid().optional(),
+	status: StatusDTO.optional(),
+	cancellationReason: z.string().optional(),
 });
 
 const orderHandler = new Hono();
@@ -97,7 +112,7 @@ orderHandler.get("/:id", async (c) => {
 });
 
 // Update (PUT) an entire order
-orderHandler.put("/:id", zValidator("json", InsertOrderDTO), async (c) => {
+orderHandler.put("/:id", zValidator("json", UpdateOrderDTO), async (c) => {
 	const { id } = c.req.param();
 	const body = c.req.valid("json");
 	try {
@@ -121,9 +136,11 @@ orderHandler.put(
 	async (c) => {
 		const { id } = c.req.param();
 		const body = c.req.valid("json");
-		const { status, cancellationReason } = body;
+		const { type, userId, status, cancellationReason } = body;
 		try {
 			const result = await putOrderStatusById({
+				type,
+				userId,
 				orderId: id,
 				status,
 				cancellationReason,

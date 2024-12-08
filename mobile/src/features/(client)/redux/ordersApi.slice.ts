@@ -72,7 +72,8 @@ export type OrderStatusType =
 	| "CANCELED";
 
 interface UpdateOrderStatusInput {
-	agentId?: string;
+	type: "agent" | "shipper" | "admin";
+	userId: string;
 	orderId: string;
 	status: Order["status"];
 	cancellationReason?: string;
@@ -105,10 +106,10 @@ export const ordersApi = createApi({
 			Partial<Order>,
 			UpdateOrderStatusInput
 		>({
-			query: ({ orderId, agentId, status, cancellationReason }) => ({
+			query: ({ type, userId, orderId, status, cancellationReason }) => ({
 				url: `/orders/${orderId}/status`,
 				method: "PUT",
-				body: { agentId, status, cancellationReason }, // <-- Updated body
+				body: { type, userId, status, cancellationReason },
 			}),
 			invalidatesTags: (_result, _error, { orderId }) => [
 				{ type: "Order", id: orderId },

@@ -89,9 +89,6 @@ export async function deleteGiftCard(giftCardId: string) {
 export async function getGiftCardByUserId(userId: string) {
 	try {
 		const giftCard = await selectGiftCardByUserId(userId);
-		if (!giftCard) {
-			throw new AppError("Carte cadeau introuvable pour cet utilisateur", 404, new Error(`GiftCard not found for user ${userId}`));
-		}
 		return giftCard;
 	} catch (error) {
 		if (error instanceof AppError) throw error;

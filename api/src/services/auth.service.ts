@@ -1,14 +1,16 @@
 import { ENV } from "@/config/constants";
 import {
+	insertAdmin,
 	insertAgent,
 	insertShipper,
 	insertUser,
+	selectAdminByEmail,
 	selectAgentByEmail,
 	selectShipperByEmail,
 	selectUserByEmail,
 } from "../repositories/auth.repository";
 import jwt from "jsonwebtoken";
-import { Agent, Shipper, User } from "@prisma/client";
+import { Admin, Agent, Shipper, User } from "@prisma/client";
 import AppError from "@/utils/AppError";
 
 export type LoginDTO = {
@@ -35,7 +37,7 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 		}
 
 		const token = jwt.sign({ userID: user.userId }, ENV.JWT_SECRET, {
-			expiresIn: "1h",
+			expiresIn: ENV.JWT_EXPIRES_IN,
 		});
 
 		return {
@@ -127,7 +129,7 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 		}
 
 		const token = jwt.sign({ agentID: agent.agentId }, ENV.JWT_SECRET, {
-			expiresIn: "1h",
+			expiresIn: ENV.JWT_EXPIRES_IN,
 		});
 
 		return {
@@ -196,7 +198,7 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 			{ shipperID: shipper.shipperId },
 			ENV.JWT_SECRET,
 			{
-				expiresIn: "1h",
+				expiresIn: ENV.JWT_EXPIRES_IN,
 			}
 		);
 
@@ -207,5 +209,62 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 	} catch (error) {
 		if (error instanceof AppError) throw error;
 		throw new AppError("Erreur lors de la connexion du livreur", 500, error as Error);
+	}
+}
+
+export type AdminLoginDTO = {
+	email: string;
+	password: string;
+};
+
+export type AdminRegisterDTO = {
+	email: string;
+	password: string;
+	marketId: string;
+};
+
+export async function postLoginAdmin(params: AdminLoginDTO): Promise<{
+	data: Admin;
+	token: string;
+}> {
+	try {
+		const admin = await selectAdminByEmail(params.email);
+		if (!admin) {
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Admin not found"));
+		}
+
+		const isMatch = await Bun.password.verify(
+			params.password,
+			admin.password
+		);
+		if (!isMatch) {
+			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
+		}
+
+		const token = jwt.sign({ adminId: admin.adminId }, ENV.JWT_SECRET, {
+			expiresIn: ENV.JWT_EXPIRES_IN,
+		});
+
+		return {
+			data: { ...admin, password: "" },
+			token: token,
+		};
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de la connexion", 500, error as Error);
+	}
+}
+
+export async function postRegisterAdmin(params: AdminRegisterDTO): Promise<Admin> {
+	try {
+		const hashedPassword = await Bun.password.hash(params.password);
+		const admin = await insertAdmin({
+			...params,
+			password: hashedPassword,
+		});
+		return admin;
+	} catch (error) {
+		if (error instanceof AppError) throw error;
+		throw new AppError("Erreur lors de l'enregistrement", 500, error as Error);
 	}
 }

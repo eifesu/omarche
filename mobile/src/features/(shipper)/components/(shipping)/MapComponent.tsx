@@ -1,103 +1,73 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, useWindowDimensions, Animated } from 'react-native';
-import MapView, { PROVIDER_DEFAULT, Region } from 'react-native-maps';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import MapView, { LatLng, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
+import { OrderDetails } from '../../../(client)/redux/ordersApi.slice';
+import MapMarkers from './MapMarkers';
+import { getDestination } from '../../helpers/destination';
 import * as Location from 'expo-location';
-import { ButtonContainer } from '@/components/Button';
-import { Iconify } from 'react-native-iconify';
-import { Theme } from '@/config/constants';
+import MapButtons from './MapButtons';
 
-interface LocationCoords {
-    latitude: number;
-    longitude: number;
+interface MapComponentProps {
+    data? : OrderDetails
 }
 
-const INITIAL_REGION: Region = {
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-};
 
-const Cursor = () => {
-    const { width, height } = useWindowDimensions();
-    const rotation = useRef(new Animated.Value(0)).current;
+const MapComponent: React.FC<MapComponentProps> = ({
+    data
+}) => {
+    const mapRef = React.useRef<MapView>(null);
+    const [destination, setDestination] = React.useState<LatLng>();
+    const [location, setLocation] = React.useState<Location.LocationObject | null>(null);
 
-    useEffect(() => {
-        const isPortrait = height > width;
-        Animated.timing(rotation, {
-            toValue: isPortrait ? 0 : 1,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-    }, [width, height]);
-
-    const rotateInterpolate = rotation.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '90deg'],
-    });
-
-    return (
-        <Animated.View style={[styles.cursor, { transform: [{ rotate: rotateInterpolate }] }]}>
-            <Iconify icon="fluent:cursor-16-filled" size={24} color={Theme.colors.orange} />
-        </Animated.View>
-    );
-};
-
-
-export default function MapComponent() {
-    const mapRef = useRef<MapView>(null);
-    const [location, setLocation] = useState<LocationCoords | null>(null);
-
-    useEffect(() => {
-        getCurrentLocation();
-    }, []);
-
-    const getCurrentLocation = async () => {
-        try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return;
-            }
-
-            const { coords } = await Location.getCurrentPositionAsync({});
-            setLocation({
-                latitude: coords.latitude,
-                longitude: coords.longitude,
+    function requestUserLocationPermission() {
+        Location.requestForegroundPermissionsAsync()
+            .then((result) => {
+                if (result.granted) {
+                    getUserLocation();
+                } else {
+                    console.log('Location permission not granted');
+                }
+            })
+            .catch((error) => {
+                console.error('Error requesting location permission:', error);
             });
-        } catch (error) {
-            console.error('Error getting current location:', error);
-        }
-    };
+    }
 
-    const scrollToCurrentLocation = () => {
-        if (location && mapRef.current) {
-            mapRef.current.animateToRegion({
-                ...location,
-                latitudeDelta: INITIAL_REGION.latitudeDelta,
-                longitudeDelta: INITIAL_REGION.longitudeDelta,
-            }, 1000);
+    function getUserLocation() {
+        Location.getCurrentPositionAsync({})
+            .then((location) => {
+                setLocation(location);
+            })
+            .catch((error) => {
+                console.error('Error getting user location:', error);
+            });
+    }
+
+    useEffect(() => {
+        if(data) {
+            setDestination(getDestination(data));
         }
-    };
+    }, [data]);
 
     return (
         <View style={styles.container}>
             <MapView
                 ref={mapRef}
                 style={styles.map}
-                provider={PROVIDER_DEFAULT}
-                initialRegion={INITIAL_REGION}
-            />
-            <ButtonContainer
-                onPress={scrollToCurrentLocation}
-                style={styles.locationButton}
+                provider={"google"}
+                showsUserLocation={true}
+                showsCompass={true}
+                showsScale={true}
             >
-                <Iconify icon="mdi:crosshairs-gps" size={32} color={Theme.colors.black} />
-            </ButtonContainer>
-            <Cursor />
+                {destination && <>
+                    <MapMarkers destination={destination} />
+                </>}
+            </MapView>
+            <MapButtons mapRef={mapRef} destination={destination} />
+
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -107,27 +77,6 @@ const styles = StyleSheet.create({
     map: {
         flex: 1,
     },
-    locationButton: {
-        position: 'absolute',
-        bottom: 16,
-        right: 16,
-        backgroundColor: 'white',
-        borderRadius: 999,
-        height: 56,
-        width: 56,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cursor: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: [{ translateX: -16 }, { translateY: -16 }],
-        backgroundColor: 'white',
-        borderRadius: 999,
-        height: 40,
-        width: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
 });
+
+export default React.memo(MapComponent);

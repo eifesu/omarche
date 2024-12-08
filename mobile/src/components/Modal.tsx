@@ -36,6 +36,13 @@ export default function Modal() {
                 toValue: 0,
                 useNativeDriver: true
             }).start()
+
+            // Auto-hide after 3 seconds
+            const timer = setTimeout(() => {
+                dispatch(hideToast())
+            }, 3000)
+
+            return () => clearTimeout(timer)
         } else {
             Animated.spring(positionAnim, {
                 toValue: 100,
@@ -75,7 +82,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
         justifyContent: 'flex-start',
-        gap: 12
+        gap: 12,
+        zIndex: 1000,
     },
     modalTitle: {
         fontFamily: Theme.font.bold,

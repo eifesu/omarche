@@ -13,6 +13,7 @@ import {
 	selectAllOrders,
 	deleteOrderById,
 	selectOrdersByUserId,
+	UpdateOrderDTO,
 } from "@/repositories/order.repository";
 import { selectProductById } from "@/repositories/product.repository";
 import { selectSellerById } from "@/repositories/seller.repository";
@@ -96,7 +97,7 @@ export async function getOrderById(orderId: string): Promise<OrderDTO> {
 	}
 }
 
-export async function putOrderById(orderId: string, order: InsertOrderDTO) {
+export async function putOrderById(orderId: string, order: UpdateOrderDTO) {
 	try {
 		const existingOrder = await selectOrderById(orderId);
 		if (!existingOrder) {
@@ -126,23 +127,26 @@ export async function getOrdersByMarketId(marketId: string): Promise<OrderDTO[]>
 
 export async function putOrderStatusById(input: UpdateOrderStatusInput) {
 	try {
-		const { orderId, status, cancellationReason } = input;
+		const { type, userId, orderId, status, cancellationReason } = input;
 		const order = await selectOrderById(orderId);
 		if (!order) {
 			throw new AppError("Commande introuvable", 404, new Error(`Order with ID ${orderId} not found`));
 		}
 
-		const updatedOrder = await updateOrderStatusById(
+		const updatedOrder = await updateOrderStatusById({
+			type,
+			userId,
 			orderId,
 			status,
-			cancellationReason
-		);
+			cancellationReason,
+		});
 		return updatedOrder;
 	} catch (error) {
 		if (error instanceof AppError) throw error;
 		throw new AppError("Erreur lors de la mise à jour du statut de la commande", 500, error as Error);
 	}
 }
+
 
 export async function getOrderDetailsById(orderId: string): Promise<
 	OrderDTO & {

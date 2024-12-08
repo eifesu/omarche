@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Seller, useUpdateSellerMutation } from "@/redux/api/seller"
+import { Seller, useUpdateSellerMutation, useDeleteSellerMutation } from "@/redux/api/seller"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,7 @@ import { FaEllipsisH, FaImage } from "react-icons/fa"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { Trash2 } from "lucide-react"
 
 interface SellerEditDialogProps {
     seller: Seller
@@ -26,6 +27,7 @@ interface SellerEditDialogProps {
 
 export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
     const [updateSeller] = useUpdateSellerMutation()
+    const [deleteSeller] = useDeleteSellerMutation()
     const [isOpen, setIsOpen] = useState(false)
     const [formData, setFormData] = useState({
         firstName: seller.firstName,
@@ -76,10 +78,23 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
         }
     }
 
+    const handleDelete = async () => {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce vendeur ? Cette action est irréversible.")) {
+            try {
+                await deleteSeller(seller.sellerId).unwrap()
+                toast.success("Vendeur supprimé avec succès")
+                setIsOpen(false)
+            } catch (error) {
+                toast.error("Erreur lors de la suppression du vendeur")
+                console.error("Failed to delete seller:", error)
+            }
+        }
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="default">
                     Modifier
                     <FaEllipsisH className="w-4 h-4" />
                 </Button>
@@ -136,8 +151,7 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
                         </Label>
                         <Select
                             value={formData.gender}
-                            onValueChange={(value: "M" | "F") => setFormData(prev => ({ ...prev, gender: value }))}
-                        >
+                            onValueChange={(value: "M" | "F") => setFormData(prev => ({ ...prev, gender: value }))}>
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Sélectionnez le genre" />
                             </SelectTrigger>
@@ -168,16 +182,28 @@ export default function SellerEditDialog({ seller }: SellerEditDialogProps) {
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-start">
-                    <Button type="button" variant="default" onClick={handleSubmit}>
-                        Enregistrer
-                    </Button>
-                    <DialogClose asChild>
-                        <Button type="button" variant="outline">
-                            Annuler
+                    <div className="flex justify-between w-full">
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            onClick={handleDelete}
+                        >
+                            <Trash2 className="w-4 h-4" />
                         </Button>
-                    </DialogClose>
+                        <div className="flex gap-2">
+                            <Button type="button" variant="default" onClick={handleSubmit}>
+                                Enregistrer
+                            </Button>
+                            <DialogClose asChild>
+                                <Button type="button" variant="outline">
+                                    Annuler
+                                </Button>
+                            </DialogClose>
+                        </div>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     )
-} 
+}

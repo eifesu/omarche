@@ -24,8 +24,8 @@ export default function MarketCreateDialog() {
     const [isOpen, setIsOpen] = useState(false)
     const [formData, setFormData] = useState({
         name: "",
-        latitude: 0,
-        longitude: 0,
+        latitude: "0",
+        longitude: "0",
         pictureUrl: undefined as string | undefined
     })
     const [errors, setErrors] = useState<{
@@ -41,11 +41,14 @@ export default function MarketCreateDialog() {
             newErrors.name = "Le nom est requis"
         }
 
-        if (isNaN(formData.latitude) || formData.latitude < -90 || formData.latitude > 90) {
+        const lat = parseFloat(formData.latitude)
+        const lng = parseFloat(formData.longitude)
+
+        if (isNaN(lat) || lat < -90 || lat > 90) {
             newErrors.latitude = "La latitude doit être entre -90 et 90"
         }
 
-        if (isNaN(formData.longitude) || formData.longitude < -180 || formData.longitude > 180) {
+        if (isNaN(lng) || lng < -180 || lng > 180) {
             newErrors.longitude = "La longitude doit être entre -180 et 180"
         }
 
@@ -83,13 +86,17 @@ export default function MarketCreateDialog() {
         if (!validateForm()) return
 
         try {
-            await createMarket(formData).unwrap()
+            await createMarket({
+                ...formData,
+                latitude: parseFloat(formData.latitude),
+                longitude: parseFloat(formData.longitude)
+            }).unwrap()
             toast.success("Marché créé avec succès")
             setIsOpen(false)
             setFormData({
                 name: "",
-                latitude: 0,
-                longitude: 0,
+                latitude: "0",
+                longitude: "0",
                 pictureUrl: undefined
             })
         } catch (error) {
@@ -140,9 +147,16 @@ export default function MarketCreateDialog() {
                         </Label>
                         <Input
                             id="latitude"
-                            type="number"
+                            type="text"
+                            inputMode="decimal"
+                            pattern="-?[0-9]*[.,]?[0-9]*"
                             value={formData.latitude}
-                            onChange={(e) => setFormData(prev => ({ ...prev, latitude: Number(e.target.value) }))}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(',', '.')
+                                if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                                    setFormData(prev => ({ ...prev, latitude: value }))
+                                }
+                            }}
                             className={`col-span-3 ${errors.latitude ? 'border-red-500' : ''}`}
                         />
                         {errors.latitude && <p className="text-red-500">{errors.latitude}</p>}
@@ -153,9 +167,16 @@ export default function MarketCreateDialog() {
                         </Label>
                         <Input
                             id="longitude"
-                            type="number"
+                            type="text"
+                            inputMode="decimal"
+                            pattern="-?[0-9]*[.,]?[0-9]*"
                             value={formData.longitude}
-                            onChange={(e) => setFormData(prev => ({ ...prev, longitude: Number(e.target.value) }))}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(',', '.')
+                                if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                                    setFormData(prev => ({ ...prev, longitude: value }))
+                                }
+                            }}
                             className={`col-span-3 ${errors.longitude ? 'border-red-500' : ''}`}
                         />
                         {errors.longitude && <p className="text-red-500">{errors.longitude}</p>}

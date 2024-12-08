@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Order, UpdateOrderStatusDTO, useUpdateOrderStatusMutation } from "@/redux/api/order"
+import { Order, UpdateOrderDTO, UpdateOrderStatusDTO, useUpdateOrderMutation, useUpdateOrderStatusMutation } from "@/redux/api/order"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -23,9 +23,12 @@ interface OrderEditDialogProps {
 }
 
 export default function OrderEditDialog({ order }: OrderEditDialogProps) {
-    const [updateOrderStatus] = useUpdateOrderStatusMutation()
+    const [updateOrderStatus] = useUpdateOrderMutation()
     const [isOpen, setIsOpen] = useState(false)
-    const [formData, setFormData] = useState<UpdateOrderStatusDTO>({
+    const [formData, setFormData] = useState<UpdateOrderDTO>({
+        address: order.address,
+        deliveryTime: order.deliveryTime,
+        paymentMethod: order.paymentMethod,
         status: order.status,
         cancellationReason: order.cancellationReason ?? ""
     })

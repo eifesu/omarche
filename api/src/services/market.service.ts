@@ -23,7 +23,6 @@ export async function getSellersFromMarketById(marketId: string) {
 	try {
 		const sellers = await selectSellersFromMarketById(marketId);
 		if (!sellers || sellers.length === 0) {
-			throw new AppError("Aucun vendeur trouvé pour ce marché", 404, new Error(`No sellers found for market ${marketId}`));
 		}
 		return sellers;
 	} catch (error) {
@@ -47,7 +46,6 @@ export async function getOrdersDetailsByMarketId(
 	try {
 		const orders = await selectOrdersByMarketId(marketId);
 		if (!orders || orders.length === 0) {
-			throw new AppError("Aucune commande trouvée pour ce marché", 404, new Error(`No orders found for market ${marketId}`));
 		}
 		const ordersDTO = await Promise.all(
 			orders.map((order) => getOrderById(order.orderId))

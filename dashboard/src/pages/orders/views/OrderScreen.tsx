@@ -43,7 +43,7 @@ const OrderScreen = (): JSX.Element => {
                         <h3 className="text-lg font-medium">Informations générales</h3>
                         <div className="grid grid-cols-2 gap-2">
                             <span className="text-sm text-gray-500">Status:</span>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
+                            <span className={`w-fit px-2 py-1 rounded-full text-xs ${
                                 order.order.status === "IDLE" ? 'bg-gray-100 text-gray-800' :
                                 order.order.status === "PROCESSING" || order.order.status === "PROCESSED" ? 'bg-blue-100 text-blue-800' :
                                 order.order.status === "COLLECTING" ? 'bg-yellow-100 text-yellow-800' :
@@ -54,7 +54,7 @@ const OrderScreen = (): JSX.Element => {
                                 {order.order.status}
                             </span>
                             <span className="text-sm text-gray-500">Client ID:</span>
-                            <span className="text-sm">{order.order.userId.slice(0, 8)}</span>
+                            <span className="text-sm">{order.order.userId}</span>
                             <span className="text-sm text-gray-500">Agent ID:</span>
                             <span className="text-sm">{order.order.agentId ? order.order.agentId : 'N/A'}</span>
                             <span className="text-sm text-gray-500">Livreur ID:</span>

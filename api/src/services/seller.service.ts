@@ -12,9 +12,6 @@ import AppError from "@/utils/AppError";
 export async function getProductsBySellerId(sellerId: string) {
 	try {
 		const products = await selectProductsBySellerId(sellerId);
-		if (!products || products.length === 0) {
-			throw new AppError("Aucun produit trouvé pour ce vendeur", 404, new Error(`No products found for seller ID ${sellerId}`));
-		}
 		return products;
 	} catch (error) {
 		if (error instanceof AppError) throw error;

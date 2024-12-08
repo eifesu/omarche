@@ -17,6 +17,8 @@ import AgentsScreen from './pages/agents/views/AgentsScreen.tsx'
 import ShippersScreen from './pages/shippers/views/ShippersScreen.tsx'
 import AgentScreen from './pages/agents/views/AgentScreen.tsx'
 import ShipperScreen from './pages/shippers/views/ShipperScreen.tsx'
+import LoginPage from './pages/auth/login'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 if (import.meta.env.DEV) {
     console.log('API URL:', API_URL)
@@ -24,8 +26,12 @@ if (import.meta.env.DEV) {
 
 const router = createBrowserRouter([
     {
+        path: '/login',
+        element: <LoginPage />,
+    },
+    {
         path: '/',
-        element: <App />,
+        element: <ProtectedRoute><App /></ProtectedRoute>,
         children: [
             {
                 path: '/',

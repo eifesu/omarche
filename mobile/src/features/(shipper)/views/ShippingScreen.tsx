@@ -7,9 +7,11 @@ import MenuComponent from '../components/(shipping)/MenuComponent';
 import { Shipper } from '@/features/auth/redux/shipper.api';
 import { setCurrentOrderId, WebSocketMessage } from '../redux/delivery.slice';
 import { ENV } from '@/config/constants';
+import { useGetOrderDetailsByIdQuery } from '@/features/(client)/redux/ordersApi.slice';
 
 export default function ShippingScreen() {
     const currentOrderId = useSelector((state: RootState) => state.delivery.currentOrderId);
+    const {data} = useGetOrderDetailsByIdQuery(currentOrderId as string, {skip: !currentOrderId, pollingInterval: 5000});
     const dispatch = useDispatch();
 
     const auth = useSelector((state: RootState) => state.auth);
@@ -19,10 +21,8 @@ export default function ShippingScreen() {
 
     useEffect(() => {
         let reconnectInterval: number;
-
         const connectWebSocket = () => {
             const newWs = new WebSocket(`ws://${ENV.API_URL.replace('http://', '')}/ws/${user.shipperId}`);
-
             newWs.onopen = () => {
                 setIsConnected(true);
                 clearInterval(reconnectInterval);
@@ -55,8 +55,8 @@ export default function ShippingScreen() {
 
     return (
         <View style={styles.container}>
-            <MapComponent />
-            <MenuComponent orderId={currentOrderId} />
+            <MapComponent data= {data} />
+            <MenuComponent data={data} />
             <Text style={styles.wsStatus}>
                 Status: {isConnected ? 'Connected' : 'Disconnected'}
             </Text>

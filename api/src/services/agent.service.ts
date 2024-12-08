@@ -4,7 +4,7 @@ import {
 	updateAgentById,
 	deleteAgentById,
 } from "@/repositories/agent.repository";
-import { Agent } from "@prisma/client";
+import { Agent} from "@shared/types/api/agent.types";
 import AppError from "@/utils/AppError";
 
 export async function getAllAgents(): Promise<Agent[]> {

@@ -5,7 +5,7 @@ import { Iconify } from 'react-native-iconify';
 import { Theme } from '@/config/constants';
 import OrdersScreen from '../views/OrdersScreen';
 import SellerStackRouter from './SellerStackRouter';
-import ProfileScreen from '@/features/(client)/views/ProfileScreen';
+import ProfileScreen from '@/features/(agent)/views/ProfileScreen';
 
 export type AgentTabParamList = {
     Orders: undefined;

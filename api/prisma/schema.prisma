@@ -16,6 +16,7 @@ model Market {
     isActive   Boolean?  @default(true)
     sellers    Seller[]
     agents     Agent[]
+    admins     Admin[]
     shippers   Shipper[]
     createdAt  DateTime? @default(now()) @db.Timestamp(6)
     updatedAt  DateTime  @updatedAt
@@ -106,6 +107,17 @@ model User {
     giftCard GiftCard?
 }
 
+model Admin {
+    adminId   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    marketId String?   @db.Uuid 
+    email     String   @unique @db.VarChar(50)
+    password  String   @db.VarChar(255)
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+
+    @@unique([email, marketId], map: "uc_admin")
+    market Market? @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
+}
+
 model Agent {
     agentId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl String?  @db.VarChar(255)
@@ -192,6 +204,7 @@ enum product_unit {
     KG
     DEMI_KG
     TAS
+    LITRE
     SAC
     BOITE
     MORCEAUX

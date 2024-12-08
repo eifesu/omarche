@@ -29,8 +29,8 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [formData, setFormData] = useState({
         name: market.name,
-        latitude: market.latitude,
-        longitude: market.longitude,
+        latitude: market.latitude.toString(),
+        longitude: market.longitude.toString(),
         isActive: market.isActive,
         pictureUrl: market.pictureUrl
     })
@@ -47,11 +47,14 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
             newErrors.name = "Le nom est requis"
         }
 
-        if (isNaN(formData.latitude) || formData.latitude < -90 || formData.latitude > 90) {
+        const lat = parseFloat(formData.latitude)
+        const lng = parseFloat(formData.longitude)
+
+        if (isNaN(lat) || lat < -90 || lat > 90) {
             newErrors.latitude = "La latitude doit être entre -90 et 90"
         }
 
-        if (isNaN(formData.longitude) || formData.longitude < -180 || formData.longitude > 180) {
+        if (isNaN(lng) || lng < -180 || lng > 180) {
             newErrors.longitude = "La longitude doit être entre -180 et 180"
         }
 
@@ -91,7 +94,11 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
         try {
             await updateMarket({
                 marketId: market.marketId,
-                updateData: formData
+                updateData: {
+                    ...formData,
+                    latitude: parseFloat(formData.latitude),
+                    longitude: parseFloat(formData.longitude)
+                }
             }).unwrap()
 
             toast.success("Marché mis à jour avec succès")
@@ -140,9 +147,16 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
                         <Label htmlFor="latitude">Latitude</Label>
                         <Input
                             id="latitude"
-                            type="number"
+                            type="text"
+                            inputMode="decimal"
+                            pattern="-?[0-9]*[.,]?[0-9]*"
                             value={formData.latitude}
-                            onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) }))}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(',', '.')
+                                if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                                    setFormData(prev => ({ ...prev, latitude: value }))
+                                }
+                            }}
                             className={errors.latitude ? "border-red-500" : ""}
                         />
                         {errors.latitude && <span className="text-sm text-red-500">{errors.latitude}</span>}
@@ -151,9 +165,16 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
                         <Label htmlFor="longitude">Longitude</Label>
                         <Input
                             id="longitude"
-                            type="number"
+                            type="text"
+                            inputMode="decimal"
+                            pattern="-?[0-9]*[.,]?[0-9]*"
                             value={formData.longitude}
-                            onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) }))}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(',', '.')
+                                if (value === '' || value === '-' || /^-?\d*\.?\d*$/.test(value)) {
+                                    setFormData(prev => ({ ...prev, longitude: value }))
+                                }
+                            }}
                             className={errors.longitude ? "border-red-500" : ""}
                         />
                         {errors.longitude && <span className="text-sm text-red-500">{errors.longitude}</span>}

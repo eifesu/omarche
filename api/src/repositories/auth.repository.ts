@@ -1,4 +1,4 @@
-import { Agent, Shipper, User } from "@prisma/client";
+import { Agent, Admin, Shipper, User } from "@prisma/client";
 import prisma from "@prisma/index";
 
 export async function selectUserByEmail(email: string): Promise<User | null> {
@@ -28,6 +28,7 @@ export async function insertUser(params: {
 		},
 	});
 }
+
 export async function selectAgentByEmail(email: string): Promise<Agent | null> {
 	return await prisma.agent.findFirst({
 		where: {
@@ -35,6 +36,7 @@ export async function selectAgentByEmail(email: string): Promise<Agent | null> {
 		},
 	});
 }
+
 export async function insertAgent(params: {
 	email: string;
 	password: string;
@@ -50,6 +52,28 @@ export async function insertAgent(params: {
 			firstName: params.firstName,
 			lastName: params.lastName,
 			phone: params.phone,
+			marketId: params.marketId,
+		},
+	});
+}
+
+export async function selectAdminByEmail(email: string): Promise<Admin | null> {
+	return await prisma.admin.findFirst({
+		where: {
+			email,
+		},
+	});
+}
+
+export async function insertAdmin(params: {
+	email: string;
+	password: string;
+	marketId: string;
+}): Promise<Admin> {
+	return await prisma.admin.create({
+		data: {
+			email: params.email,
+			password: params.password,
 			marketId: params.marketId,
 		},
 	});

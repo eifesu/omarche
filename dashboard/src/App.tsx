@@ -3,6 +3,7 @@ import './App.css'
 import NavigationBar, { NavigationButton, NavigationLink, NavigationLinkContainer, NavigationLogo } from './components/Navigation'
 import { FaBoxOpen, FaCreditCard, FaDoorOpen, FaListCheck, FaReceipt, FaShop, FaTags, FaTruck } from "react-icons/fa6";
 import { Toaster } from 'sonner';
+import Footer from './components/Footer';
 
 function App() {
     return (
@@ -42,6 +43,7 @@ function App() {
             <div className="flex flex-col flex-1 justify-center items-center w-full max-w-7xl">
                 <Outlet />
             </div>
+            <Footer />
         </main>
     )
 }

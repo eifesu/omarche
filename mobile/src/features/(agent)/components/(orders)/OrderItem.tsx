@@ -30,6 +30,7 @@ const OrderItem = ({ data, onConfirm, onFinish }: OrderItemProps) => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [cancellationReason, setCancellationReason] = useState('');
+    const user = useSelector((state: RootState) => state.auth.user) as Agent
     const [updateOrderStatus] = useUpdateOrderStatusMutation();
     const { data: orderProducts, isLoading: isOrderProductsLoading } = useGetOrderProductsByOrderIdQuery(data.orderId);
     const { data: product, isLoading: isProductLoading } = useFetchProductByIdQuery(orderProducts?.[0]?.productId ?? '', { skip: !orderProducts });
@@ -37,7 +38,7 @@ const OrderItem = ({ data, onConfirm, onFinish }: OrderItemProps) => {
     const { data: market, isLoading: isMarketLoading } = useFetchMarketByIdQuery(seller?.marketId ?? '', { skip: !seller?.marketId });
 
     const handleCancel = () => {
-        updateOrderStatus({ orderId: data.orderId, status: 'CANCELED', cancellationReason });
+        updateOrderStatus({ orderId: data.orderId,  status: 'CANCELED',agentId: user.agentId, cancellationReason });
         setModalVisible(false);
         setCancellationReason('');
     };
@@ -180,7 +181,7 @@ const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVis
     const [qrModalVisible, setQrModalVisible] = useState(false);
     const auth = useSelector((state: RootState) => state.auth)
     const user = auth.user as Agent
-    const disabled = data.agentId === user.agentId
+    const disabled = data.agentId !== user.agentId
 
     if (disabled) return null
     return (

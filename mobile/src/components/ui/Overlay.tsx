@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         zIndex: 999,
+        elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
     }

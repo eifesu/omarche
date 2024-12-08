@@ -9,6 +9,7 @@
 		"seed": "bun run prisma/seed.ts"
 	},
 	"dependencies": {
+		"@shared": "file:../shared",
 		"@hono/zod-validator": "^0.2.2",
 		"@prisma/client": "^5.19.1",
 		"@types/jsonwebtoken": "^9.0.6",

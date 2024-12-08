@@ -8,11 +8,21 @@ async function seedDb() {
 		await seedAgents();
 		await seedUsers();
 		await seedShippers();
+		await seedAdmin();
 		console.log("🌱 Database seeding completed successfully");
 	} catch (error) {
 		console.log("🌱 Database seeding failed");
 		console.log(error);
 	}
+}
+async function seedAdmin()  {
+	await prisma.admin.create({
+		data: {
+			email: "admin@omarche.com",
+			password: Bun.password.hashSync("testadmin"),
+		},
+	})
+	console.log("✅ Admin seeded successfully");
 }
 
 async function seedMarkets() {
@@ -95,7 +105,7 @@ async function seedProducts() {
 			{
 				name: "Tomates",
 				amount: 1,
-				unit: "pc",
+				unit: "KG",
 				price: 500,
 				description: "Notre sélection de tomates fraîches",
 				pictureUrl: [
@@ -106,7 +116,7 @@ async function seedProducts() {
 			{
 				name: "Pommes",
 				amount: 1,
-				unit: "kg",
+				unit: "KG",
 				price: 1000,
 				description: "Notre sélection de pommes fraîches",
 				pictureUrl: [

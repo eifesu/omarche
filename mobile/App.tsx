@@ -4,6 +4,7 @@ import BaseRouter from '@/routers/BaseRouter';
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import Overlay from "@/components/ui/Overlay";
+import { Text } from "react-native";
 
 const MyTheme = {
     ...DefaultTheme

@@ -1,5 +1,5 @@
 import { HeaderContainer, HeaderSubtitle, HeaderTitle } from "../../../components/Header";
-import { useGetMarketByIdQuery, useGetSellersFromMarketQuery, useGetOrdersFromMarketQuery } from "@/redux/api/market";
+import { useGetMarketByIdQuery, useGetSellersFromMarketQuery, useGetOrdersFromMarketQuery, useDeleteMarketMutation } from "@/redux/api/market";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import MarketEditDialog from "../components/MarketEditDialog";
@@ -9,11 +9,15 @@ import OrderCreateDialog from "../components/OrderCreateDialog";
 import OrderEditDialog from "../components/OrderEditDialog";
 import { TableCell, TableContainer, TableHeader, TableRow } from "@/components/Table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import * as Tabs from "@radix-ui/react-tabs";
 
 const MarketScreen = (): JSX.Element => {
     const { marketId } = useParams();
     const navigate = useNavigate();
+    const [deleteMarket] = useDeleteMarketMutation();
     const { data: market, isLoading: marketLoading, error: marketError } = useGetMarketByIdQuery(marketId!);
     const { data: sellers, isLoading: sellersLoading } = useGetSellersFromMarketQuery(marketId!);
     const { data: orders, isLoading: ordersLoading } = useGetOrdersFromMarketQuery(marketId!);
@@ -45,6 +49,19 @@ const MarketScreen = (): JSX.Element => {
         navigate(`/sellers/${sellerId}`);
     };
 
+    const handleDelete = async () => {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce marché ? Cette action est irréversible.")) {
+            try {
+                await deleteMarket(marketId!).unwrap();
+                toast.success("Marché supprimé avec succès");
+                navigate("/markets");
+            } catch (error) {
+                console.error("Failed to delete market:", error);
+                toast.error("Erreur lors de la suppression du marché");
+            }
+        }
+    };
+
     return (
         <div className="flex flex-col justify-start items-start w-full h-full border border-slate-100">
             <HeaderContainer>
@@ -54,6 +71,13 @@ const MarketScreen = (): JSX.Element => {
                 </div>
                 <div className="flex flex-row gap-4 justify-center items-center">
                     <MarketEditDialog market={market} />
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={handleDelete}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
                 </div>
             </HeaderContainer>
 
