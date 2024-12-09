@@ -22,7 +22,7 @@ export default function ShippingScreen() {
     useEffect(() => {
         let reconnectInterval: number;
         const connectWebSocket = () => {
-            const newWs = new WebSocket(`ws://${ENV.API_URL.replace('http://', '')}/ws/${user.shipperId}`);
+            const newWs = new WebSocket(`ws://${ENV.API_URL.replace('https://', '')}/ws/${user.shipperId}`);
             newWs.onopen = () => {
                 setIsConnected(true);
                 clearInterval(reconnectInterval);

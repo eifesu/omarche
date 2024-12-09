@@ -38,7 +38,7 @@ const OrderItem = ({ data, onConfirm, onFinish }: OrderItemProps) => {
     const { data: market, isLoading: isMarketLoading } = useFetchMarketByIdQuery(seller?.marketId ?? '', { skip: !seller?.marketId });
 
     const handleCancel = () => {
-        updateOrderStatus({ orderId: data.orderId,  status: 'CANCELED',agentId: user.agentId, cancellationReason });
+        updateOrderStatus({ orderId: data.orderId,  status: 'CANCELED', type: 'shipper', userId: user.agentId, cancellationReason });
         setModalVisible(false);
         setCancellationReason('');
     };
@@ -181,7 +181,7 @@ const OrderActions = ({ data, isOrderProcessed, onConfirm, onFinish, setModalVis
     const [qrModalVisible, setQrModalVisible] = useState(false);
     const auth = useSelector((state: RootState) => state.auth)
     const user = auth.user as Agent
-    const disabled = data.agentId !== user.agentId
+    const disabled = data.status !== "IDLE" && data.agentId !== user.agentId
 
     if (disabled) return null
     return (

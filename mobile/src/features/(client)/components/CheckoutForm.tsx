@@ -40,7 +40,7 @@ export default function CheckoutForm(props: { cart: CartItemType[] }) {
     const [validatePromoCode, { isLoading: isValidatePromoCodeLoading }] = useValidatePromoCodeMutation()
     const [promoCode, setPromoCode] = useState<PromoCode | undefined>(undefined)
     const shippingFee = 1500
-    const servicesFee = 800
+    const servicesFee = 200
     const dispatch = useDispatch()
     const navigation = useNavigation()
 

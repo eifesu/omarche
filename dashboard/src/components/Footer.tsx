@@ -23,6 +23,7 @@ interface FooterLinkProps {
 const FooterLink = ({ children, to }: FooterLinkProps): JSX.Element => {
     return (
         <Link 
+            target="_blank"
             to={to}
             className='text-sm transition-colors duration-300 text-slate-600 hover:text-slate-900'
         >

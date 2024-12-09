@@ -186,10 +186,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     sellerItem: {
-        borderBottomWidth: 1,
-        borderStyle: 'dotted',
-        borderColor: 'rgba(0,0,0,.1)',
-        borderRadius: 8,
     },
     sellerName: {
         fontFamily: Theme.font.black,

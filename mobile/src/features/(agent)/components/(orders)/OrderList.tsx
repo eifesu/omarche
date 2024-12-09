@@ -20,7 +20,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
 
     const handleConfirm = async (orderId: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'PROCESSING', agentId: user.agentId }).unwrap()
+            await updateOrderStatus({ orderId, status: 'PROCESSING', type:'agent',userId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande confirmée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
@@ -30,7 +30,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
 
     const handleCancel = async (orderId: string, reason?: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'CANCELED', cancellationReason: reason, agentId: user.agentId }).unwrap()
+            await updateOrderStatus({ orderId, status: 'CANCELED', cancellationReason: reason, type:'agent', userId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande annulée avec succès.", type: "success" }))
             refetch()
         } catch (error) {
@@ -40,7 +40,7 @@ const OrderList = ({ marketId }: { marketId: string }) => {
 
     const handleFinish = async (orderId: string) => {
         try {
-            await updateOrderStatus({ orderId, status: 'PROCESSED', agentId: user.agentId }).unwrap()
+            await updateOrderStatus({ orderId, status: 'PROCESSED', type:'agent', userId: user.agentId }).unwrap()
             dispatch(showToast({ message: "Commande collectée avec succès.", type: "success" }))
             refetch()
         } catch (error) {

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLoginMutation } from '@/redux/api/auth.api';
+import { useLoginMutation } from '@/redux/api/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

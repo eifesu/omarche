@@ -8,7 +8,7 @@ import { promocodeApi } from "./promocode";
 import { shipperApi } from "./shipper";
 import { agentApi } from "./agent";
 import { imageApi } from "./image";
-import { authApi } from "./auth.api";
+import { authApi } from "./auth";
 
 export const store = configureStore({
   reducer: {
