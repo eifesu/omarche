@@ -1,6 +1,7 @@
 import { ENV } from "@/config/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Product } from "./productsApi.slice";
+import { baseQuery } from "@/features/auth/redux/baseApi";
 
 export type Seller = {
 	sellerId: string;
@@ -16,7 +17,7 @@ export type Seller = {
 
 export const sellersApi = createApi({
 	reducerPath: "sellersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}` }),
+	baseQuery,
 	tagTypes: ["Seller", "Product"],
 	endpoints: (builder) => ({
 		fetchProductsBySellerId: builder.query<Product[], string>({
@@ -24,18 +25,14 @@ export const sellersApi = createApi({
 				url: `/sellers/${sellerId}/products`,
 				method: "GET",
 			}),
-			providesTags: (_result, _error, sellerId) => [
-				{ type: "Product", id: sellerId },
-			],
+			providesTags: ["Product"],
 		}),
 		fetchSellerById: builder.query<Seller, string>({
 			query: (sellerId) => ({
 				url: `/sellers/${sellerId}`,
 				method: "GET",
 			}),
-			providesTags: (_result, _error, sellerId) => [
-				{ type: "Seller", id: sellerId },
-			],
+			providesTags: ["Seller"],
 		}),
 		updateSellerById: builder.mutation<
 			Partial<Seller>,
@@ -46,26 +43,29 @@ export const sellersApi = createApi({
 				method: "PUT",
 				body: data,
 			}),
-			invalidatesTags: (_result, _error, { sellerId }) => [
-				{ type: "Seller", id: sellerId },
-			],
+			invalidatesTags: ["Seller"],
+		}),
+		deleteSellerById: builder.mutation<void, string>({
+			query: (sellerId) => ({
+				url: `/sellers/${sellerId}`,
+				method: "DELETE",
+			}),
+			invalidatesTags: ["Seller"],
 		}),
 		fetchSellersByMarketId: builder.query<Seller[], string>({
 			query: (marketId) => ({
 				url: `/markets/${marketId}/sellers`,
 				method: "GET",
 			}),
-			providesTags: (_result, _error, marketId) => [
-				{ type: "Seller", id: marketId },
-			],
+			providesTags: ["Seller"],
 		}),
 		createSeller: builder.mutation<Seller, Partial<Seller>>({
 			query: (newSeller) => ({
-				url: "/",
+				url: "/sellers/",
 				method: "POST",
 				body: newSeller,
 			}),
-			invalidatesTags: [{ type: "Seller", id: "LIST" }],
+			invalidatesTags: ["Seller"],
 		}),
 	}),
 });
@@ -76,6 +76,7 @@ export const {
 	useFetchSellersByMarketIdQuery,
 	useCreateSellerMutation,
 	useUpdateSellerByIdMutation,
+	useDeleteSellerByIdMutation,
 } = sellersApi;
 
 export default sellersApi;

@@ -1,17 +1,24 @@
+import { selectCurrentToken, selectCurrentUser } from '@/redux/slices/authSlice';
 import { ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  restrictedForAreaAdmin?: boolean;
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, restrictedForAreaAdmin = false }: ProtectedRouteProps) {
   const location = useLocation();
-  const token = localStorage.getItem('token');
+  const user = useSelector(selectCurrentUser);
 
-  if (!token) {
-    // Redirect to login page but save the attempted url
+  if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Restrict access to certain routes for admins with areaCode
+  if (restrictedForAreaAdmin && user.areaCode) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

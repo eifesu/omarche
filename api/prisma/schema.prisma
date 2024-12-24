@@ -13,10 +13,10 @@ model Market {
     name       String    @unique @db.VarChar(50)
     latitude   Float
     longitude  Float
+    areaCode  area_code
     isActive   Boolean?  @default(true)
     sellers    Seller[]
     agents     Agent[]
-    admins     Admin[]
     shippers   Shipper[]
     createdAt  DateTime? @default(now()) @db.Timestamp(6)
     updatedAt  DateTime  @updatedAt
@@ -93,7 +93,7 @@ model Seller {
 
 model User {
     userId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    email     String   @unique @db.VarChar(50)
+    email     String?   @unique @db.VarChar(50)
     password  String   @db.VarChar(255)
     firstName String   @db.VarChar(50)
     lastName  String   @db.VarChar(50)
@@ -109,24 +109,23 @@ model User {
 
 model Admin {
     adminId   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    marketId String?   @db.Uuid 
+    areaCode  area_code?
     email     String   @unique @db.VarChar(50)
     password  String   @db.VarChar(255)
     createdAt DateTime @default(now()) @db.Timestamp(6)
 
-    @@unique([email, marketId], map: "uc_admin")
-    market Market? @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
+    @@unique([email, areaCode], map: "uc_admin")
 }
 
 model Agent {
     agentId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl String?  @db.VarChar(255)
     marketId   String   @db.Uuid
-    email      String   @unique @db.VarChar(50)
+    email      String?   @unique @db.VarChar(50)
     password   String   @db.VarChar(255)
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
-    phone      String   @db.VarChar(50)
+    phone      String   @unique @db.VarChar(50)
     role       String   @default("Agent") @db.VarChar(50)
     market     Market   @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
     createdAt  DateTime @default(now()) @db.Timestamp(6)
@@ -141,9 +140,9 @@ model Shipper {
     marketId   String   @db.Uuid
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
-    email      String   @unique @db.VarChar(50)
+    email      String?   @unique @db.VarChar(50)
     password   String   @db.VarChar(255)
-    phone      String   @db.VarChar(50)
+    phone      String   @unique @db.VarChar(50)
     pictureUrl String?  @db.VarChar(255)
     isOnline   Boolean  @default(false)
     market     Market   @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
@@ -164,13 +163,30 @@ model PromoCode {
 }
 
 model GiftCard {
-    giftCardId String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    giftCardId String   @id 
     userId     String?  @unique @db.Uuid
     expiration DateTime @db.Timestamp(6)
     status     String   @default("IDLE") @db.VarChar(50)
     createdAt  DateTime @default(now()) @db.Timestamp(6)
     updatedAt  DateTime @updatedAt
     user       User?    @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+}
+
+enum area_code {
+    ABOBO
+    ADJAME
+    ATTECOUBE
+    COCODY
+    KOUMASSI
+    MARCORY
+    PLATEAU
+    TREICHVILLE
+    YOPOUGON
+    BROFODOUME
+    BINGERVILLE
+    PORT_BOUET
+    ANYAMA
+    SONGON
 }
 
 enum order_status {

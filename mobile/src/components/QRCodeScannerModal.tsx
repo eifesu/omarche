@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 50,
         alignSelf: 'center',
+        paddingHorizontal: 24,
         backgroundColor: Theme.colors.green,
     },
 });

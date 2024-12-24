@@ -15,7 +15,7 @@ import sellersApi from "@/features/(client)/redux/sellersApi.slice";
 import agentsApi from "@/features/auth/redux/agent.api";
 import shippersApi from "@/features/auth/redux/shipper.api";
 import { promoCodeApi } from "@/features/(client)/redux/promoCodeApi.slice";
-import giftCardApi from "@/features/(client)/redux/giftCardApi.slice";
+import {giftCardApi} from "@/features/(client)/redux/giftCardApi.slice";
 
 export const store = configureStore({
 	reducer: {

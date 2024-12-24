@@ -1,6 +1,6 @@
 import { ENV } from "@/config/constants";
-import { OrderDetailsWithParticipants } from "@/features/(client)/redux/ordersApi.slice";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "./baseApi";
 
 export interface Shipper {
 	shipperId: string;
@@ -16,27 +16,18 @@ export interface Shipper {
 
 export const shippersApi = createApi({
 	reducerPath: "shippersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/shippers` }),
+	baseQuery,
 	endpoints: (builder) => ({
 		fetchShipperById: builder.query<Shipper, string>({
 			query: (shipperId) => ({
-				url: `/${shipperId}`,
-				method: "GET",
-			}),
-		}),
-		getAssignedOrder: builder.query<
-			OrderDetailsWithParticipants | null,
-			string
-		>({
-			query: (shipperId) => ({
-				url: `/${shipperId}/assigned-order`,
+				url: `/shippers/${shipperId}`,
 				method: "GET",
 			}),
 		}),
 	}),
 });
 
-export const { useFetchShipperByIdQuery, useGetAssignedOrderQuery } =
+export const { useFetchShipperByIdQuery } =
 	shippersApi;
 
 export default shippersApi;

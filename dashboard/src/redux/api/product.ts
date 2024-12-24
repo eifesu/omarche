@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Seller } from "./seller";
 import { OrderProducts } from "./order";
+import { baseQuery } from "./baseApi";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -56,7 +57,7 @@ export interface UpdateProductDTO {
 
 export const productApi = createApi({
 	reducerPath: "productApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+	baseQuery: baseQuery,
 	tagTypes: ["Product"],
 	endpoints: (builder) => ({
 		getAllProducts: builder.query<Product[], void>({

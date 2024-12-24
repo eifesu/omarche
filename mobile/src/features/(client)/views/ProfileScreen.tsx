@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native'
 import { RootStackNavigation } from '@/routers/BaseRouter'
 import QRCodeScannerModal from '@/components/QRCodeScannerModal'
 import { showToast } from '@/redux/slices/toast.slice'
-import { GiftCard, useAssignGiftCardToUserMutation } from '../redux/giftCardApi.slice'
+import { GiftCard, useAssignGiftCardMutation } from '../redux/giftCardApi.slice'
 import { useFetchGiftCardByUserIdQuery, User } from '@/features/auth/redux/user.api'
 import { RootState } from '@/redux/store'
 import { Theme } from '@/config/constants'
@@ -18,7 +18,7 @@ export default function ProfileScreen() {
     const dispatch = useDispatch()
     const [isQRCodeScannerVisible, setQRCodeScannerVisible] = useState(false)
     const user = useSelector((state: RootState) => state.auth.user) as User
-    const [assignGiftCardToUser] = useAssignGiftCardToUserMutation()
+    const [assignGiftCardToUser] = useAssignGiftCardMutation()
     const { data: giftCard, isLoading, refetch } = useFetchGiftCardByUserIdQuery(user.userId)
 
     const handleQRCodeScan = async (code: string) => {
@@ -52,7 +52,7 @@ function Menu({ onScanPress }: { onScanPress: () => void }) {
 
     const handleLogout = () => {
         dispatch(logOut())
-        navigation.navigate('Auth', { screen: 'Login', params: { email: '' } })
+        navigation.navigate('Auth', { screen: 'Login', params: { phone: '' } })
     }
 
     return (

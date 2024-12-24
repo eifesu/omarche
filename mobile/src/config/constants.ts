@@ -31,6 +31,6 @@ export const Theme = {
 
 export const ENV = {
 	// API_URL: "http://192.168.1.6:3000",
-	// API_URL: "http://192.168.68.111:3000",
+	// API_URL: "http://192.168.1.3:3000",
 	API_URL: "https://api.omarcheivoire.ci",
 };

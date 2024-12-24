@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "area_code" AS ENUM ('ABOBO', 'ADJAME', 'ATTECOUBE', 'COCODY', 'KOUMASSI', 'MARCORY', 'PLATEAU', 'TREICHVILLE', 'YOPOUGON', 'BROFODOUME', 'BINGERVILLE', 'PORT_BOUET', 'ANYAMA', 'SONGON');
+
+-- CreateEnum
 CREATE TYPE "order_status" AS ENUM ('IDLE', 'PROCESSING', 'PROCESSED', 'COLLECTING', 'DELIVERING', 'DELIVERED', 'CANCELED');
 
 -- CreateEnum
@@ -8,7 +11,7 @@ CREATE TYPE "promo_code_type" AS ENUM ('PERCENTAGE', 'FIXED');
 CREATE TYPE "product_category" AS ENUM ('Legumes', 'Fruits', 'Viandes', 'Poissons', 'Cereales', 'Tubercules', 'Mer', 'Epices', 'Autres');
 
 -- CreateEnum
-CREATE TYPE "product_unit" AS ENUM ('KG', 'DEMI_KG', 'TAS', 'SAC', 'BOITE', 'MORCEAUX', 'UNIT', 'AUTRE');
+CREATE TYPE "product_unit" AS ENUM ('KG', 'DEMI_KG', 'TAS', 'LITRE', 'SAC', 'BOITE', 'MORCEAUX', 'UNIT', 'AUTRE');
 
 -- CreateTable
 CREATE TABLE "Market" (
@@ -17,6 +20,7 @@ CREATE TABLE "Market" (
     "name" VARCHAR(50) NOT NULL,
     "latitude" DOUBLE PRECISION NOT NULL,
     "longitude" DOUBLE PRECISION NOT NULL,
+    "areaCode" "area_code" NOT NULL,
     "isActive" BOOLEAN DEFAULT true,
     "createdAt" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -93,7 +97,7 @@ CREATE TABLE "Seller" (
 -- CreateTable
 CREATE TABLE "User" (
     "userId" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "email" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(50),
     "password" VARCHAR(255) NOT NULL,
     "firstName" VARCHAR(50) NOT NULL,
     "lastName" VARCHAR(50) NOT NULL,
@@ -109,7 +113,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Admin" (
     "adminId" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "marketId" UUID NOT NULL,
+    "areaCode" "area_code",
     "email" VARCHAR(50) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -122,7 +126,7 @@ CREATE TABLE "Agent" (
     "agentId" UUID NOT NULL DEFAULT gen_random_uuid(),
     "pictureUrl" VARCHAR(255),
     "marketId" UUID NOT NULL,
-    "email" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(50),
     "password" VARCHAR(255) NOT NULL,
     "firstName" VARCHAR(50) NOT NULL,
     "lastName" VARCHAR(50) NOT NULL,
@@ -140,7 +144,7 @@ CREATE TABLE "Shipper" (
     "marketId" UUID NOT NULL,
     "firstName" VARCHAR(50) NOT NULL,
     "lastName" VARCHAR(50) NOT NULL,
-    "email" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(50),
     "password" VARCHAR(255) NOT NULL,
     "phone" VARCHAR(50) NOT NULL,
     "pictureUrl" VARCHAR(255),
@@ -195,7 +199,7 @@ CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "uc_admin" ON "Admin"("email", "marketId");
+CREATE UNIQUE INDEX "uc_admin" ON "Admin"("email", "areaCode");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Agent_email_key" ON "Agent"("email");
@@ -235,9 +239,6 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_sellerId_fkey" FOREIGN KEY ("selle
 
 -- AddForeignKey
 ALTER TABLE "Seller" ADD CONSTRAINT "Seller_marketId_fkey" FOREIGN KEY ("marketId") REFERENCES "Market"("marketId") ON DELETE CASCADE ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "Admin" ADD CONSTRAINT "Admin_marketId_fkey" FOREIGN KEY ("marketId") REFERENCES "Market"("marketId") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "Agent" ADD CONSTRAINT "Agent_marketId_fkey" FOREIGN KEY ("marketId") REFERENCES "Market"("marketId") ON DELETE CASCADE ON UPDATE NO ACTION;

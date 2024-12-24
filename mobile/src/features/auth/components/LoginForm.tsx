@@ -30,19 +30,19 @@ export default function LoginForm() {
 
             <View style={styles.formContainer}>
                 <Formik
-                    initialValues={{ email: route.params ? route.params.email : '', password: '' }}
+                    initialValues={{ phone: route.params ? route.params.phone : '', password: '' }}
                     onSubmit={async (values) => {
-                        if (!values.email || !values.password) return;
+                        if (!values.phone || !values.password) return;
                         try {
                             let result;
                             if (role === 'Client') {
-                                result = await loginClient({ email: values.email, password: values.password }).unwrap();
+                                result = await loginClient({ phone: values.phone, password: values.password }).unwrap();
                                 homeNavigation.navigate('Client');
                             } else if (role === 'Agent') {
-                                result = await loginAgent({ email: values.email, password: values.password }).unwrap();
+                                result = await loginAgent({ phone: values.phone, password: values.password }).unwrap();
                                 homeNavigation.navigate('Agent');
                             } else if (role === 'Livreur') {
-                                result = await loginShipper({ email: values.email, password: values.password }).unwrap();
+                                result = await loginShipper({ phone: values.phone, password: values.password }).unwrap();
                                 homeNavigation.navigate('Shipper');
                             }
                         } catch (error) {
@@ -54,15 +54,16 @@ export default function LoginForm() {
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
                         <>
                             <FormInputContainer>
-                                <MaterialCommunityIcons name="email" size={20} color="rgba(0,0,0,0.2)" />
+                                <MaterialCommunityIcons name="phone" size={20} color="rgba(0,0,0,0.2)" />
                                 <FormInputField
-                                    placeholder="Entrer votre adresse email"
-                                    onChangeText={handleChange('email')}
-                                    onBlur={handleBlur('email')}
-                                    value={values.email}
+                                    placeholder="Entrer votre numéro de téléphone"
+                                    onChangeText={handleChange('phone')}
+                                    onBlur={handleBlur('phone')}
+                                    value={values.phone}
+                                    keyboardType="phone-pad"
                                 />
                             </FormInputContainer>
-                            {errors.email && touched.email && <InputError error={errors.email} />}
+                            {errors.phone && touched.phone && <InputError error={errors.phone} />}
 
                             <FormInputContainer>
                                 <MaterialCommunityIcons name="form-textbox-password" size={20} color="rgba(0,0,0,0.2)" />
@@ -101,8 +102,11 @@ export default function LoginForm() {
 }
 
 const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Veuillez entrer une adresse email valide.').required('Veuillez entrer une adresse email.'),
-    password: Yup.string().min(8, 'Votre mot de passe doit avoir au moins 8 caractères.').required('Veuillez entrer un mot de passe.')
+    phone: Yup.string()
+        .required('Le numéro de téléphone est requis')
+        .matches(/^[0-9]+$/, 'Le numéro de téléphone doit contenir uniquement des chiffres'),
+    password: Yup.string()
+        .required('Le mot de passe est requis')
 })
 
 const styles = StyleSheet.create({

@@ -13,44 +13,41 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
 const UserLoginDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 });
 
 const UserRegisterDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 	firstName: z.string(),
 	lastName: z.string(),
 	address: z.string(),
-	phone: z.string(),
 });
 
 const AgentLoginDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 });
 
 const AgentRegisterDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 	firstName: z.string(),
 	lastName: z.string(),
-	phone: z.string(),
 	marketId: z.string().uuid(),
 });
 
 const ShipperLoginDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 });
 
 const ShipperRegisterDTO = z.object({
-	email: z.string(),
+	phone: z.string(),
 	password: z.string(),
 	firstName: z.string(),
 	lastName: z.string(),
-	phone: z.string(),
 	marketId: z.string().uuid(),
 });
 
@@ -62,14 +59,14 @@ const AdminLoginDTO = z.object({
 const AdminRegisterDTO = z.object({
 	email: z.string(),
 	password: z.string(),
-	marketId: z.string().uuid(),
+	areaCode: z.string(),
 });
 
 const authHandler = new Hono();
 
 authHandler.post("/user/login", zValidator("json", UserLoginDTO), async (c) => {
-	const { email, password } = c.req.valid("json");
-	const body = await postLoginUser({ email, password });
+	const { phone, password } = c.req.valid("json");
+	const body = await postLoginUser({ phone, password });
 	return c.json(body);
 });
 
@@ -77,15 +74,14 @@ authHandler.post(
 	"/user/register",
 	zValidator("json", UserRegisterDTO),
 	async (c) => {
-		const { email, password, firstName, lastName, address, phone } =
+		const { phone, password, firstName, lastName, address } =
 			c.req.valid("json");
 		await postRegisterUser({
-			email,
+			phone,
 			password,
 			firstName,
 			lastName,
 			address,
-			phone,
 		});
 		return c.json("Enregistrement réussi");
 	}
@@ -95,8 +91,8 @@ authHandler.post(
 	"/agent/login",
 	zValidator("json", AgentLoginDTO),
 	async (c) => {
-		const { email, password } = c.req.valid("json");
-		const body = await postLoginAgent({ email, password });
+		const { phone, password } = c.req.valid("json");
+		const body = await postLoginAgent({ phone, password });
 		return c.json(body);
 	}
 );
@@ -105,17 +101,16 @@ authHandler.post(
 	"/agent/register",
 	zValidator("json", AgentRegisterDTO),
 	async (c) => {
-		const { email, password, firstName, lastName, phone, marketId } =
+		const { phone, password, firstName, lastName, marketId } =
 			c.req.valid("json");
-		await postRegisterAgent({
-			email,
+		const body = await postRegisterAgent({
+			phone,
 			password,
 			firstName,
 			lastName,
-			phone,
 			marketId,
 		});
-		return c.json("Enregistrement réussi");
+		return c.json(body);
 	}
 );
 
@@ -123,8 +118,8 @@ authHandler.post(
 	"/shipper/login",
 	zValidator("json", ShipperLoginDTO),
 	async (c) => {
-		const { email, password } = c.req.valid("json");
-		const body = await postLoginShipper({ email, password });
+		const { phone, password } = c.req.valid("json");
+		const body = await postLoginShipper({ phone, password });
 		return c.json(body);
 	}
 );
@@ -133,17 +128,16 @@ authHandler.post(
 	"/shipper/register",
 	zValidator("json", ShipperRegisterDTO),
 	async (c) => {
-		const { email, password, firstName, lastName, phone, marketId } =
+		const { phone, password, firstName, lastName, marketId } =
 			c.req.valid("json");
-		await postRegisterShipper({
-			email,
+		const body = await postRegisterShipper({
+			phone,
 			password,
 			firstName,
 			lastName,
-			phone,
 			marketId,
 		});
-		return c.json("Enregistrement réussi");
+		return c.json(body);
 	}
 );
 
@@ -158,5 +152,6 @@ authHandler.post("/admin/register", zValidator("json", AdminRegisterDTO), async 
 	const response = await postRegisterAdmin(data);
 	return c.json(response);
 });
+
 
 export default authHandler;

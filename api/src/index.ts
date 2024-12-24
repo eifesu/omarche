@@ -16,8 +16,15 @@ import { setupWebSocket } from "./websocket";
 import promocodeHandler from "./handlers/promocode.handler";
 import giftcardHandler from "./handlers/giftcard.handler";
 import imageHandler from "./handlers/image.handler";
+import { authMiddleware } from "./middlewares/auth.middleware";
+import { Admin, Agent, area_code, Shipper, User } from "@prisma/client";
 
-const app = new Hono();
+export type Variables = {
+	userId: string;
+	areaCode: area_code | null;
+}
+
+const app = new Hono<{Variables: Variables}>();
 app.use(cors());
 app.use(logger());
 app.use("/uploads/*", serveStatic({ root: "./" }));
@@ -30,6 +37,7 @@ export const server = Bun.serve({
 });
 
 app.route("/auth/", authHandler);
+app.use(authMiddleware)
 app.route("/markets/", marketHandler);
 app.route("/products/", productHandler);
 app.route("/orders/", orderHandler);

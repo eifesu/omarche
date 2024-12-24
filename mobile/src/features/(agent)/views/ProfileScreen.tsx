@@ -23,7 +23,7 @@ function Menu() {
 
     const handleLogout = () => {
         dispatch(logOut())
-        navigation.navigate('Auth', { screen: 'Login', params: { email: '' } })
+        navigation.navigate('Auth', { screen: 'Login', params: { phone: '' } })
     }
 
     return (

@@ -1,57 +1,53 @@
-import { Agent, Admin, Shipper, User } from "@prisma/client";
+import { Agent, Admin, Shipper, User, area_code } from "@prisma/client";
 import prisma from "@prisma/index";
 
-export async function selectUserByEmail(email: string): Promise<User | null> {
+export async function selectUserByPhone(phone: string): Promise<User | null> {
 	return await prisma.user.findFirst({
 		where: {
-			email,
+			phone,
 		},
 	});
 }
 
 export async function insertUser(params: {
-	email: string;
+	phone: string;
 	password: string;
 	firstName: string;
 	lastName: string;
 	address: string;
-	phone: string;
 }): Promise<User> {
 	return await prisma.user.create({
 		data: {
-			email: params.email,
+			phone: params.phone,
 			password: params.password,
 			firstName: params.firstName,
 			lastName: params.lastName,
 			address: params.address,
-			phone: params.phone,
 		},
 	});
 }
 
-export async function selectAgentByEmail(email: string): Promise<Agent | null> {
+export async function selectAgentByPhone(phone: string): Promise<Agent | null> {
 	return await prisma.agent.findFirst({
 		where: {
-			email,
+			phone,
 		},
 	});
 }
 
 export async function insertAgent(params: {
-	email: string;
+	phone: string;
 	password: string;
 	firstName: string;
 	lastName: string;
-	phone: string;
 	marketId: string;
 }): Promise<Agent> {
 	return await prisma.agent.create({
 		data: {
-			email: params.email,
+			phone: params.phone,
 			password: params.password,
 			firstName: params.firstName,
 			lastName: params.lastName,
-			phone: params.phone,
 			marketId: params.marketId,
 		},
 	});
@@ -68,42 +64,38 @@ export async function selectAdminByEmail(email: string): Promise<Admin | null> {
 export async function insertAdmin(params: {
 	email: string;
 	password: string;
-	marketId: string;
+	areaCode: area_code;
 }): Promise<Admin> {
 	return await prisma.admin.create({
 		data: {
 			email: params.email,
 			password: params.password,
-			marketId: params.marketId,
+			areaCode: params.areaCode,
 		},
 	});
 }
 
-export async function selectShipperByEmail(
-	email: string
-): Promise<Shipper | null> {
+export async function selectShipperByPhone(phone: string): Promise<Shipper | null> {
 	return await prisma.shipper.findFirst({
 		where: {
-			email,
+			phone,
 		},
 	});
 }
 
 export async function insertShipper(params: {
-	email: string;
+	phone: string;
 	password: string;
 	firstName: string;
 	lastName: string;
-	phone: string;
 	marketId: string;
 }): Promise<Shipper> {
 	return await prisma.shipper.create({
 		data: {
-			email: params.email,
+			phone: params.phone,
 			password: params.password,
 			firstName: params.firstName,
 			lastName: params.lastName,
-			phone: params.phone,
 			marketId: params.marketId,
 		},
 	});

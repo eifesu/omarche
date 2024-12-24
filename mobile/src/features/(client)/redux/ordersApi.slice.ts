@@ -1,10 +1,11 @@
 import { ENV } from "@/config/constants";
 import { Agent } from "@/features/auth/redux/agent.api";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Market } from "./marketsApi.slice";
 import { Shipper } from "@/features/auth/redux/shipper.api";
 import { User } from "@/features/auth/redux/user.api";
 import { Product } from "./productsApi.slice";
+import { baseQuery } from "@/features/auth/redux/baseApi";
 
 export interface Order {
 	orderId: string;
@@ -81,7 +82,8 @@ interface UpdateOrderStatusInput {
 
 export const ordersApi = createApi({
 	reducerPath: "ordersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}` }),
+	baseQuery,
+	tagTypes: ["Order"],
 	endpoints: (builder) => ({
 		createOrderWithProducts: builder.mutation<
 			void,
@@ -116,13 +118,12 @@ export const ordersApi = createApi({
 			],
 		}),
 	}),
-	tagTypes: ["Order"],
 });
 
 export const {
 	useCreateOrderWithProductsMutation,
-	useGetOrdersByUserIdQuery,
 	useUpdateOrderStatusMutation,
+	useGetOrdersByUserIdQuery,
 	useGetOrderProductsByOrderIdQuery,
 	useGetOrderDetailsByIdQuery,
 } = ordersApi;

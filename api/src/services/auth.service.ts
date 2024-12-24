@@ -5,16 +5,16 @@ import {
 	insertShipper,
 	insertUser,
 	selectAdminByEmail,
-	selectAgentByEmail,
-	selectShipperByEmail,
-	selectUserByEmail,
+	selectAgentByPhone,
+	selectShipperByPhone,
+	selectUserByPhone,
 } from "../repositories/auth.repository";
 import jwt from "jsonwebtoken";
-import { Admin, Agent, Shipper, User } from "@prisma/client";
+import { Admin, Agent, area_code, Shipper, User } from "@prisma/client";
 import AppError from "@/utils/AppError";
 
 export type LoginDTO = {
-	email: string;
+	phone: string;
 	password: string;
 };
 
@@ -23,9 +23,9 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 	token: string;
 }> {
 	try {
-		let user = await selectUserByEmail(params.email);
+		let user = await selectUserByPhone(params.phone);
 		if (!user) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("User not found"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("User not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -33,10 +33,10 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 			user.password
 		);
 		if (!isMatch) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
-		const token = jwt.sign({ userID: user.userId }, ENV.JWT_SECRET, {
+		const token = jwt.sign({ userId: user.userId }, ENV.JWT_SECRET, {
 			expiresIn: ENV.JWT_EXPIRES_IN,
 		});
 
@@ -51,7 +51,6 @@ export async function postLoginUser(params: LoginDTO): Promise<{
 }
 
 export type RegisterDTO = {
-	email: string;
 	password: string;
 	firstName: string;
 	lastName: string;
@@ -63,12 +62,11 @@ export async function postRegisterUser(params: RegisterDTO): Promise<void> {
 	try {
 		const password = await Bun.password.hash(params.password);
 		await insertUser({
-			email: params.email,
+			phone: params.phone,
 			password: password,
 			firstName: params.firstName,
 			lastName: params.lastName,
 			address: params.address,
-			phone: params.phone,
 		});
 	} catch (error) {
 		if (error instanceof AppError) throw error;
@@ -77,12 +75,11 @@ export async function postRegisterUser(params: RegisterDTO): Promise<void> {
 }
 
 export type AgentLoginDTO = {
-	email: string;
+	phone: string;
 	password: string;
 };
 
 export type AgentRegisterDTO = {
-	email: string;
 	password: string;
 	firstName: string;
 	lastName: string;
@@ -96,14 +93,13 @@ export async function postRegisterAgent(
 	try {
 		const hashedPassword = await Bun.password.hash(params.password);
 		const agent = await insertAgent({
-			email: params.email,
+			phone: params.phone,
 			password: hashedPassword,
 			firstName: params.firstName,
 			lastName: params.lastName,
-			phone: params.phone,
 			marketId: params.marketId,
 		});
-		return agent;
+		return { ...agent, password: "" };
 	} catch (error) {
 		if (error instanceof AppError) throw error;
 		throw new AppError("Erreur lors de l'inscription de l'agent", 500, error as Error);
@@ -115,9 +111,9 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 	token: string;
 }> {
 	try {
-		let agent = await selectAgentByEmail(params.email);
+		let agent = await selectAgentByPhone(params.phone);
 		if (!agent) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Agent not found"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("Agent not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -125,10 +121,10 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 			agent.password
 		);
 		if (!isMatch) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
-		const token = jwt.sign({ agentID: agent.agentId }, ENV.JWT_SECRET, {
+		const token = jwt.sign({ agentId: agent.agentId }, ENV.JWT_SECRET, {
 			expiresIn: ENV.JWT_EXPIRES_IN,
 		});
 
@@ -143,12 +139,11 @@ export async function postLoginAgent(params: AgentLoginDTO): Promise<{
 }
 
 export type ShipperLoginDTO = {
-	email: string;
+	phone: string;
 	password: string;
 };
 
 export type ShipperRegisterDTO = {
-	email: string;
 	password: string;
 	firstName: string;
 	lastName: string;
@@ -162,14 +157,13 @@ export async function postRegisterShipper(
 	try {
 		const hashedPassword = await Bun.password.hash(params.password);
 		const shipper = await insertShipper({
-			email: params.email,
+			phone: params.phone,
 			password: hashedPassword,
 			firstName: params.firstName,
 			lastName: params.lastName,
-			phone: params.phone,
 			marketId: params.marketId,
 		});
-		return shipper;
+		return { ...shipper, password: "" };
 	} catch (error) {
 		if (error instanceof AppError) throw error;
 		throw new AppError("Erreur lors de l'inscription du livreur", 500, error as Error);
@@ -181,9 +175,9 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 	token: string;
 }> {
 	try {
-		let shipper = await selectShipperByEmail(params.email);
+		let shipper = await selectShipperByPhone(params.phone);
 		if (!shipper) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Shipper not found"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("Shipper not found"));
 		}
 
 		const isMatch = await Bun.password.verify(
@@ -191,11 +185,11 @@ export async function postLoginShipper(params: ShipperLoginDTO): Promise<{
 			shipper.password
 		);
 		if (!isMatch) {
-			throw new AppError("E-mail/mot de passe incorrect", 401, new Error("Invalid password"));
+			throw new AppError("Téléphone/mot de passe incorrect", 401, new Error("Invalid password"));
 		}
 
 		const token = jwt.sign(
-			{ shipperID: shipper.shipperId },
+			{ shipperId: shipper.shipperId },
 			ENV.JWT_SECRET,
 			{
 				expiresIn: ENV.JWT_EXPIRES_IN,
@@ -220,7 +214,7 @@ export type AdminLoginDTO = {
 export type AdminRegisterDTO = {
 	email: string;
 	password: string;
-	marketId: string;
+	areaCode: area_code;
 };
 
 export async function postLoginAdmin(params: AdminLoginDTO): Promise<{
@@ -259,8 +253,9 @@ export async function postRegisterAdmin(params: AdminRegisterDTO): Promise<Admin
 	try {
 		const hashedPassword = await Bun.password.hash(params.password);
 		const admin = await insertAdmin({
-			...params,
+			email: params.email,
 			password: hashedPassword,
+			areaCode: params.areaCode,
 		});
 		return admin;
 	} catch (error) {

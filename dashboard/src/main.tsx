@@ -59,11 +59,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/cards',
-                element: <GiftCardsScreen />,
+                element: <ProtectedRoute restrictedForAreaAdmin><GiftCardsScreen /></ProtectedRoute>,
             },
             {
                 path: '/promo-codes',
-                element: <PromoCodesScreen />,
+                element: <ProtectedRoute restrictedForAreaAdmin><PromoCodesScreen /></ProtectedRoute>,
             },
             {
                 path: '/agents',

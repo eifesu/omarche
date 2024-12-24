@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "./user";
+import { baseQuery } from "./baseApi";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -31,7 +32,7 @@ export interface AssignGiftCardDTO {
 
 export const giftCardApi = createApi({
 	reducerPath: "giftCardApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+	baseQuery: baseQuery,
 	tagTypes: ["GiftCard"],
 	endpoints: (builder) => ({
 		getAllGiftCards: builder.query<GiftCard[], void>({

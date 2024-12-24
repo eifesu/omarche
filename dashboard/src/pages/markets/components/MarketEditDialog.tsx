@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Market, useUpdateMarketMutation } from "@/redux/api/market"
+import { Market, useUpdateMarketMutation, AreaCode } from "@/redux/api/market"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -13,11 +13,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FaEllipsisH } from "react-icons/fa"
 import { Checkbox } from "@/components/ui/checkbox"
-import { FaImage } from "react-icons/fa6"
 import { ImageUpload } from "@/components/ui/image-upload"
 
 interface MarketEditDialogProps {
@@ -32,7 +38,8 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
         latitude: market.latitude.toString(),
         longitude: market.longitude.toString(),
         isActive: market.isActive,
-        pictureUrl: market.pictureUrl
+        pictureUrl: market.pictureUrl,
+        areaCode: market.areaCode
     })
     const [errors, setErrors] = useState<{
         name?: string;
@@ -61,34 +68,8 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const response = await fetch('YOUR_UPLOAD_ENDPOINT', {
-                method: 'POST',
-                body: formData
-            })
-
-            if (!response.ok) {
-                throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            setFormData(prev => ({ ...prev, pictureUrl: data.url }))
-            toast.success("Image téléchargée avec succès")
-        } catch (error) {
-            toast.error("Erreur lors du téléchargement de l'image")
-            console.error("Failed to upload image:", error)
-        }
-    }
-
     const handleSubmit = async () => {
+
         if (!validateForm()) return
 
         try {
@@ -178,6 +159,39 @@ export default function MarketEditDialog({ market }: MarketEditDialogProps) {
                             className={errors.longitude ? "border-red-500" : ""}
                         />
                         {errors.longitude && <span className="text-sm text-red-500">{errors.longitude}</span>}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="areaCode">Zone</Label>
+                        <Select
+                            value={formData.areaCode}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, areaCode: value as AreaCode }))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner une zone" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries({
+                                    ABOBO: "Abobo",
+                                    ADJAME: "Adjamé",
+                                    ATTECOUBE: "Attécoubé",
+                                    COCODY: "Cocody",
+                                    KOUMASSI: "Koumassi",
+                                    MARCORY: "Marcory",
+                                    PLATEAU: "Plateau",
+                                    TREICHVILLE: "Treichville",
+                                    YOPOUGON: "Yopougon",
+                                    BROFODOUME: "Brofodoumé",
+                                    BINGERVILLE: "Bingerville",
+                                    PORT_BOUET: "Port-Bouët",
+                                    ANYAMA: "Anyama",
+                                    SONGON: "Songon"
+                                }).map(([code, label]) => (
+                                    <SelectItem key={code} value={code}>
+                                        {label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="flex items-center space-x-2">
                         <Checkbox

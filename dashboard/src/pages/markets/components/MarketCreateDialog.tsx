@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useCreateMarketMutation } from "@/redux/api/market"
+import { useCreateMarketMutation, AreaCode } from "@/redux/api/market"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FaPlus } from "react-icons/fa"
@@ -26,7 +33,8 @@ export default function MarketCreateDialog() {
         name: "",
         latitude: "0",
         longitude: "0",
-        pictureUrl: undefined as string | undefined
+        pictureUrl: undefined as string | undefined,
+        areaCode: "" as AreaCode
     })
     const [errors, setErrors] = useState<{
         name?: string;
@@ -56,32 +64,6 @@ export default function MarketCreateDialog() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const response = await fetch('YOUR_UPLOAD_ENDPOINT', {
-                method: 'POST',
-                body: formData
-            })
-
-            if (!response.ok) {
-                throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            setFormData(prev => ({ ...prev, pictureUrl: data.url }))
-            toast.success("Image téléchargée avec succès")
-        } catch (error) {
-            toast.error("Erreur lors du téléchargement de l'image")
-            console.error("Failed to upload image:", error)
-        }
-    }
-
     const handleSubmit = async () => {
         if (!validateForm()) return
 
@@ -97,7 +79,8 @@ export default function MarketCreateDialog() {
                 name: "",
                 latitude: "0",
                 longitude: "0",
-                pictureUrl: undefined
+                pictureUrl: undefined,
+                areaCode: "COCODY"
             })
         } catch (error) {
             toast.error("Erreur lors de la création du marché")
@@ -124,6 +107,7 @@ export default function MarketCreateDialog() {
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label>Photo</Label>
                         <ImageUpload
+                            className="col-span-3"
                             value={formData.pictureUrl}
                             onChange={(url) => setFormData({ ...formData, pictureUrl: url })}
                             onDelete={() => setFormData({ ...formData, pictureUrl: "" })}
@@ -139,7 +123,7 @@ export default function MarketCreateDialog() {
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                             className={`col-span-3 ${errors.name ? 'border-red-500' : ''}`}
                         />
-                        {errors.name && <p className="text-red-500">{errors.name}</p>}
+                        {errors.name && <span className="text-sm text-red-500">{errors.name}</span>}
                     </div>
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label htmlFor="latitude" className="text-right">
@@ -159,7 +143,7 @@ export default function MarketCreateDialog() {
                             }}
                             className={`col-span-3 ${errors.latitude ? 'border-red-500' : ''}`}
                         />
-                        {errors.latitude && <p className="text-red-500">{errors.latitude}</p>}
+                        {errors.latitude && <span className="text-sm text-red-500">{errors.latitude}</span>}
                     </div>
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label htmlFor="longitude" className="text-right">
@@ -179,7 +163,44 @@ export default function MarketCreateDialog() {
                             }}
                             className={`col-span-3 ${errors.longitude ? 'border-red-500' : ''}`}
                         />
-                        {errors.longitude && <p className="text-red-500">{errors.longitude}</p>}
+                        {errors.longitude && <span className="text-sm text-red-500">{errors.longitude}</span>}
+                    </div>
+                    <div className="grid grid-cols-4 gap-4 items-center">
+                        <Label htmlFor="areaCode">Zone</Label>
+                        <div className="col-span-3">
+                        <Select
+                            value={formData.areaCode}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, areaCode: value as AreaCode }))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner une zone" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries({
+                                    ABOBO: "Abobo",
+                                    ADJAME: "Adjamé",
+                                    ATTECOUBE: "Attécoubé",
+                                    COCODY: "Cocody",
+                                    KOUMASSI: "Koumassi",
+                                    MARCORY: "Marcory",
+                                    PLATEAU: "Plateau",
+                                    TREICHVILLE: "Treichville",
+                                    YOPOUGON: "Yopougon",
+                                    BROFODOUME: "Brofodoumé",
+                                    BINGERVILLE: "Bingerville",
+                                    PORT_BOUET: "Port-Bouët",
+                                    ANYAMA: "Anyama",
+                                    SONGON: "Songon"
+                                }).map(([code, label]) => (
+                                    <SelectItem key={code} value={code}>
+                                        {label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        </div>
+                    </div>
+                    <div className="grid gap-2">
                     </div>
                 </div>
                 <DialogFooter>

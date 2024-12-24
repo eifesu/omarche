@@ -32,7 +32,7 @@ const cartSlice = createSlice({
 				existingItem.quantity += quantity;
 			} else {
 				cartList.push({
-					product: { ...product, sellerId: product.seller.sellerId },
+					product: { ...product, sellerId: product.sellerId },
 					quantity,
 				});
 			}

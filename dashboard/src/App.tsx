@@ -34,11 +34,11 @@ function App() {
                     <FaReceipt />
                     <NavigationLink>Commandes</NavigationLink>
                 </NavigationLinkContainer>
-                <NavigationLinkContainer to="/cards">
+                <NavigationLinkContainer to="/cards" hideForAreaAdmin>
                     <FaCreditCard />
                     <NavigationLink>Cartes</NavigationLink>
                 </NavigationLinkContainer>
-                <NavigationLinkContainer to="/promo-codes">
+                <NavigationLinkContainer to="/promo-codes" hideForAreaAdmin>
                     <FaTags />
                     <NavigationLink>Codes</NavigationLink>
                 </NavigationLinkContainer>

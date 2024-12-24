@@ -4,6 +4,7 @@ import { User } from "./user";
 import { Agent } from "./agent";
 import { Shipper } from "./shipper";
 import { PromoCode } from "./promocode";
+import { baseQuery } from "./baseApi";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -110,7 +111,7 @@ export interface UpdateOrderStatusDTO {
 
 export const orderApi = createApi({
     reducerPath: "orderApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+    baseQuery: baseQuery,
     tagTypes: ["Order"],
     endpoints: (builder) => ({
         getAllOrders: builder.query<OrderDTO[], void>({

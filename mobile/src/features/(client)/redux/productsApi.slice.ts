@@ -1,5 +1,6 @@
 import { ENV } from "@/config/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "@/features/auth/redux/baseApi";
 
 export enum ProductCategory {
     Legumes = "Legumes",
@@ -54,57 +55,65 @@ export interface ProductDetails extends Product {
 
 export const productApi = createApi({
     reducerPath: "productApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/products` }),
+    baseQuery,
     tagTypes: ["Product"],
     endpoints: (builder) => ({
         fetchProducts: builder.query<Product[], void>({
             query: () => ({
-                url: "/",
+                url: "/products/",
                 method: "GET",
             }),
             providesTags: ["Product"],
         }),
-        fetchProductById: builder.query<Product, string>({
+        fetchProductById: builder.query<ProductDetails, string>({
             query: (productId) => ({
-                url: `/${productId}`,
+                url: `/products/${productId}`,
                 method: "GET",
             }),
-            providesTags: (_result, _error, productId) => [
-                { type: "Product", id: productId },
-            ],
+            providesTags: ["Product"],
         }),
-        createProduct: builder.mutation<void, Omit<Product, "productId">>({
+        fetchProductsByCategory: builder.query<
+            Product[],
+            ProductCategory
+        >({
+            query: (category) => ({
+                url: `/products/category/${category}`,
+                method: "GET",
+            }),
+            providesTags: ["Product"],
+        }),
+        fetchProductsBySellerId: builder.query<Product[], string>({
+            query: (sellerId) => ({
+                url: `/products/seller/${sellerId}`,
+                method: "GET",
+            }),
+            providesTags: ["Product"],
+        }),
+        createProduct: builder.mutation<Product, FormData>({
             query: (body) => ({
-                url: "/",
+                url: "/products",
                 method: "POST",
                 body,
             }),
             invalidatesTags: ["Product"],
         }),
-        updateProductById: builder.mutation<
-            void,
-            { productId: string; data: UpdateProductDTO }
+        updateProduct: builder.mutation<
+            Product,
+            { productId: string; body: UpdateProductDTO }
         >({
-            onQueryStarted(arg, _) {
-                console.log(arg);
-            },
-            query: ({ productId, data }) => ({
-                url: `/${productId}`,
-                method: "PUT",
-                body: data,
+            query: ({ productId, body }) => ({
+                url: `/products/${productId}`,
+                method: "PATCH",
+                body,
             }),
-            invalidatesTags: (_result, _error, { productId }) => [
-                { type: "Product", id: productId },
-            ],
+            invalidatesTags: ["Product"],
         }),
-        deleteProductById: builder.mutation<void, string>({
+        deleteProduct: builder.mutation<void, string>({
             query: (productId) => ({
-                url: `/${productId}`,
+                url: `/products/${productId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (_result, _error, productId) => [
-                { type: "Product", id: productId },
-            ],
+            invalidatesTags: ["Product"],
         }),
     }),
 });
@@ -113,8 +122,8 @@ export const {
     useFetchProductsQuery,
     useFetchProductByIdQuery,
     useCreateProductMutation,
-    useUpdateProductByIdMutation,
-    useDeleteProductByIdMutation,
+    useUpdateProductMutation,
+    useDeleteProductMutation,
 } = productApi;
 
 export default productApi;

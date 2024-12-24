@@ -1,6 +1,8 @@
 import logo from '@/assets/logo.png';
 import { ButtonHTMLAttributes } from 'react';
 import { LinkProps, NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/redux/slices/authSlice';
 
 const NavigationBar = ({ children }: { children: React.ReactNode }): JSX.Element => {
     return <nav className='flex justify-center items-center px-8 w-full h-14 border-b bg-slate-50 border-slate-200'>
@@ -9,7 +11,6 @@ const NavigationBar = ({ children }: { children: React.ReactNode }): JSX.Element
         </div>
     </nav>
 }
-
 
 export const NavigationLogo = (): JSX.Element => {
     return <NavLink to="/" className='flex justify-center items-center mr-8'>
@@ -21,12 +22,19 @@ export const NavigationLink = ({ children }: { children: React.ReactNode }): JSX
     return <p className='font-medium rounded-md transition-all duration-300'>{children}</p>
 }
 
-
 interface NavigationLinkContainerProps extends LinkProps {
     children: React.ReactNode;
+    hideForAreaAdmin?: boolean;
 }
 
-export const NavigationLinkContainer = (props: NavigationLinkContainerProps): JSX.Element => {
+export const NavigationLinkContainer = ({ hideForAreaAdmin = false, ...props }: NavigationLinkContainerProps): JSX.Element | null => {
+    const user = useSelector(selectCurrentUser);
+
+    // Hide the link if the user is an area admin and the link should be hidden
+    if (hideForAreaAdmin && user?.areaCode) {
+        return null;
+    }
+
     return <NavLink {...props} className={({ isActive }) => 'group hover:bg-slate-200 bg-slate-50 transition-all duration-300 flex items-center justify-center gap-3 px-4 py-2 rounded-md ' + (isActive ? ' text-slate-800 bg-slate-200' : ' text-slate-400')}>
         {props.children}
     </NavLink>

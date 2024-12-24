@@ -7,7 +7,7 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import RegisterScreen from '../views/RegisterScreen';
 
 type LoginParams = {
-    email: string | undefined;
+    phone: string | undefined;
 };
 
 export type LoginScreenRouteProp = RouteProp<AuthStackParamList, 'Login'>;

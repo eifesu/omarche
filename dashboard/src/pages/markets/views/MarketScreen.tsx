@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import * as Tabs from "@radix-ui/react-tabs";
+import { getAreaLabel } from "./MarketsScreen";
 
 const MarketScreen = (): JSX.Element => {
     const { marketId } = useParams();
@@ -98,6 +99,8 @@ const MarketScreen = (): JSX.Element => {
                             <span className="text-sm">{new Date(market.createdAt!).toLocaleDateString()}</span>
                             <span className="text-sm text-gray-500">Mis à jour le:</span>
                             <span className="text-sm">{new Date(market.updatedAt!).toLocaleDateString()}</span>
+                            <span className="text-sm text-gray-500">Zone:</span>
+                            <span className="text-sm">{getAreaLabel(market.areaCode)}</span>
                         </div>
                     </div>
                     {market.pictureUrl && (

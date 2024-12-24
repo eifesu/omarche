@@ -1,5 +1,6 @@
 import { ENV } from "@/config/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "./baseApi";
 
 export interface Agent {
 	agentId: string;
@@ -16,11 +17,11 @@ export interface Agent {
 
 export const agentsApi = createApi({
 	reducerPath: "agentsApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/agents` }),
+	baseQuery,
 	endpoints: (builder) => ({
 		fetchAgentById: builder.query<Agent, string>({
 			query: (agentId) => ({
-				url: `/${agentId}`,
+				url: `/agents/${agentId}`,
 				method: "GET",
 			}),
 		}),

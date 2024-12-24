@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "./baseApi";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -12,7 +13,7 @@ export interface ImageUploadResponse {
 
 export const imageApi = createApi({
     reducerPath: "imageApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+    baseQuery: baseQuery,
     tagTypes: ["Image"],
     endpoints: (builder) => ({
         uploadImage: builder.mutation<ImageUploadResponse, FormData>({

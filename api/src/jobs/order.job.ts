@@ -60,7 +60,9 @@ async function findAvailableShipper(
 		const assignedOrder = await prisma.order.findFirst({
 			where: {
 				shipperId: shipperId,
-				status: "PROCESSED",
+				status: {
+					in: ["PROCESSED", "COLLECTING", "DELIVERING"],
+				},
 			},
 		});
 

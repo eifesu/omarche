@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_URL } from "../../config";
 import { Order } from "./order";
 import { Market } from "./market";
+import { baseQuery } from "./baseApi";
 
 export interface Agent {
 	agentId: string;
@@ -43,9 +43,7 @@ export interface UpdateAgentDTO {
 
 export const agentApi = createApi({
 	reducerPath: "agentApi",
-	baseQuery: fetchBaseQuery({
-		baseUrl: `${API_URL}/`,
-	}),
+	baseQuery: baseQuery,
 	tagTypes: ["Agent"],
 	endpoints: (builder) => ({
 		getAllAgents: builder.query<Agent[], void>({

@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseQuery } from './baseApi';
+import { AreaCode } from './market';
 
 // DTOs
 interface LoginDTO {
@@ -9,8 +11,9 @@ interface LoginDTO {
 interface AdminLoginDTO extends LoginDTO {}
 
 // Response Types
-interface Admin {
+export interface Admin {
   adminId: string;
+  areaCode: AreaCode | null;
   marketId?: string;
   email: string;
 }
@@ -22,16 +25,7 @@ interface AuthResponse {
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: import.meta.env.VITE_API_URL,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, AdminLoginDTO>({
       query: (credentials) => ({

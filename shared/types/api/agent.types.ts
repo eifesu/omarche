@@ -4,7 +4,7 @@ export const AgentSchema = z.object({
     agentId: z.string().uuid(),
     firstName: z.string(),
     lastName: z.string(),
-    email: z.string().email(),
+    email: z.string().email().nullable(),
     phone: z.string(),
     marketId: z.string().uuid(),
     createdAt: z.date(),

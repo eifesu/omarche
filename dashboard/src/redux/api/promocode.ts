@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_URL } from "../../config";
 import { Order } from "./order";
+import { baseQuery } from "./baseApi";
 
 export type PromoCodeType = "PERCENTAGE" | "FIXED";
 
@@ -31,9 +32,7 @@ export interface UpdatePromoCodeDTO {
 
 export const promocodeApi = createApi({
 	reducerPath: "promocodeApi",
-	baseQuery: fetchBaseQuery({
-		baseUrl: `${API_URL}/`,
-	}),
+	baseQuery: baseQuery,
 	tagTypes: ["PromoCode"],
 	endpoints: (builder) => ({
 		getAllPromoCodes: builder.query<PromoCode[], void>({

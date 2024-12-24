@@ -10,10 +10,11 @@ import { getOrderById, OrderDTO } from "./order.service";
 import { selectOrdersByMarketId } from "@/repositories/order.repository";
 import { Market, Order } from "@prisma/client";
 import AppError from "@/utils/AppError";
+import { area_code } from "@prisma/client";
 
-export async function getAllMarkets() {
+export async function getAllMarkets(areaCode?: area_code) {
 	try {
-		return await selectAllMarkets();
+		return await selectAllMarkets(areaCode);
 	} catch (error) {
 		throw new AppError("Erreur lors de la récupération des marchés", 500, error as Error);
 	}
@@ -76,6 +77,7 @@ export async function createMarket(data: {
 	latitude: number;
 	longitude: number;
 	pictureUrl?: string;
+	areaCode: Market['areaCode'];
 }) {
 	try {
 		const newMarket = await insertMarket(data);

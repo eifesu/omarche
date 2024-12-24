@@ -5,6 +5,8 @@ import OrderEditDialog from "../components/OrderEditDialog";
 import { TableCell, TableContainer, TableHeader, TableRow } from "@/components/Table";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Printer } from "lucide-react";
 
 const OrderScreen = (): JSX.Element => {
     const { orderId } = useParams();
@@ -25,6 +27,78 @@ const OrderScreen = (): JSX.Element => {
         product.quantity.toString().includes(searchTerm)
     );
 
+    const generateOrderHTML = () => {
+        const html = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Détails de la commande</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1, h2 { color: #333; }
+                    .order-info { margin-bottom: 20px; }
+                    .product-list { border-top: 1px solid #ccc; padding-top: 10px; }
+                    .product-item { margin-bottom: 20px; }
+                    .status-badge {
+                        display: inline-block;
+                        padding: 4px 8px;
+                        border-radius: 9999px;
+                        font-size: 12px;
+                        font-weight: 500;
+                    }
+                    .status-idle { background: #f3f4f6; color: #1f2937; }
+                    .status-processing, .status-processed { background: #dbeafe; color: #1e40af; }
+                    .status-collecting { background: #fef3c7; color: #92400e; }
+                    .status-delivering { background: #f3e8ff; color: #6b21a8; }
+                    .status-delivered { background: #dcfce7; color: #166534; }
+                    .status-canceled { background: #fee2e2; color: #991b1b; }
+                </style>
+            </head>
+            <body>
+                <h1>Détails de la commande #${order.order.orderId.slice(0, 8)}</h1>
+                <div class="order-info">
+                    <p><strong>Status:</strong> <span class="status-badge status-${order.order.status.toLowerCase()}">${order.order.status}</span></p>
+                    <p><strong>Client ID:</strong> ${order.order.userId}</p>
+                    <p><strong>Agent ID:</strong> ${order.order.agentId || 'N/A'}</p>
+                    <p><strong>Livreur ID:</strong> ${order.order.shipperId || 'N/A'}</p>
+                    <p><strong>Adresse:</strong> ${order.order.address}</p>
+                    <p><strong>Heure de livraison:</strong> ${order.order.deliveryTime}</p>
+                    <p><strong>Méthode de paiement:</strong> ${order.order.paymentMethod}</p>
+                    ${order.order.promoCode ? `<p><strong>Code promo:</strong> ${order.order.promoCode.code}</p>` : ''}
+                    ${order.order.cancellationReason ? `<p><strong>Raison d'annulation:</strong> ${order.order.cancellationReason}</p>` : ''}
+                </div>
+                <div class="product-list">
+                    <h2>Produits</h2>
+                    ${order.orderProducts.map(op => `
+                        <div class="product-item">
+                            <h3>${op.product.name}</h3>
+                            <p><strong>Quantité:</strong> ${op.quantity}</p>
+                            <p><strong>Prix:</strong> ${op.product.price} CFA</p>
+                            <p><strong>Unité:</strong> ${op.product.unit}</p>
+                            <p><strong>Catégorie:</strong> ${op.product.category}</p>
+                            ${op.product.description ? `<p><strong>Description:</strong> ${op.product.description}</p>` : ''}
+                            <p><strong>En stock:</strong> ${op.product.isInStock ? 'Oui' : 'Non'}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </body>
+            </html>
+        `;
+        return html;
+    };
+
+    const handlePrint = () => {
+        const html = generateOrderHTML();
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    };
+
     return (
         <div className="flex flex-col justify-start items-start w-full h-full border border-slate-100">
             <HeaderContainer>
@@ -33,6 +107,14 @@ const OrderScreen = (): JSX.Element => {
                     <HeaderSubtitle>Informations détaillées de la commande</HeaderSubtitle>
                 </div>
                 <div className="flex flex-row gap-4 justify-center items-center">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handlePrint}
+                        className="h-10 w-10"
+                    >
+                        <Printer className="h-4 w-4" />
+                    </Button>
                     <OrderEditDialog order={order.order} />
                 </div>
             </HeaderContainer>
@@ -126,4 +208,4 @@ const OrderScreen = (): JSX.Element => {
     );
 };
 
-export default OrderScreen; 
+export default OrderScreen;

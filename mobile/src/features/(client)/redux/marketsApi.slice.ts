@@ -1,7 +1,8 @@
 import { ENV } from "@/config/constants";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Seller } from "./sellersApi.slice";
 import { Order } from "./ordersApi.slice";
+import { baseQuery } from "@/features/auth/redux/baseApi";
 
 export type Market = {
 	marketId: string;
@@ -14,28 +15,31 @@ export type Market = {
 
 export const marketsApi = createApi({
 	reducerPath: "marketsApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/markets` }),
+	baseQuery,
 	endpoints: (builder) => ({
 		fetchMarkets: builder.query<Market[], void>({
 			query: () => ({
-				url: "/",
+				url: "/markets/",
 				method: "GET",
 			}),
 		}),
 		fetchMarketById: builder.query<Market, string>({
 			query: (marketId) => ({
-				url: `/${marketId}`,
+				url: `/markets/${marketId}`,
 				method: "GET",
 			}),
 		}),
 		fetchSellersByMarketId: builder.query<Seller[], string>({
 			query: (marketId) => ({
-				url: `/${marketId}/sellers`,
+				url: `/markets/${marketId}/sellers`,
 				method: "GET",
 			}),
 		}),
 		getOrdersByMarketId: builder.query<Order[], string>({
-			query: (marketId) => `/${marketId}/orders`,
+			query: (marketId) => ({
+				url: `/markets/${marketId}/orders`,
+				method: "GET",
+			}),
 		}),
 	}),
 });

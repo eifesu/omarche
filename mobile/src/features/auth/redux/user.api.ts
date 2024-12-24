@@ -1,7 +1,8 @@
 import { ENV } from "@/config/constants";
 import { GiftCard } from "@/features/(client)/redux/giftCardApi.slice";
 import { Order } from "@/features/(client)/redux/ordersApi.slice";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "./baseApi";
 
 export interface User {
 	userId: string;
@@ -18,23 +19,23 @@ export interface User {
 
 export const usersApi = createApi({
 	reducerPath: "usersApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${ENV.API_URL}/users` }),
+	baseQuery,
 	endpoints: (builder) => ({
 		fetchUsers: builder.query<User[], void>({
 			query: () => ({
-				url: "/",
+				url: "/users",
 				method: "GET",
 			}),
 		}),
 		fetchOrdersByUserId: builder.query<Order[], string>({
 			query: (userId) => ({
-				url: `/${userId}/orders`,
+				url: `/users/${userId}/orders`,
 				method: "GET",
 			}),
 		}),
 		fetchGiftCardByUserId: builder.query<GiftCard | undefined, string>({
 			query: (userId) => ({
-				url: `/${userId}/gift-card`,
+				url: `/users/${userId}/gift-card`,
 				method: "GET",
 			}),
 		}),

@@ -9,9 +9,11 @@ import { shipperApi } from "./shipper";
 import { agentApi } from "./agent";
 import { imageApi } from "./image";
 import { authApi } from "./auth";
+import authReducer from "../slices/authSlice"
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     [marketApi.reducerPath]: marketApi.reducer,
     [sellerApi.reducerPath]: sellerApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,

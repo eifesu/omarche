@@ -1,8 +1,12 @@
 import prisma from "@prisma/index";
-import { Market } from "@prisma/client";
+import { area_code, Market } from "@prisma/client";
 
-export async function selectAllMarkets() {
-	const markets = await prisma.market.findMany();
+export async function selectAllMarkets(areaCode?: area_code) {
+	const markets = await prisma.market.findMany({
+		where: {
+			areaCode,
+		},
+	});
 	return markets;
 }
 
@@ -24,6 +28,7 @@ export async function insertMarket(data: {
 	latitude: number;
 	longitude: number;
 	pictureUrl?: string;
+	areaCode: Market['areaCode'];
 }) {
 	const newMarket = await prisma.market.create({
 		data,

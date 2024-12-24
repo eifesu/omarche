@@ -3,6 +3,7 @@ import { Seller } from "./seller";
 import { Order } from "./order";
 import { Agent } from "./agent";
 import { Shipper } from "./shipper";
+import { baseQuery } from "./baseApi";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -11,6 +12,7 @@ export interface Market {
 	pictureUrl?: string;
 	name: string;
 	latitude: number;
+	areaCode: AreaCode;
 	longitude: number;
 	isActive?: boolean;
 	createdAt?: Date;
@@ -23,12 +25,29 @@ export interface Market {
 export interface CreateMarketDTO {
 	name: string;
 	latitude: number;
+	areaCode: AreaCode;
 	longitude: number;
 	pictureUrl?: string;
 }
+export type AreaCode =
+	| "ABOBO"
+	| "ADJAME"
+	| "ATTECOUBE"
+	| "COCODY"
+	| "KOUMASSI"
+	| "MARCORY"
+	| "PLATEAU"
+	| "TREICHVILLE"
+	| "YOPOUGON"
+	| "BROFODOUME"
+	| "BINGERVILLE"
+	| "PORT_BOUET"
+	| "ANYAMA"
+	| "SONGON";
 
 export interface UpdateMarketDTO {
 	name?: string;
+	areaCode?: AreaCode;
 	latitude?: number;
 	longitude?: number;
 	isActive?: boolean;
@@ -59,7 +78,7 @@ export interface OrderDetails {
 
 export const marketApi = createApi({
 	reducerPath: "marketApi",
-	baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+	baseQuery: baseQuery,
 	tagTypes: ["Market"],
 	endpoints: (builder) => ({
 		getAllMarkets: builder.query<Market[], void>({
