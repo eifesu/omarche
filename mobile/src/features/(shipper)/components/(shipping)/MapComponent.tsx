@@ -59,9 +59,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 showsCompass={true}
                 showsScale={true}
             >
-                {destination && <>
-                    <MapMarkers destination={destination} />
-                </>}
+                {destination && (
+                    <>
+                        <MapMarkers destination={destination} />
+                    </>
+                )}
             </MapView>
             <MapButtons mapRef={mapRef} destination={destination} />
 

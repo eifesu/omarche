@@ -6,12 +6,12 @@ export function getDestination(order: OrderDetails) : LatLng | undefined{
         case("COLLECTING"):
             return  {
                 latitude: order.market.latitude,
-                longitude: order.market.longitude
+                longitude: order.market.longitude 
             }
         case("DELIVERING"):
             return {
-                latitude: order.order.locationX,
-                longitude: order.order.locationY
+                latitude: parseFloat(order.order.locationX),
+                longitude: parseFloat(order.order.locationY)
             }
     }
   }

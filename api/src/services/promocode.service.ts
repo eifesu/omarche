@@ -5,6 +5,7 @@ import {
 	updatePromoCodeById,
 	deletePromoCodeById,
 	selectPromoCodeByCode,
+	checkIfPromoCodeUsedByUserId,
 } from "@/repositories/promocode.repository";
 import { PromoCode } from "@prisma/client";
 import AppError from "@/utils/AppError";
@@ -72,17 +73,23 @@ export async function deletePromoCode(promoCodeId: string) {
 	}
 }
 
-export async function validatePromoCode(code: string) {
+export async function validatePromoCode(code: string, userId: string) {
 	try {
 		const promoCode = await selectPromoCodeByCode(code);
 		if (!promoCode) {
 			throw new AppError("Code promo invalide", 400, new Error(`Invalid promo code: ${code}`));
 		}
-		
+
+		const promoCodeIsUsed = await checkIfPromoCodeUsedByUserId(promoCode.promoCodeId, userId);
+
+		if (promoCodeIsUsed) {
+			throw new AppError("Code promo déjà utilisé", 400, new Error(`Promo code already used: ${code}`));
+		}
+
 		if (new Date(promoCode.expiration) < new Date()) {
 			throw new AppError("Code promo expiré", 400, new Error(`Expired promo code: ${code}`));
 		}
-		
+
 		return promoCode;
 	} catch (error) {
 		if (error instanceof AppError) throw error;

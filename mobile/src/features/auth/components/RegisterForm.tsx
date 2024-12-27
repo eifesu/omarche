@@ -33,7 +33,7 @@ const RegisterSchema = Yup.object().shape({
     birthDay: Yup.string().matches(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/, 'Veuillez entrer une date de naissance valide.').required('Veuillez entrer votre date de naissance.'),
     phone: Yup.string().length(10, "Veuillez entrer un numéro à 10 chiffres.").required('Veuillez entrer votre numéro de téléphone.'),
     address: Yup.string().required('Veuillez entrer votre quartier.'),
-    email: Yup.string().email('Veuillez entrer une adresse email valide.').required('Veuillez entrer une adresse email.'),
+    email: Yup.string().email('Veuillez entrer une adresse email valide.'),
     password: Yup.string().min(8, 'Votre mot de passe doit avoir au moins 8 caractères.').required('Veuillez entrer un mot de passe.'),
     confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Les mots de passe doivent correspondre.').required('Veuillez confirmer votre mot de passe.')
 })
@@ -56,7 +56,7 @@ function Form() {
                 password: values.password,
                 phone: values.phone,
             }).then(() => {
-                navigation.navigate('Login', { email: values.email })
+                navigation.navigate('Login', { phone: values.phone })
                 dispatch(showToast({ message: "Votre compte a été créé avec succès.", type: "success" }))
             })
         }}
@@ -135,6 +135,7 @@ function Form() {
                     <FormInputField
                         placeholder="Entrer votre adresse email"
                         onChangeText={handleChange('email')}
+                        autoCapitalize='none'
                         onBlur={handleBlur('email')}
                         value={values.email}
                     />

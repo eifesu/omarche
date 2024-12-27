@@ -8,7 +8,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { ButtonContainer, ButtonText } from '@/components/Button';
 import { StatusBar } from 'expo-status-bar';
 import { useDispatch } from 'react-redux';
-import { useFetchProductByIdQuery, useUpdateProductByIdMutation } from '../../(client)/redux/productsApi.slice';
+import { useFetchProductByIdQuery, useUpdateProductMutation } from '../../(client)/redux/productsApi.slice';
 import { showToast } from '@/redux/slices/toast.slice';
 import { Iconify } from 'react-native-iconify';
 import { Image } from 'expo-image';
@@ -23,7 +23,7 @@ export default function ProductScreen() {
     const { productId } = route.params;
 
     const { data: productDetails, isLoading } = useFetchProductByIdQuery(productId);
-    const [updateProduct, { isLoading: isUpdating }] = useUpdateProductByIdMutation();
+    const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
     const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -33,9 +33,8 @@ export default function ProductScreen() {
         try {
             await updateProduct({
                 productId,
-                data: { isInStock: !productDetails.isInStock },
-            }).unwrap();
-
+                body: { isInStock: !productDetails.isInStock },
+            });
             dispatch(
                 showToast({
                     message: productDetails.isInStock ? 'Produit marqué en rupture de stock.' : 'Produit marqué comme disponible.',

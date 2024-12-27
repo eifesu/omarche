@@ -12,8 +12,8 @@ export interface Order {
 	userId: string;
 	agentId?: string;
 	shipperId?: string;
-	locationX: number;
-	locationY: number;
+	locationX: string;
+	locationY: string;
 	address: string;
 	deliveryTime: string;
 	paymentMethod: string;

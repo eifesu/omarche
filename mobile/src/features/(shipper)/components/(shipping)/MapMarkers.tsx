@@ -1,13 +1,14 @@
 import React from "react";
-import { LatLng, MapMarker, Polyline } from "react-native-maps";
+import { LatLng, MapMarker } from "react-native-maps";
 
-const MapMarkers = ({ destination}: { destination?: LatLng }) => {
-
-  if(!destination) return
+const MapMarkers = ({ destination}: { destination: LatLng }) => {
   return (
     <>
     <MapMarker
-      coordinate={destination}
+      coordinate={{
+        longitude: destination.longitude || 0,
+        latitude: destination.latitude || 0,
+      }}
     />
     </>
   );

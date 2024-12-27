@@ -11,8 +11,9 @@ import {
 } from "@/services/promocode.service";
 import AppError from "@/utils/AppError";
 import { Decimal } from "@prisma/client/runtime/library";
+import { Variables } from "..";
 
-const promocodeHandler = new Hono();
+const promocodeHandler = new Hono<{ Variables: Variables }>();
 
 const PromoCodeDTO = z.object({
 	code: z.string(),
@@ -117,8 +118,9 @@ promocodeHandler.post(
 	zValidator("json", z.object({ code: z.string() })),
 	async (c) => {
 		const { code } = c.req.valid("json");
+		const userId = c.get("userId");
 		try {
-			const validPromoCode = await validatePromoCode(code);
+			const validPromoCode = await validatePromoCode(code, userId);
 			return c.json(validPromoCode);
 		} catch (error) {
 			if (

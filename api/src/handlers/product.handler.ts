@@ -21,7 +21,9 @@ const UpdateProductDTO = z.object({
     "LITRE",
     "SAC",
     "BOITE",
-    "MORCEAUX"
+    "MORCEAUX",
+    "UNIT",
+    "AUTRE"
   ]).optional(),
   isInStock: z.boolean().optional(),
   amount: z.number().optional(),
@@ -55,7 +57,9 @@ const CreateProductDTO = z.object({
     "LITRE",
     "SAC",
     "BOITE",
-    "MORCEAUX"
+    "MORCEAUX",
+    "UNIT",
+    "AUTRE"
   ]).default("KG"),
   amount: z.number(),
   price: z.number().transform((value) => new Decimal(value)),

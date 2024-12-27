@@ -75,7 +75,7 @@ export const authApi = createApi({
 		}),
 		register: builder.mutation<void, RegisterPayload>({
 			query: (body) => ({
-				url: "/auth/register",
+				url: "/auth/user/register",
 				method: "POST",
 				body,
 			}),

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useCreateProductMutation } from "@/redux/api/product"
+import { Product, useCreateProductMutation } from "@/redux/api/product"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -30,7 +30,7 @@ interface FormData {
     unit: string;
     amount: number;
     price: number;
-    category: "Legumes" | "Fruits" | "Viandes" | "Poissons" | "Cereales" | "Tubercules" | "Mer" | "Epices" | "Autres";
+    category: Product['category'];
     pictureUrl: string[];
     sellerId: string;
 }

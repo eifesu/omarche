@@ -46,3 +46,21 @@ export async function selectPromoCodeByCode(
 		where: { code },
 	});
 }
+
+export async function checkIfPromoCodeUsedByUserId(
+	promoCodeId: string,
+	userId: string
+): Promise<boolean> {
+	return prisma.promoCode.findFirst({
+		where: {
+			promoCodeId,
+		},
+		include: {
+			orders: {
+				where: {
+					userId,
+				},
+			},
+		},
+	}) !== null;
+}
