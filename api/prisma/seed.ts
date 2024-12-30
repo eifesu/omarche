@@ -1,3 +1,4 @@
+import { area_code } from "@prisma/client";
 import prisma from ".";
 
 async function seedDb() {
@@ -18,15 +19,27 @@ async function seedDb() {
 }
 
 async function seedAdmin()  {
+	const areas : area_code[] = ['ABOBO', 'ADJAME', 'ATTECOUBE', 'COCODY', 'KOUMASSI', 'MARCORY', 'PLATEAU', 'TREICHVILLE', 'YOPOUGON', 'BROFODOUME', 'BINGERVILLE', 'PORT_BOUET', 'ANYAMA', 'SONGON'];
+
 	await prisma.admin.createMany({
 		skipDuplicates: true,
 		data: [
 			{
 				email: "admin@omarche.com",
-				password: Bun.password.hashSync("testadmin"),
+				password: "OMarche@Admin2024",
 			},
 		],
 	})
+
+	for (const area of areas) {
+		await prisma.admin.create({
+			data: {
+				email: `admin@${area.toLowerCase()}.com`,
+				password: `OMarche@${area}2024`,
+				areaCode: area,
+			},
+		});
+	}
 	console.log("✅ Admin seeded successfully");
 }
 
