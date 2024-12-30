@@ -26,7 +26,7 @@ async function seedAdmin()  {
 		data: [
 			{
 				email: "admin@omarche.com",
-				password: "OMarche@Admin2024",
+				password: Bun.password.hashSync("OMarche@2024"),
 			},
 		],
 	})
@@ -35,7 +35,7 @@ async function seedAdmin()  {
 		await prisma.admin.create({
 			data: {
 				email: `admin@${area.toLowerCase()}.com`,
-				password: `OMarche@${area}2024`,
+				password: Bun.password.hashSync(`OMarche@${area}2024`),
 				areaCode: area,
 			},
 		});
