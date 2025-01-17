@@ -1,61 +1,78 @@
 import {
-	selectAllAgents,
-	selectAgentById,
-	updateAgentById,
-	deleteAgentById,
+  selectAllAgents,
+  selectAgentById,
+  updateAgentById as updateAgent,
+  deleteAgentById as deleteAgent,
+  selectAgentOrders,
 } from "@/repositories/agent.repository";
-import { Agent} from "@shared/types/api/agent.types";
 import AppError from "@/utils/AppError";
+import { Agent, Prisma, area_code } from "@prisma/client";
+import prisma from "@prisma/index";
 
-export async function getAllAgents(): Promise<Agent[]> {
-	try {
-		return await selectAllAgents();
-	} catch (error) {
-		throw new AppError("Erreur lors de la récupération des agents", 500, error as Error);
-	}
+export async function getAllAgents(areaCode?: area_code): Promise<Agent[]> {
+  try {
+    return await selectAllAgents(areaCode);
+  } catch (error) {
+    throw new AppError("Failed to fetch agents", 500, error as Error);
+  }
 }
 
 export async function getAgentById(agentId: string): Promise<Agent | null> {
-	try {
-		const agent = await selectAgentById(agentId);
-		if (!agent) {
-			throw new AppError("Agent introuvable", 404, new Error(`Agent with ID ${agentId} not found`));
-		}
-		return agent;
-	} catch (error) {
-		if (error instanceof AppError) throw error;
-		throw new AppError("Erreur lors de la récupération de l'agent", 500, error as Error);
-	}
+  try {
+    return await selectAgentById(agentId);
+  } catch (error) {
+    throw new AppError("Failed to fetch agent", 500, error as Error);
+  }
 }
 
-export async function updateAgent(
-	agentId: string,
-	data: Partial<Agent>
+export async function createAgent(data: Omit<Agent, "agentId" | "createdAt" | "updatedAt">): Promise<Omit<Agent, "password">> {
+  try {
+    const hashedPassword = await Bun.password.hash(data.password);
+    const agent = await prisma.agent.create({
+      data: {
+        ...data,
+        password: hashedPassword,
+      },
+    });
+    
+    const { password, ...agentWithoutPassword } = agent;
+    return agentWithoutPassword;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        throw new AppError("Agent with this email already exists", 400, error);
+      }
+    }
+    throw new AppError("Failed to create agent", 500, error as Error);
+  }
+}
+
+export async function updateAgentById(
+  agentId: string,
+  data: Partial<Omit<Agent, "agentId" | "createdAt" | "updatedAt">>
 ): Promise<Agent> {
-	try {
-		const existingAgent = await selectAgentById(agentId);
-		if (!existingAgent) {
-			throw new AppError("Agent introuvable", 404, new Error(`Agent with ID ${agentId} not found`));
-		}
-
-		const updatedAgent = await updateAgentById(agentId, data);
-		return updatedAgent;
-	} catch (error) {
-		if (error instanceof AppError) throw error;
-		throw new AppError("Erreur lors de la mise à jour de l'agent", 500, error as Error);
-	}
+  try {
+    if (data.password) {
+      data.password = await Bun.password.hash(data.password);
+    }
+    return await updateAgent(agentId, data);
+  } catch (error) {
+    throw new AppError("Failed to update agent", 500, error as Error);
+  }
 }
 
-export async function deleteAgent(agentId: string): Promise<void> {
-	try {
-		const existingAgent = await selectAgentById(agentId);
-		if (!existingAgent) {
-			throw new AppError("Agent introuvable", 404, new Error(`Agent with ID ${agentId} not found`));
-		}
+export async function deleteAgentById(agentId: string): Promise<void> {
+  try {
+    await deleteAgent(agentId);
+  } catch (error) {
+    throw new AppError("Failed to delete agent", 500, error as Error);
+  }
+}
 
-		await deleteAgentById(agentId);
-	} catch (error) {
-		if (error instanceof AppError) throw error;
-		throw new AppError("Erreur lors de la suppression de l'agent", 500, error as Error);
-	}
+export async function getAgentOrders(agentId: string) {
+  try {
+    return await selectAgentOrders(agentId);
+  } catch (error) {
+    throw new AppError("Failed to fetch agent orders", 500, error as Error);
+  }
 }

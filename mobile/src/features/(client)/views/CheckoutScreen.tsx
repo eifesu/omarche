@@ -41,7 +41,7 @@ function Header(props: { stackProps: NativeStackScreenProps<MarketStackParamList
             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
                 <ButtonContainer
                     style={{ backgroundColor: Theme.colors.greenLight, height: 42, paddingHorizontal: 12, width: 'auto' }} >
-                    <ButtonText color={Theme.colors.greenDark} style={{ fontFamily: Theme.font.black, fontSize: 14 }}>{props.stackProps.route.params.marketName}</ButtonText>
+                    <ButtonText color={Theme.colors.greenDark} style={{ fontFamily: Theme.font.black, fontSize: 12 }}>{props.stackProps.route.params.marketName}</ButtonText>
                 </ButtonContainer>
             </View>
         </HeaderContainer>

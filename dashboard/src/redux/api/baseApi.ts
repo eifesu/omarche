@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
 import { RootState } from './store';
-import { logOut } from '../slices/authSlice';
+import { logIn, logOut } from '../slices/authSlice';
 
 const mutex = new Mutex();
 
@@ -28,7 +28,7 @@ const baseQueryWithReauth: BaseQueryFn<
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
-        // try to get a new token
+        // Try to get a new token
         const refreshResult = await baseQuery(
           '/auth/refresh',
           api,
@@ -36,12 +36,22 @@ const baseQueryWithReauth: BaseQueryFn<
         );
 
         if (refreshResult.data) {
+          // Store the new token
+          const data = refreshResult.data as { token: string; data: any };
+          api.dispatch(logIn({ 
+            token: data.token,
+            user: data.data
+          }));
+          
           // Retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {
-          // If refresh fails, log out the user
           api.dispatch(logOut());
+          window.location.href = '/login';
         }
+      } catch (error) {
+        api.dispatch(logOut());
+        window.location.href = '/login';
       } finally {
         release();
       }
@@ -50,8 +60,11 @@ const baseQueryWithReauth: BaseQueryFn<
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
   return result;
 };
+
+export const baseQueryWithRetry = baseQueryWithReauth;
 
 // Type for extending the base API
 export type BaseQuery = typeof baseQuery;

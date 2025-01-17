@@ -31,7 +31,8 @@
 				"android.permission.CAMERA",
 				"android.permission.RECORD_AUDIO"
 			],
-			"package": "com.eifesu.omarcheivoire"
+			"package": "com.omarche.omarcheapp",
+			"versionCode": 12
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

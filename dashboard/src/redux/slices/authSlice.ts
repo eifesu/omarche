@@ -2,16 +2,43 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Admin } from '../api/auth';
 
 export type AuthStateType = {
-  user: Admin | undefined; // Replace with proper user type when available
+  user: Admin | undefined;
   role: "Client" | "Agent" | "Livreur";
   token: string;
 };
 
-const initialState: AuthStateType = {
-  user: undefined,
-  role: "Client",
-  token: "",
+// Load initial state from localStorage if available
+const loadState = (): AuthStateType => {
+  try {
+    const serializedState = localStorage.getItem('auth');
+    if (serializedState === null) {
+      return {
+        user: undefined,
+        role: "Client",
+        token: "",
+      };
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return {
+      user: undefined,
+      role: "Client",
+      token: "",
+    };
+  }
 };
+
+// Save auth state to localStorage
+export const saveState = (state: AuthStateType) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('auth', serializedState);
+  } catch {
+    // Ignore write errors
+  }
+};
+
+const initialState: AuthStateType = loadState();
 
 const authSlice = createSlice({
   name: 'auth',
@@ -19,15 +46,18 @@ const authSlice = createSlice({
   reducers: {
     changeRole: (state, action: PayloadAction<AuthStateType["role"]>) => {
       state.role = action.payload;
+      saveState(state);
     },
     logIn: (state, action: PayloadAction<Omit<AuthStateType, "role">>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
+      saveState(state);
     },
     logOut: (state) => {
       state.user = undefined;
       state.role = "Client";
       state.token = "";
+      localStorage.removeItem('auth');
     },
   },
 });

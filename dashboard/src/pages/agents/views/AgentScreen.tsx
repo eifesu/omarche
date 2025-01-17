@@ -1,5 +1,5 @@
 import { HeaderContainer, HeaderSubtitle, HeaderTitle } from "../../../components/Header";
-import { useGetAgentByIdQuery, useGetAgentOrdersQuery } from "@/redux/api/agent";
+import { useGetAgentByIdQuery, useGetOrdersFromAgentQuery } from "@/redux/api/agent";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { TableCell, TableContainer, TableHeader, TableRow } from "@/components/Table";
@@ -9,7 +9,7 @@ import AgentEditDialog from "../components/AgentEditDialog";
 const AgentScreen = (): JSX.Element => {
     const { agentId } = useParams();
     const { data: agent, isLoading: agentLoading, error: agentError } = useGetAgentByIdQuery(agentId!);
-    const { data: orders, isLoading: ordersLoading, error: ordersError } = useGetAgentOrdersQuery(agentId!);
+    const { data: orders, isLoading: ordersLoading, error: ordersError } = useGetOrdersFromAgentQuery(agentId!);
     const [searchTerm, setSearchTerm] = useState("");
 
     if (agentLoading || ordersLoading) {

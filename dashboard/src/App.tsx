@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import './App.css'
 import NavigationBar, { NavigationButton, NavigationLink, NavigationLinkContainer, NavigationLogo } from './components/Navigation'
-import { FaCreditCard, FaDoorOpen, FaListCheck, FaReceipt, FaShop, FaTags, FaTruck } from "react-icons/fa6";
+import { FaCreditCard, FaDoorOpen, FaListCheck, FaReceipt, FaShop, FaTags, FaTruck, FaUser } from "react-icons/fa6";
 import { Toaster, toast } from 'sonner';
 import Footer from './components/Footer';
 import { useLogoutMutation } from './redux/api/auth';
@@ -46,9 +46,13 @@ function App() {
                     <FaListCheck />
                     <NavigationLink>Agents</NavigationLink>
                 </NavigationLinkContainer>
-                <NavigationLinkContainer to="/shippers">
+                <NavigationLinkContainer to="/shippers" hideForAreaAdmin>
                     <FaTruck />
                     <NavigationLink>Livreurs</NavigationLink>
+                </NavigationLinkContainer>
+                <NavigationLinkContainer to="/users" hideForAreaAdmin>
+                    <FaUser />
+                    <NavigationLink>Utilisateurs</NavigationLink>
                 </NavigationLinkContainer>
                 <NavigationButton onClick={handleLogout}>
                     <FaDoorOpen />

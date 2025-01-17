@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     },
     flatListItemTitle: {
         fontFamily: Theme.font.black,
-        fontSize: 16,
+        fontSize: 14,
         letterSpacing: -.5,
         color: 'white'
     },

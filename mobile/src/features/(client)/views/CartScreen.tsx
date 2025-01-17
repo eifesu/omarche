@@ -69,7 +69,7 @@ function Header({ route, navigation }: { route: RouteProp<MarketStackParamList, 
             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
                 <ButtonContainer
                     style={{ backgroundColor: Theme.colors.greenLight, height: 42, paddingHorizontal: 12, width: 'auto' }} >
-                    <ButtonText color={Theme.colors.greenDark} style={{ fontFamily: Theme.font.black, fontSize: 14 }}>{route.params.marketName}</ButtonText>
+                    <ButtonText color={Theme.colors.greenDark} style={{ fontFamily: Theme.font.black, fontSize: 12, overflow: 'scroll' }}>{route.params.marketName}</ButtonText>
                 </ButtonContainer>
             </View>
         </View>
@@ -123,7 +123,7 @@ function CartItem(props: { item: CartItemType, marketId: string }) {
                     style={{ backgroundColor: 'rgba(255,0,0,0.05)', width: 30, height: 'auto', flexDirection: 'row', marginBottom: 4, borderRadius: 8, padding: 8, paddingHorizontal: 10 }}>
                     <Iconify icon="material-symbols:delete" size={12} color={Theme.colors.red} />
                 </ButtonContainer>
-                <Text style={{ fontFamily: Theme.font.black, color: Theme.colors.greenDark, fontSize: 16, letterSpacing: -.5 }}>
+                <Text style={{ fontFamily: Theme.font.black, color: Theme.colors.greenDark, fontSize: 14, letterSpacing: -.5 }}>
                     +{quantity * props.item.product.price}
                     <Text style={{ fontSize: 10 }}>CFA</Text>
                 </Text>

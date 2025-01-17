@@ -6,9 +6,12 @@ import { useState } from "react";
 import OrderCreateDialog from "../components/OrderCreateDialog";
 import OrderEditDialog from "../components/OrderEditDialog";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/redux/slices/authSlice";
 
 const OrdersScreen = (): JSX.Element => {
-    const { data: orders, isLoading, error } = useGetAllOrdersQuery();
+    const user = useSelector(selectCurrentUser)!;
+    const { data: orders, isLoading, error } = useGetAllOrdersQuery(user.areaCode ?? undefined);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 

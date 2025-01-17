@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         fontFamily: Theme.font.black,
         color: Theme.colors.greenDark,
         letterSpacing: -.5,
-        fontSize: 18
+        fontSize: 16
     },
 
 })

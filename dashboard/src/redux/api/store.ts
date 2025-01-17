@@ -10,6 +10,7 @@ import { agentApi } from "./agent";
 import { imageApi } from "./image";
 import { authApi } from "./auth";
 import authReducer from "../slices/authSlice"
+import { userApi } from "./user";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     [promocodeApi.reducerPath]: promocodeApi.reducer,
     [shipperApi.reducerPath]: shipperApi.reducer,
     [agentApi.reducerPath]: agentApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
     [imageApi.reducerPath]: imageApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
@@ -35,6 +37,7 @@ export const store = configureStore({
       promocodeApi.middleware,
       shipperApi.middleware,
       agentApi.middleware,
+      userApi.middleware,
       imageApi.middleware,
       authApi.middleware
     ),

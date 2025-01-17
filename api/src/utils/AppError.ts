@@ -1,9 +1,11 @@
+import { StatusCode } from "hono/utils/http-status";
+
 class AppError extends Error {
-	statusCode: number;
+	statusCode: StatusCode;
 	isOperational: boolean;
 	error: Error;
 
-	constructor(message: string, statusCode: number, error: Error) {
+	constructor(message: string, statusCode: StatusCode, error: Error) {
 		super(message);
 		this.statusCode = statusCode;
 		this.isOperational = true;

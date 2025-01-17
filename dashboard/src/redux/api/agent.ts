@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Order } from "./order";
-import { Market } from "./market";
+import { Market, AreaCode } from "./market";
 import { baseQuery } from "./baseApi";
 
 export interface Agent {
@@ -46,8 +46,8 @@ export const agentApi = createApi({
 	baseQuery: baseQuery,
 	tagTypes: ["Agent"],
 	endpoints: (builder) => ({
-		getAllAgents: builder.query<Agent[], void>({
-			query: () => "agents/",
+		getAllAgents: builder.query<Agent[], AreaCode | undefined>({
+			query: (areaCode) => areaCode ? `agents/?areaCode=${areaCode}` : "agents/",
 			providesTags: ["Agent"],
 		}),
 
@@ -56,7 +56,7 @@ export const agentApi = createApi({
 			providesTags: ["Agent"],
 		}),
 
-		getAgentOrders: builder.query<Order[], string>({
+		getOrdersFromAgent: builder.query<Order[], string>({
 			query: (agentId) => `agents/${agentId}/orders`,
 			providesTags: ["Agent"],
 		}),
@@ -76,13 +76,13 @@ export const agentApi = createApi({
 		>({
 			query: ({ agentId, updateData }) => ({
 				url: `agents/${agentId}`,
-				method: "PUT",
+				method: "PATCH",
 				body: updateData,
 			}),
 			invalidatesTags: ["Agent"],
 		}),
 
-		deleteAgent: builder.mutation<{ message: string }, string>({
+		deleteAgent: builder.mutation<void, string>({
 			query: (agentId) => ({
 				url: `agents/${agentId}`,
 				method: "DELETE",
@@ -95,7 +95,7 @@ export const agentApi = createApi({
 export const {
 	useGetAllAgentsQuery,
 	useGetAgentByIdQuery,
-	useGetAgentOrdersQuery,
+	useGetOrdersFromAgentQuery,
 	useCreateAgentMutation,
 	useUpdateAgentMutation,
 	useDeleteAgentMutation,

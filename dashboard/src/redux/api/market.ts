@@ -81,8 +81,8 @@ export const marketApi = createApi({
 	baseQuery: baseQuery,
 	tagTypes: ["Market"],
 	endpoints: (builder) => ({
-		getAllMarkets: builder.query<Market[], void>({
-			query: () => "markets/",
+		getAllMarkets: builder.query<Market[], string | undefined>({
+			query: (areaCode) => `markets/?a=${areaCode}`,
 			providesTags: ["Market"],
 		}),
 

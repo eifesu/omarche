@@ -1,129 +1,165 @@
 import { Hono } from "hono";
-import prisma from "@prisma/index";
 import { z } from "zod";
-import { zValidator } from "@hono/zod-validator";
-import { Prisma } from "@prisma/client";
+import { Agent } from "@prisma/client";
+import { 
+  createAgent, 
+  getAllAgents, 
+  getAgentById, 
+  updateAgentById, 
+  deleteAgentById,
+  getAgentOrders
+} from "@/services/agent.service";
 import AppError from "@/utils/AppError";
-import { CreateAgentDTO, UpdateAgentDTO } from "@shared/types/api/agent.types";
+import { AreaCodeQueryValidator } from "./market.handler";
 
 const agentHandler = new Hono();
 
-agentHandler.post("/", zValidator("json", CreateAgentDTO), async (c) => {
-  const agentData = c.req.valid("json");
+const AgentSchema = z.object({
+  agentId: z.string().uuid(),
+  pictureUrl: z.string().url().nullable(),
+  marketId: z.string().uuid(),
+  email: z.string().email().nullable(),
+  password: z.string(),
+  firstName: z.string().min(1).max(50),
+  lastName: z.string().min(1).max(50),
+  phone: z.string().min(1).max(50),
+  createdAt: z.date(),
+  updatedAt: z.date()
+});
 
-  try {
-    const hashedPassword = await Bun.password.hash(agentData.password);
-    const newAgent = await prisma.agent.create({
-      data: {
-        ...agentData,
-        password: hashedPassword,
-      },
-    });
+const CreateAgentSchema = AgentSchema.omit({ 
+  agentId: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
 
-    return c.json({ ...newAgent, password: undefined }, 201);
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        throw new AppError(
-          "Un agent avec cet email existe déjà",
-          400,
-          error
-        );
-      }
-    }
-    throw new AppError(
-      "Erreur lors de la création de l'agent",
-      500,
-      error as Error
-    );
-  }
+const UpdateAgentSchema = AgentSchema.partial().omit({ 
+  agentId: true,
+  createdAt: true,
+  updatedAt: true 
 });
 
 // Get all agents
 agentHandler.get("/", async (c) => {
   try {
-    const agents = await prisma.agent.findMany({});
+    const query = c.req.query();
+    const areaCode = AreaCodeQueryValidator.parse({ areaCode: query.areaCode }).a;
+    const agents = await getAllAgents(areaCode);
     return c.json(agents);
   } catch (error) {
-    throw new AppError(
-      "Erreur lors de la récupération des agents",
-      500,
-      error as Error
-    );
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        statusCode: error.statusCode,
+        isOperational: error.isOperational,
+        error: error.error
+      }, error.statusCode);
+    }
+    throw error;
   }
 });
 
-// Get agent by id
+// Get agent by ID
 agentHandler.get("/:agentId", async (c) => {
-  const { agentId } = c.req.param();
-  const agent = await prisma.agent.findUnique({
-    where: { agentId },
-  });
-
-  if (!agent) {
-    throw new AppError(
-      "Agent non trouvé",
-      404,
-      new Error("Agent not found")
-    );
+  try {
+    const { agentId } = c.req.param();
+    const agent = await getAgentById(agentId);
+    if (!agent) {
+      return c.json({ 
+        message: 'Agent not found', 
+        statusCode: 404,
+        isOperational: true,
+        error: null
+      }, 404);
+    }
+    return c.json(agent);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        statusCode: error.statusCode,
+        isOperational: error.isOperational,
+        error: error.error
+      }, error.statusCode);
+    }
+    throw error;
   }
-
-  return c.json(agent);
 });
 
+// Get agent orders
 agentHandler.get("/:agentId/orders", async (c) => {
-  const { agentId } = c.req.param();
   try {
-    const orders = await prisma.order.findMany({
-      where: { agentId },
-    });
+    const { agentId } = c.req.param();
+    const orders = await getAgentOrders(agentId);
     return c.json(orders);
   } catch (error) {
-    throw new AppError(
-      "Erreur lors de la récupération des commandes de l'agent",
-      500,
-      error as Error
-    );
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        status: error.statusCode 
+      }, error.statusCode);
+    }
+    return c.json({ message: "Internal server error", status: 500 }, 500);
+  }
+});
+
+// Create agent
+agentHandler.post("/", async (c) => {
+  try {
+    const data = await c.req.json();
+    const validatedData = CreateAgentSchema.parse(data);
+    const agent = await createAgent(validatedData);
+    return c.json(agent, 201);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        statusCode: error.statusCode,
+        isOperational: error.isOperational,
+        error: error.error
+      }, error.statusCode);
+    }
+    throw error;
   }
 });
 
 // Update agent
-
-agentHandler.put("/:agentId", zValidator("json", UpdateAgentDTO), async (c) => {
-  const { agentId } = c.req.param();
-  const updateData = c.req.valid("json");
-
+agentHandler.patch("/:agentId", async (c) => {
   try {
-    const updatedAgent = await prisma.agent.update({
-      where: { agentId },
-      data: updateData,
-    });
-    return c.json(updatedAgent);
+    const { agentId } = c.req.param();
+    const data = await c.req.json();
+    const validatedData = UpdateAgentSchema.parse(data);
+    const agent = await updateAgentById(agentId, validatedData);
+    return c.json(agent);
   } catch (error) {
-    console.error("Error updating agent:", error);
-    throw new AppError(
-      "Erreur lors de la mise à jour de l'agent",
-      500,
-      error as Error
-    );
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        statusCode: error.statusCode,
+        isOperational: error.isOperational,
+        error: error.error
+      }, error.statusCode);
+    }
+    throw error;
   }
 });
 
 // Delete agent
 agentHandler.delete("/:agentId", async (c) => {
-  const { agentId } = c.req.param();
-
   try {
-    await prisma.agent.delete({
-      where: { agentId },
-    });
-    return c.json({ message: "Agent supprimé avec succès" });
+    const { agentId } = c.req.param();
+    await deleteAgentById(agentId);
+    return c.body(null, 204);
   } catch (error) {
-    throw new AppError(
-      "Erreur lors de la suppression de l'agent",
-      500,
-      error as Error
-    );
+    if (error instanceof AppError) {
+      return c.json({ 
+        message: error.message, 
+        statusCode: error.statusCode,
+        isOperational: error.isOperational,
+        error: error.error
+      }, error.statusCode);
+    }
+    throw error;
   }
 });
 

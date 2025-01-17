@@ -15,6 +15,8 @@ import { useGetAllMarketsQuery } from "@/redux/api/market";
 import MarketCreateDialog from "../components/MarketCreateDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { selectCurrentUser } from "@/redux/slices/authSlice";
+import { useSelector } from "react-redux";
 
 export const getAreaLabel = (code: string) => {
   const areaLabels: Record<string, string> = {
@@ -37,7 +39,8 @@ export const getAreaLabel = (code: string) => {
 };
 
 const MarketsScreen = (): JSX.Element => {
-  const { data: markets, isLoading, error } = useGetAllMarketsQuery();
+  const user = useSelector(selectCurrentUser)!;
+  const { data: markets, isLoading, error } = useGetAllMarketsQuery(user.areaCode ?? undefined);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 

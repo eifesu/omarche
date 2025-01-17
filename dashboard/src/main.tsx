@@ -17,6 +17,8 @@ import AgentsScreen from './pages/agents/views/AgentsScreen.tsx'
 import ShippersScreen from './pages/shippers/views/ShippersScreen.tsx'
 import AgentScreen from './pages/agents/views/AgentScreen.tsx'
 import ShipperScreen from './pages/shippers/views/ShipperScreen.tsx'
+import UsersScreen from './pages/users/views/UsersScreen.tsx'
+import UserScreen from './pages/users/views/UserScreen.tsx'
 import LoginPage from './pages/auth/login'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
@@ -75,11 +77,19 @@ const router = createBrowserRouter([
             },
             {
                 path: '/shippers',
-                element: <ShippersScreen />,
+                element: <ProtectedRoute restrictedForAreaAdmin><ShippersScreen /></ProtectedRoute>,
             },
             {
                 path: '/shippers/:shipperId',
-                element: <ShipperScreen />,
+                element: <ProtectedRoute restrictedForAreaAdmin><ShipperScreen /></ProtectedRoute>,
+            },
+            {
+                path: '/users',
+                element:  <ProtectedRoute restrictedForAreaAdmin><UsersScreen /></ProtectedRoute>,
+            },
+            {
+                path: '/users/:userId',
+                element:    <ProtectedRoute restrictedForAreaAdmin><UserScreen /></ProtectedRoute>,
             }
         ],
     },

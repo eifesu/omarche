@@ -38,8 +38,14 @@ export async function updateUser(
 		if (!existingUser) {
 			throw new AppError("Utilisateur introuvable", 404, new Error(`User with ID ${userId} not found`));
 		}
+		let password = data.password;
+		if (password) {
+			password = await Bun.password.hash(password);
+		} else {
+			password = existingUser.password;
+		}
 
-		return await updateUserById(userId, data);
+		return await updateUserById(userId, { ...data, password });
 	} catch (error) {
 		if (error instanceof AppError) throw error;
 		throw new AppError("Erreur lors de la mise à jour de l'utilisateur", 500, error as Error);

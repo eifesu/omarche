@@ -11,6 +11,7 @@ import {
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import AppError from "@/utils/AppError";
+import { AreaCodeQueryValidator } from "./market.handler";
 
 const StatusDTO = z.enum([
 	"IDLE",
@@ -81,9 +82,11 @@ orderHandler.post("/", zValidator("json", PostOrderDTO), async (c) => {
 });
 
 // Read (GET) all orders
-orderHandler.get("/", async (c) => {
+orderHandler.get("/", zValidator("query", AreaCodeQueryValidator), async (c) => {
 	try {
-		const orders = await getAllOrders();
+		const query = c.req.valid("query");
+		console.log(query)
+		const orders = await getAllOrders(query.a ?? undefined);
 		return c.json(orders);
 	} catch (error) {
 		throw new AppError(

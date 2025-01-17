@@ -1,4 +1,4 @@
-package com.eifesu.omarcheivoire
+package com.omarche.omarcheapp;
 
 import android.app.Application
 import android.content.res.Configuration

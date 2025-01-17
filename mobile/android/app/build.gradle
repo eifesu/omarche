@@ -109,13 +109,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.eifesu.omarcheivoire'
+    namespace 'com.omarche.omarcheapp'
     defaultConfig {
-        applicationId 'com.eifesu.omarcheivoire'
+        applicationId 'com.omarche.omarcheapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 12
+        versionName "1.0.1"
     }
     signingConfigs {
         debug {

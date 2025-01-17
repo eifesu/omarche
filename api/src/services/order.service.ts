@@ -19,6 +19,7 @@ import { selectProductById } from "@/repositories/product.repository";
 import { selectSellerById } from "@/repositories/seller.repository";
 import {
 	Agent,
+	area_code,
 	Market,
 	Order,
 	OrderProducts,
@@ -190,7 +191,7 @@ export async function getOrderDetailsById(orderId: string): Promise<
 	}
 }
 
-export async function getAllOrders(): Promise<OrderDTO[]> {
+export async function getAllOrders(areaCode?: area_code): Promise<OrderDTO[]> {
 	try {
 		const orders = await selectAllOrders();
 		const ordersDTO = orders.map((order) => ({

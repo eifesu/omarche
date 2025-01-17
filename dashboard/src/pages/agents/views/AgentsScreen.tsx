@@ -7,11 +7,15 @@ import { useGetAllMarketsQuery } from "@/redux/api/market";
 import AgentCreateDialog from "../components/AgentCreateDialog";
 import AgentEditDialog from "../components/AgentEditDialog";
 import { useNavigate } from "react-router-dom";
+import { selectCurrentUser } from "@/redux/slices/authSlice";
+import { useSelector } from "react-redux";
+import { getAreaLabel } from "@/pages/markets/views/MarketsScreen";
 
 const AgentsScreen = (): JSX.Element => {
+    const user = useSelector(selectCurrentUser)!;
     const [searchTerm, setSearchTerm] = useState("");
-    const { data: agents, isLoading: agentsLoading, error: agentsError } = useGetAllAgentsQuery();
-    const { data: markets, isLoading: marketsLoading } = useGetAllMarketsQuery();
+    const { data: agents, isLoading: agentsLoading, error: agentsError } = useGetAllAgentsQuery(user.areaCode ?? undefined);
+    const { data: markets, isLoading: marketsLoading } = useGetAllMarketsQuery(user.areaCode ?? undefined);
     const navigate = useNavigate();
 
     if (agentsLoading || marketsLoading) {
@@ -38,7 +42,9 @@ const AgentsScreen = (): JSX.Element => {
             <HeaderContainer>
                 <div>
                     <HeaderTitle>Agents</HeaderTitle>
-                    <HeaderSubtitle>Gérez les gestionnaires de commande</HeaderSubtitle>
+                    <HeaderSubtitle>
+                        {user.areaCode ? `Agents de ${getAreaLabel(user.areaCode)}` : 'Gérez les gestionnaires de commande'}
+                    </HeaderSubtitle>
                 </div>
                 <div className="flex flex-row gap-4 justify-center items-center">
                     <Input
@@ -50,11 +56,9 @@ const AgentsScreen = (): JSX.Element => {
                     <AgentCreateDialog />
                 </div>
             </HeaderContainer>
-
             <TableContainer>
                 <TableRow className="bg-slate-50">
                     <TableHeader>NOM</TableHeader>
-                    <TableHeader>PRÉNOM</TableHeader>
                     <TableHeader>EMAIL</TableHeader>
                     <TableHeader>TÉLÉPHONE</TableHeader>
                     <TableHeader>MARCHÉ</TableHeader>
@@ -66,8 +70,7 @@ const AgentsScreen = (): JSX.Element => {
                         className="cursor-pointer hover:bg-slate-50"
                         onClick={() => navigate(`/agents/${agent.agentId}`)}
                     >
-                        <TableCell>{agent.lastName}</TableCell>
-                        <TableCell>{agent.firstName}</TableCell>
+                        <TableCell>{`${agent.firstName} ${agent.lastName}`}</TableCell>
                         <TableCell>{agent.email}</TableCell>
                         <TableCell>{agent.phone}</TableCell>
                         <TableCell>{marketMap?.[agent.marketId] || "N/A"}</TableCell>

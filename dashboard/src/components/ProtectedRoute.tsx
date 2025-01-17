@@ -18,7 +18,7 @@ export function ProtectedRoute({ children, restrictedForAreaAdmin = false }: Pro
 
   // Restrict access to certain routes for admins with areaCode
   if (restrictedForAreaAdmin && user.areaCode) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

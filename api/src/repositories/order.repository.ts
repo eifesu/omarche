@@ -1,5 +1,6 @@
 import prisma from "@prisma/index";
-import { Order } from "@prisma/client";
+import { area_code, Order } from "@prisma/client";
+import { selectAllMarkets } from "./market.repository";
 
 export type InsertOrderDTO = {
     userId: string;
@@ -174,8 +175,44 @@ export async function selectOrderDetailsById(orderId: string) {
     return orderDetails;
 }
 
-export async function selectAllOrders() {
+export async function selectOrders() {
     const orders = await prisma.order.findMany({
+        include: {
+            users: true,
+            shipper: true,
+            orderProducts: {
+                include: {
+                    products: {
+                        include: {
+                            seller: {
+                                include: {
+                                    market: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+    return orders;
+}
+
+export async function selectAllOrders(areaCode?: area_code) {
+    const orders = await prisma.order.findMany({
+        where: {
+            orderProducts: {
+                some: {
+                    products: {
+                        seller: {
+                            market: {
+                                areaCode: areaCode
+                            }
+                        }
+                    }
+                }
+            }
+        },
         include: {
             users: true,
             shipper: true,

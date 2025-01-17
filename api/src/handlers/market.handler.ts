@@ -16,10 +16,32 @@ import { Variables } from "..";
 
 const marketHandler = new Hono<{ Variables: Variables}>();
 
+const AreaCodeDTO = z.enum([
+  "ABOBO",
+  "ADJAME",
+  "ATTECOUBE",
+  "COCODY",
+  "KOUMASSI",
+  "MARCORY",
+  "PLATEAU",
+  "TREICHVILLE",
+  "YOPOUGON",
+  "BROFODOUME",
+  "BINGERVILLE",
+  "PORT_BOUET",
+  "ANYAMA",
+  "SONGON",
+]);
+
+export const AreaCodeQueryValidator = z.object({
+  a: AreaCodeDTO.optional(),
+});
+
 // GET all markets
-marketHandler.get("/", async (c) => {
-  const areaCode = c.get("areaCode") ?? undefined;
-  const markets = await getAllMarkets(areaCode);
+marketHandler.get("/", zValidator("query", AreaCodeQueryValidator), async (c) => {
+  const query = c.req.valid("query");
+  console.log(query)
+  const markets = await getAllMarkets(query.a ?? undefined);
   return c.json(markets);
 });
 
@@ -63,22 +85,7 @@ const CreateMarketDTO = z.object({
   latitude: z.number(),
   longitude: z.number(),
   pictureUrl: z.string().optional(),
-  areaCode: z.enum([
-    "ABOBO",
-    "ADJAME",
-    "ATTECOUBE",
-    "COCODY",
-    "KOUMASSI",
-    "MARCORY",
-    "PLATEAU",
-    "TREICHVILLE",
-    "YOPOUGON",
-    "BROFODOUME",
-    "BINGERVILLE",
-    "PORT_BOUET",
-    "ANYAMA",
-    "SONGON",
-  ]),
+  areaCode: AreaCodeDTO,
 });
 
 // POST create a new market
@@ -102,24 +109,7 @@ const UpdateMarketDTO = z.object({
   longitude: z.number().optional(),
   isActive: z.boolean().optional(),
   pictureUrl: z.string().nullable(),
-  areaCode: z
-    .enum([
-      "ABOBO",
-      "ADJAME",
-      "ATTECOUBE",
-      "COCODY",
-      "KOUMASSI",
-      "MARCORY",
-      "PLATEAU",
-      "TREICHVILLE",
-      "YOPOUGON",
-      "BROFODOUME",
-      "BINGERVILLE",
-      "PORT_BOUET",
-      "ANYAMA",
-      "SONGON",
-    ])
-    .optional(),
+  areaCode: AreaCodeDTO.optional(),
 });
 
 // PUT update a market

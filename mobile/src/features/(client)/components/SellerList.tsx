@@ -95,16 +95,26 @@ function SellerItem(props: { seller: Seller }) {
 
 function ProductLabel({ category }: { category: Product['category'] }) {
     switch (category) {
+        case 'Legumes':
+            return <Iconify icon="fa6-solid:carrot" size={20} color="white" />
         case 'Fruits':
-            return <Iconify icon="icon-park-twotone:tomato" size={20} color="white" />
-        case 'Légumes':
-            return <Iconify icon="icon-park-twotone:apple-one" size={20} color="white" />
-        case 'Viande':
-            return <Iconify icon="tabler:meat" size={20} color="white" />
-        case 'Poisson':
-            return <Iconify icon="icon-park-twotone:fish" size={20} color="white" />
+            return <Iconify icon="fa6-solid:apple-whole" size={20} color="white" />
+        case 'Viandes':
+            return <Iconify icon="fa6-solid:drumstick-bite" size={20} color="white" />
+        case 'Poissons':
+            return <Iconify icon="fa6-solid:fish" size={20} color="white" />
+        case 'Cereales':
+            return <Iconify icon="fa6-solid:wheat-awn" size={20} color="white" />
+        case 'Tubercules':
+            return <Iconify icon="fa6-solid:seedling" size={20} color="white" />
+        case 'Mer':
+            return <Iconify icon="fa6-solid:shrimp" size={20} color="white" />
+        case 'Epices':
+            return <Iconify icon="fa6-solid:mortar-pestle" size={20} color="white" />
+        case 'Autres':
+            return <Iconify icon="fa6-solid:utensils" size={20} color="white" />
         default:
-            return <Iconify icon="icon-park-twotone:tomato" size={20} color="white" />
+            return <Iconify icon="fa6-solid:utensils" size={20} color="white" />
     }
 }
 
@@ -115,19 +125,19 @@ function ProductItem(props: { product: Product, seller: Seller }) {
     return (
         <TouchableOpacity style={styles.productItemContainer} onPress={() => navigation.navigate('Product', { productId: props.product.productId, marketId: props.seller.marketId })}>
             <View style={{ flex: 1, backgroundColor: Theme.colors.greenDark, position: 'relative', padding: 8, justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <View style={{ position: 'absolute', backgroundColor: 'black', zIndex: 0, opacity: .4, flex: 1, top: 0, left: 0, right: 0, bottom: 0 }} />
+                <View style={{ position: 'absolute', backgroundColor: 'black', zIndex: 0, opacity: .6, flex: 1, top: 0, left: 0, right: 0, bottom: 0 }} />
                 <Image source={props.product.pictureUrl[0]} contentFit="cover" style={{ flex: 1, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }} />
                 <ProductLabel category={props.product.category} />
                 <View>
                     <Text style={{ fontFamily: Theme.font.bold, color: 'white', fontSize: 8, letterSpacing: -.2 }}>Chez {props.seller.firstName}</Text>
-                    <Text style={{ fontFamily: Theme.font.black, marginTop: -2, color: 'white', fontSize: 14, letterSpacing: -.2 }}>{props.product.name}</Text>
+                    <Text style={{ fontFamily: Theme.font.black, marginTop: -2, color: 'white', fontSize: 12, letterSpacing: -.2 }}>{props.product.name}</Text>
                 </View>
             </View>
             <View style={{ height: 'auto', paddingHorizontal: 6, paddingVertical: 6, width: '100%', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
                 <View style={{ borderWidth: 1, borderColor: 'white', borderRadius: 4, padding: 4, paddingHorizontal: 8 }}>
-                    <Text style={{ fontFamily: Theme.font.black, color: 'white', fontSize: 10, letterSpacing: -.2 }}>{props.product.amount} {props.product.unit.toUpperCase()}</Text>
+                    <Text style={{ fontFamily: Theme.font.black, color: 'white', fontSize: 8, letterSpacing: -.2 }}>{props.product.amount} {props.product.unit.toUpperCase()}</Text>
                 </View>
-                <Text style={{ fontFamily: Theme.font.black, color: 'white', fontSize: 14, letterSpacing: -.2 }}>{props.product.price}<Text style={{ fontSize: 8 }}>CFA</Text></Text>
+                <Text style={{ fontFamily: Theme.font.black, color: 'white', fontSize: 12, letterSpacing: -.2 }}>{props.product.price}<Text style={{ fontSize: 8 }}>CFA</Text></Text>
             </View>
         </TouchableOpacity>
     )

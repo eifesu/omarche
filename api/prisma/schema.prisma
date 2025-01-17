@@ -126,7 +126,6 @@ model Agent {
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
     phone      String   @unique @db.VarChar(50)
-    role       String   @default("Agent") @db.VarChar(50)
     market     Market   @relation(fields: [marketId], references: [marketId], onDelete: Cascade, onUpdate: NoAction)
     createdAt  DateTime @default(now()) @db.Timestamp(6)
     updatedAt  DateTime @updatedAt
