@@ -40,7 +40,6 @@ export const AreaCodeQueryValidator = z.object({
 // GET all markets
 marketHandler.get("/", zValidator("query", AreaCodeQueryValidator), async (c) => {
   const query = c.req.valid("query");
-  console.log(query)
   const markets = await getAllMarkets(query.a ?? undefined);
   return c.json(markets);
 });

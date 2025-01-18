@@ -11,6 +11,7 @@ import { imageApi } from "./image";
 import { authApi } from "./auth";
 import authReducer from "../slices/authSlice"
 import { userApi } from "./user";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 export const store = configureStore({
   reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
+      authMiddleware,
       marketApi.middleware,
       sellerApi.middleware,
       orderApi.middleware,
