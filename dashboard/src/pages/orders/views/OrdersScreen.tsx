@@ -8,11 +8,16 @@ import OrderEditDialog from "../components/OrderEditDialog";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/redux/slices/authSlice";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const ITEMS_PER_PAGE = 10;
 
 const OrdersScreen = (): JSX.Element => {
     const user = useSelector(selectCurrentUser)!;
     const { data: orders, isLoading, error } = useGetAllOrdersQuery(user.areaCode ?? undefined);
     const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
 
     if (isLoading) {
@@ -29,6 +34,20 @@ const OrdersScreen = (): JSX.Element => {
         order.order.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.order.status.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const totalItems = filteredOrders?.length || 0;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentItems = filteredOrders?.slice(startIndex, endIndex);
+
+    const canGoPrevious = currentPage > 1;
+    const canGoNext = currentPage < totalPages;
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
     const handleOrderClick = (orderId: string) => {
         navigate(`/orders/${orderId}`);
@@ -60,7 +79,7 @@ const OrdersScreen = (): JSX.Element => {
                 <TableHeader>MARCHÉ</TableHeader>
                 <TableHeader>ACTIONS</TableHeader>
             </TableRow>
-            {filteredOrders?.map((order) => (
+            {currentItems?.map((order) => (
                 <TableRow
                     key={order.order.orderId}
                     className="cursor-pointer hover:bg-slate-50"
@@ -89,6 +108,52 @@ const OrdersScreen = (): JSX.Element => {
                 </TableRow>
             ))}
         </TableContainer>
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center px-8 py-4 w-full border-t">
+            <div className="flex justify-start items-center text-sm w-fit text-muted-foreground">
+                Page {currentPage} sur {totalPages}
+            </div>
+            <div className="flex items-center space-x-6 lg:space-x-8">
+                <div className="flex items-center space-x-2">
+                    <Button
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                        onClick={() => handlePageChange(1)}
+                        disabled={!canGoPrevious}
+                    >
+                        <span className="sr-only">Go to first page</span>
+                        <ChevronsLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={!canGoPrevious}
+                    >
+                        <span className="sr-only">Go to previous page</span>
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={!canGoNext}
+                    >
+                        <span className="sr-only">Go to next page</span>
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                        onClick={() => handlePageChange(totalPages)}
+                        disabled={!canGoNext}
+                    >
+                        <span className="sr-only">Go to last page</span>
+                        <ChevronsRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
