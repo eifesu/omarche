@@ -13,7 +13,7 @@ model Market {
     name       String    @unique @db.VarChar(50)
     latitude   Float
     longitude  Float
-    areaCode  area_code
+    areaCode   area_code
     isActive   Boolean?  @default(true)
     sellers    Seller[]
     agents     Agent[]
@@ -70,8 +70,6 @@ model Product {
     seller        Seller           @relation(fields: [sellerId], references: [sellerId], onDelete: Cascade, onUpdate: NoAction)
     createdAt     DateTime?        @default(now()) @db.Timestamp(6)
     updatedAt     DateTime         @updatedAt
-
-    @@unique([name, sellerId], map: "uc_product")
 }
 
 model Seller {
@@ -93,7 +91,7 @@ model Seller {
 
 model User {
     userId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    email     String?   @unique @db.VarChar(50)
+    email     String?  @unique @db.VarChar(50)
     password  String   @db.VarChar(255)
     firstName String   @db.VarChar(50)
     lastName  String   @db.VarChar(50)
@@ -108,11 +106,11 @@ model User {
 }
 
 model Admin {
-    adminId   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    adminId   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     areaCode  area_code?
-    email     String   @unique @db.VarChar(50)
-    password  String   @db.VarChar(255)
-    createdAt DateTime @default(now()) @db.Timestamp(6)
+    email     String     @unique @db.VarChar(50)
+    password  String     @db.VarChar(255)
+    createdAt DateTime   @default(now()) @db.Timestamp(6)
 
     @@unique([email, areaCode], map: "uc_admin")
 }
@@ -121,7 +119,7 @@ model Agent {
     agentId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     pictureUrl String?  @db.VarChar(255)
     marketId   String   @db.Uuid
-    email      String?   @unique @db.VarChar(50)
+    email      String?  @unique @db.VarChar(50)
     password   String   @db.VarChar(255)
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
@@ -139,7 +137,7 @@ model Shipper {
     marketId   String   @db.Uuid
     firstName  String   @db.VarChar(50)
     lastName   String   @db.VarChar(50)
-    email      String?   @unique @db.VarChar(50)
+    email      String?  @unique @db.VarChar(50)
     password   String   @db.VarChar(255)
     phone      String   @unique @db.VarChar(50)
     pictureUrl String?  @db.VarChar(255)
@@ -162,7 +160,7 @@ model PromoCode {
 }
 
 model GiftCard {
-    giftCardId String   @id 
+    giftCardId String   @id
     userId     String?  @unique @db.Uuid
     expiration DateTime @db.Timestamp(6)
     status     String   @default("IDLE") @db.VarChar(50)
@@ -210,7 +208,7 @@ enum product_category {
     Poissons
     Cereales
     Tubercules
-    Mer 
+    Mer
     Epices
     Autres
 }

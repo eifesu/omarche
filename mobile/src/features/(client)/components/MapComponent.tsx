@@ -41,10 +41,10 @@ function Marker({ market }: { market: Market }) {
             onPress={() => { navigation.navigate('Market', { screen: 'Sellers', params: { name: market.name, marketId: market.marketId } }) }}
             style={styles.mapMarker}>
             <Entypo name="shop" size={20} color={Theme.colors.black} style={styles.mapMarkerBackgroundIcon} />
-            <View style={{ justifyContent: 'center' }}>
+            {/* <View style={{ justifyContent: 'center' }}>
                 <Text style={styles.mapMarkerSubtext}>Marché de</Text>
                 <Text style={styles.mapMarkerText}>{market.name}</Text>
-            </View>
+            </View> */}
             <View style={{ width: 40, height: 40, borderRadius: 999, backgroundColor: 'white', borderWidth: 0, borderColor: 'white', position: 'relative', overflow: 'hidden' }}>
                 <Image source={market.pictureUrl} contentFit='cover' style={{ flex: 1 }} />
             </View>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     mapMarker: {
-        width: 200,
+        width: 'auto',
         backgroundColor: Theme.colors.greenDark,
         position: 'relative',
         height: 'auto',

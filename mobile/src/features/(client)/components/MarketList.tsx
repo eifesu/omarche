@@ -177,7 +177,7 @@ function MarketItem({ item, locationState }: { item: Market, locationState: Loca
     const navigation = useNavigation<RootStackNavigation>()
     return (
         <TouchableOpacity
-            onPress={() => { navigation.navigate('Market', { screen: 'Sellers', params: { name: item.name, marketId: item.marketId } }) }}
+            onPress={() => { if (item.isActive) navigation.navigate('Market', { screen: 'Sellers', params: { name: item.name, marketId: item.marketId } }) }}
             style={[styles.flatListItem, { opacity: item.isActive ? 1 : .5 }]}>
             <View style={{ flex: 1, zIndex: 1, padding: 8, justifyContent: 'space-between' }}>
                 <Entypo name="shop" size={20} color="white" />
@@ -193,7 +193,7 @@ function MarketItem({ item, locationState }: { item: Market, locationState: Loca
                     : <ActivityIndicator size="small" color="white" />
                 }
             </View>
-            <View style={styles.flatListeItemOpenIcon}>
+            <View style={[styles.flatListeItemOpenIcon, { backgroundColor: item.isActive ? Theme.colors.green : Theme.colors.red }]}>
                 <MaterialIcons name="arrow-right-alt" size={20} color="white" />
             </View>
             <View style={{ backgroundColor: 'black', position: 'absolute', zIndex: 0, flex: 1, opacity: .6, height: '100%', width: '100%' }} />
@@ -264,7 +264,6 @@ const styles = StyleSheet.create({
         top: 8,
         zIndex: 3,
         borderRadius: 999,
-        backgroundColor: Theme.colors.orange,
         width: 24,
         height: 24,
     },
