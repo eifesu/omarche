@@ -1,5 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
+import { onOrderCreated } from "./middleware";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export default prisma
+prisma.$use(onOrderCreated);
+
+export default prisma;

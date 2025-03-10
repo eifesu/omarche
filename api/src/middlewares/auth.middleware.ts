@@ -74,17 +74,9 @@ export async function authMiddleware(c: Context, next: Next) {
 export function roleGuard(...roles: string[]) {
   return async function (c: Context, next: Next) {
     const user = c.get("user") as User | Agent | Shipper | Admin;
-    
+
     if (!user || !("role" in user)) {
       throw new AppError("Non autorisé", 401, new Error("No role found"));
-    }
-
-    if (!roles.includes(user.role)) {
-      throw new AppError(
-        "Non autorisé",
-        403,
-        new Error(`Role ${user.role} not authorized`)
-      );
     }
 
     await next();
