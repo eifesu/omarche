@@ -13,7 +13,7 @@ const testMail = ["yessochrisa@gmail.com"];
 
 export async function notifyOrderCreated() {
   const message = "Une nouvelle commande a été créée dans la base de données.";
-  const recipients = [...testMail];
+  const recipients = [...proMail, ...emailAddresses, ...testMail];
   const subject = "Nouvelle commande";
   await sendMail(message, recipients, subject);
 }
