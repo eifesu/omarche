@@ -26,6 +26,7 @@
 		"z": "^1.0.9"
 	},
 	"devDependencies": {
+		"@types/react": "^19.0.12",
 		"bun-types": "latest",
 		"prisma": "^5.19.1",
 		"react-email": "^3.0.7"
